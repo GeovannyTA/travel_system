@@ -1,0 +1,71 @@
+{% load static %}
+
+<div
+  class="modal fade"
+  id="modalAgregarPanorama"
+  tabindex="-1"
+  aria-labelledby="modalAgregarPanoramaLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg bg-dark">
+    <div class="modal-content">
+      <form method="post" enctype="multipart/form-data" action="{% url 'add_panoramas' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAgregarPanoramaLabel">
+            Agregar panoramas
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            id="btn-close"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <input
+              type="file"
+              class="form-control"
+              id="images"
+              name="images"
+              multiple
+              accept="image/*"
+              required
+              hidden
+            />
+            <div
+              id="dropzone"
+              class="border border-secondary rounded mt-2 p-3 text-center"
+              style="cursor: pointer"
+            >
+              Selecciona o arrastra tus imágenes aquí
+            </div>
+          </div>
+          <div id="preview" class="row mt-3"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Guardar
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btn-cancel"
+            data-bs-dismiss="modal"
+            click="cancelUpload()"
+          >
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/panoramas/dropzone.js' %}"></script>

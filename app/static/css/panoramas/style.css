@@ -1,0 +1,22 @@
+.table-panorama tbody tr > td {
+    max-width: 200px;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.panorama-data {
+    text-wrap: nowrap;
+    overflow: hidden;
+}
+
+.actions_btns {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+}
+
+.action_btn {
+    border: none;
+    background: none;
+}
