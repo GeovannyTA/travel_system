@@ -11,7 +11,11 @@
 >
   <div class="modal-dialog modal-lg bg-dark">
     <div class="modal-content">
-      <form method="post" enctype="multipart/form-data" action="{% url 'add_panoramas' %}">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'add_panoramas' %}"
+      >
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="modalAgregarPanoramaLabel">
@@ -20,8 +24,8 @@
           <button
             type="button"
             class="btn-close"
+            onclick="cancelUpload()"
             data-bs-dismiss="modal"
-            id="btn-close"
             aria-label="Cerrar"
           ></button>
         </div>
@@ -39,25 +43,35 @@
             />
             <div
               id="dropzone"
-              class="border border-secondary rounded mt-2 p-3 text-center"
-              style="cursor: pointer"
+              class="rounded text-center dropzone"
             >
-              Selecciona o arrastra tus imágenes aquí
+              <i class="fa-solid fa-file-import fa-2xl"></i>
+              <span>
+                  Selecciona o arrastra tus imágenes aquí
+              </span>
             </div>
           </div>
           <div id="preview" class="row mt-3"></div>
         </div>
         <div class="modal-footer">
+            <button
+            type="button"
+            class="btn btn-secondary"
+            id="btn-cancel"
+            data-bs-dismiss="modal"
+          >
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
           <button type="submit" class="btn btn-primary">
             <i class="fa-solid fa-floppy-disk"></i>
             Guardar
           </button>
           <button
             type="button"
-            class="btn btn-secondary"
-            id="btn-cancel"
+            class="btn btn-danger"
+            onClick="cancelUpload()"
             data-bs-dismiss="modal"
-            click="cancelUpload()"
           >
             <i class="fa-solid fa-ban"></i>
             Cancelar
