@@ -25,6 +25,7 @@
             <th scope="col">URL</th>
             <th scope="col">Latitud</th>
             <th scope="col">Longitud</th>
+            <th scope="col">Altitud</th>
             <th scope="col">Direction</th>
             <th scope="col">Orientación</th>
             <th scope="col">Fecha de toma</th>
@@ -38,6 +39,7 @@
                 <td><i class="bi bi-clipboard"></i>{{ panorama.url }}</td>
                 <td>{{ panorama.gps_lat }}</td>
                 <td>{{ panorama.gps_lng }}</td>
+                <td>{{ panorama.gps_alt }}</td>
                 <td>{{ panorama.gps_direction }}</td>
                 <td>{{ panorama.orientation }}</td>
                 <td>{{ panorama.date_taken|date:'d-m-Y h:m' }}</td>

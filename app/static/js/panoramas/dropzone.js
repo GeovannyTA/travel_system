@@ -1,58 +1,93 @@
 const dropzone = document.getElementById("dropzone");
 const input = document.getElementById("images");
-const preview = document.getElementById("preview");
+const fileCount = document.getElementById("file-count");
 
+// Crear un objeto DataTransfer para manejar los archivos
+const dataTransfer = new DataTransfer();
+
+// Valor por defecto del File count
+fileCount.textContent = "0 archivo(s) seleccionado(s)";
+
+// Manejar clic en el área de dropzone para abrir el selector de archivos
 dropzone.addEventListener("click", () => input.click());
 
+// Cambiar estilo al arrastrar archivos sobre el dropzone
 dropzone.addEventListener("dragover", (e) => {
   e.preventDefault();
   dropzone.classList.add("bg-light");
 });
 
+// Revertir estilo al salir del área de dropzone
 dropzone.addEventListener("dragleave", () => {
   dropzone.classList.remove("bg-light");
 });
 
+// Manejar archivos soltados en el dropzone
 dropzone.addEventListener("drop", (e) => {
   e.preventDefault();
-  input.files = e.dataTransfer.files;
-  showPreview(input.files);
+  dropzone.classList.remove("bg-light");
+  const newFiles = Array.from(e.dataTransfer.files);
+  addFiles(newFiles);
 });
 
+// Manejar selección de archivos mediante el input
 input.addEventListener("change", () => {
-  showPreview(input.files);
+  const newFiles = Array.from(input.files);
+  newFiles.forEach((newFile) => {
+    const isDuplicate = Array.from(dataTransfer.files).some(
+      (existingFile) =>
+        existingFile.name === newFile.name &&
+        existingFile.size === newFile.size
+    );
+
+    if (!isDuplicate) {
+      dataTransfer.items.add(newFile);
+    }
+  });
+
+  input.files = dataTransfer.files;
+  updateFileCount();
 });
 
-function showPreview(files) {
-  preview.innerHTML = "";
-  Array.from(files).forEach((file, index) => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const col = document.createElement("div");
-      col.className = "col-4 mb-3 position-relative";
+// Función para agregar archivos evitando duplicados
+function addFiles(files) {
+  files.forEach((newFile) => {
+    const isDuplicate = Array.from(dataTransfer.files).some(
+      (existingFile) =>
+        existingFile.name === newFile.name &&
+        existingFile.size === newFile.size &&
+        existingFile.lastModified === newFile.lastModified
+    );
 
-      col.innerHTML = `
-          <div class="position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Cerrar"></button>
-            <img src="${e.target.result}" class="img-fluid rounded border shadow" alt="preview">
-          </div>
-        `;
-
-      // Evento para eliminar la imagen
-      col.querySelector(".btn-close").addEventListener("click", () => {
-        col.remove();
-        // Si deseas también eliminar el archivo del input, necesitarías gestionarlo con un FileList personalizada (más complejo)
-      });
-
-      preview.appendChild(col);
-    };
-    reader.readAsDataURL(file);
+    if (!isDuplicate) {
+      dataTransfer.items.add(newFile);
+    }
   });
+
+  input.files = dataTransfer.files;
+  updateFileCount();
+}
+
+function updateFileCount() {
+  fileCount.textContent = `${dataTransfer.files.length} archivo(s) seleccionado(s)`;
 }
 
 function cancelUpload() {
-  const preview = document.getElementById("preview");
-  const input = document.getElementById("images");
-  preview.innerHTML = "";
-  input.value = null;
+  while (dataTransfer.items.length > 0) {
+    dataTransfer.items.remove(0);
+  }
+  const newDataTransfer = new DataTransfer();
+  input.files = newDataTransfer.files;
+  dropzone.classList.remove("bg-light");
+  fileCount.textContent = "0 archivo(s) seleccionado(s)";
+}
+
+function clearFiles() {
+  while (dataTransfer.items.length > 0) {
+    dataTransfer.items.remove(0);
+  }
+  const newDataTransfer = new DataTransfer();
+  input.files = newDataTransfer.files;
+  dropzone.classList.remove("bg-light");
+  fileCount.textContent = "0 archivo(s) seleccionado(s)";
 }

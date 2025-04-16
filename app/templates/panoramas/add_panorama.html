@@ -1,5 +1,4 @@
 {% load static %}
-
 <div
   class="modal fade"
   id="modalAgregarPanorama"
@@ -9,7 +8,7 @@
   data-bs-backdrop="static"
   data-bs-keyboard="false"
 >
-  <div class="modal-dialog modal-lg bg-dark">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form
         method="post"
@@ -24,6 +23,7 @@
           <button
             type="button"
             class="btn-close"
+            id="btn-close"
             onclick="cancelUpload()"
             data-bs-dismiss="modal"
             aria-label="Cerrar"
@@ -38,9 +38,11 @@
               name="images"
               multiple
               accept="image/*"
+              multiple
               required
               hidden
             />
+            <small id="file-count" class="text-muted mt-2 d-block"></small>
             <div
               id="dropzone"
               class="rounded text-center dropzone"
@@ -51,27 +53,28 @@
               </span>
             </div>
           </div>
-          <div id="preview" class="row mt-3"></div>
         </div>
         <div class="modal-footer">
             <button
             type="button"
             class="btn btn-secondary"
-            id="btn-cancel"
-            data-bs-dismiss="modal"
+            id="btn-clear"
+            onClick="clearFiles()"
           >
-            <i class="fa-solid fa-ban"></i>
-            Cancelar
+            <i class="fa-solid fa-eraser"></i>
+            Limpiar
           </button>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" id="btn-save">
             <i class="fa-solid fa-floppy-disk"></i>
             Guardar
           </button>
           <button
             type="button"
             class="btn btn-danger"
+            id="btn-cancel"
             onClick="cancelUpload()"
             data-bs-dismiss="modal"
+            aria-label="Cerrar"
           >
             <i class="fa-solid fa-ban"></i>
             Cancelar
@@ -83,3 +86,4 @@
 </div>
 
 <script src="{% static 'js/panoramas/dropzone.js' %}"></script>
+<script src="{% static 'js/panoramas/form.js' %}"></script>

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fontawesomefree',
     'app',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DATA_UPLOAD_MAX_NUMBER_FILES = 1000  # Numero maximo de imagenes permitidos
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024 * 1024  # Numero maximo de gigas 50GB
+
+# Usar S3 como backend para archivos estáticos y medios
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Datos de tu bucket
+AWS_ACCESS_KEY_ID = 'AKIA4MTWLQ33LZ6HZOWE'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'prueba-recorrido'
+AWS_S3_REGION_NAME = 'us-west-2'  # Ejemplo: us-east-1, us-west-2, etc.
+
+# Opcionales
+AWS_S3_FILE_OVERWRITE = True
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
