@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnClear.disabled = true;
     btnCancel.disabled = true;
     btnClose.disabled = true;
-    
+
     // Cambiar apariencia del botón guardar
     btnSave.innerHTML = `<i class="fas fa-spinner fa-spin spinner-custom"></i> Subiendo...`;
 

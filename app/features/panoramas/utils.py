@@ -29,23 +29,23 @@ def extract_metadata(file_obj):
         alt = gps_data.get("GPSAltitude")
         alt = float(Fraction(alt)) if alt else None
 
-        raw_fecha = clean_exif_string(exif.get("DateTimeOriginal", ""))
-        fecha = None
-        if raw_fecha:
-            fecha = timezone.make_aware(
-                datetime.strptime(raw_fecha, "%Y:%m:%d %H:%M:%S")
+        raw_date = clean_exif_string(exif.get("DateTimeOriginal", ""))
+        date_taken = None
+        if raw_date:
+            date_taken = timezone.make_aware(
+                datetime.strptime(raw_date, "%Y:%m:%d %H:%M:%S")
             )
 
         return {
             "lat": lat,
             "lon": lon,
             "alt": alt,
-            "fecha": fecha,
+            "date_taken": date_taken,
             "marca": clean_exif_string(exif.get("Make", "No disponible")),
             "model": clean_exif_string(exif.get("Model", "No disponible")),
             "software": clean_exif_string(exif.get("Software", "No disponible")),
-            "orientacion": exif.get("Orientation", 1),
-            "direccion": clean_exif_string(exif.get("GPSImgDirection", 0)),
+            "orientation": exif.get("Orientation", 1),
+            "direction": clean_exif_string(exif.get("GPSImgDirection", 0)),
         }
     except Exception as e:
         print(f"Error extrayendo metadatos: {e}")

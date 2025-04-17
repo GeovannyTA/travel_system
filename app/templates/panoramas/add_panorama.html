@@ -30,6 +30,15 @@
           ></button>
         </div>
         <div class="modal-body">
+          <div class="form-group">
+            <label for="owner" class="form-label" style="outline: none;">Entidad federativa</label>
+            <select class="form-select" id="states" name="states" required>
+              <option selected disabled hidden>Selecciona una opción</option>
+              {% for state in states %}
+                <option value="{{ state.id }}">{{ state.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
           <div class="mb-3">
             <input
               type="file"
