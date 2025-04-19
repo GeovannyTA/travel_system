@@ -1,0 +1,115 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EstratiView {% block title %} Manager {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}" />
+    <link
+      rel="shortcut icon"
+      href="{% static 'images/favicon.ico' %}"
+      type="image/x-icon"
+    />
+    {% block extraCSS %} {% endblock %}
+    <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+      <div class="container-fluid">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <img
+              src="{% static 'images/lgstratimex.webp' %}"
+              alt="Logo"
+              class="logo"
+            />
+          </a>
+        </div>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a 
+                class="nav-link {% if request.path == '/' %}active-route{% endif %}" 
+                style="display: inline-flex; align-items: center; width: fit-content;"
+                aria-current="page" 
+                href="/"
+              >
+                <i class="fas fa-home me-2"></i>
+                Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/panoramas/' %}active-route{% endif %}"
+                style="display: inline-flex; align-items: center; width: fit-content;"
+                href="{% url 'panoramas' %}"
+              >
+                <i class="fas fa-globe me-2"></i>
+                Panoramas
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/panoramass/' %}active-route{% endif %}"
+                style="display: inline-flex; align-items: center; width: fit-content;"
+                href="{% url 'panoramas' %}"
+              >
+                <i class="fas fa-users me-2"></i>
+                Usuarios
+              </a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fas fa-user-cog me-2"></i>
+                {{ request.user.first_name }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <form action="{% url 'sign_out' %}" method="post">
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="dropdown-item dropdown-item-custom"
+                    >
+                      <i class="fas fa-sign-in-alt me-2"></i>
+                      Cerrar sesión
+                    </button>
+                  </form>
+                </li>
+                <!-- <li><hr class="dropdown-divider" /></li> -->
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main>{% block content %} {% endblock %}</main>
+
+    <footer class="bg-dark text-center" data-bs-theme="dark">
+      <p>&copy; 2025 Estrategas de México</p>
+    </footer>
+
+    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+  </body>
+</html>

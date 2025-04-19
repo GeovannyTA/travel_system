@@ -1,0 +1,62 @@
+<!-- Extender desde la plantilla -->
+{% extends 'layout.html' %}
+<!-- Cargar archivos estáticos -->
+{% load static %}
+
+{% block extraCSS %}
+<link rel="stylesheet" href="{% static 'css/panoramas/style.css' %}" />
+{% endblock %}
+
+<!-- Contenido de la plantilla panoramas -->
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="text-left mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarPanorama">
+            <i class="fa-solid fa-plus"></i> Agregar
+          </button>
+    </div>
+
+</div>
+
+<div class="container-fluid mt-3 overflow-auto">
+    <table class="table table-striped table-hover table-bordered table-panorama" id="panoramas-table">
+        <thead>
+            <th scope="col">Id</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Latitud</th>
+            <th scope="col">Longitud</th>
+            <th scope="col">Altitud</th>
+            <!-- <th scope="col">Direction</th> -->
+            <!-- <th scope="col">Orientación</th> -->
+            <th scope="col">Estado</th>
+            <th scope="col">Fecha de toma</th>
+            <th scope="col">Fecha de subida</th>
+            <!-- <th scope="col">Acciones</th> -->
+        </thead>
+        <tbody>
+            {% for panorama in panoramas %}
+            <tr>
+                <td>{{ panorama.id }}</td>
+                <td>{{ panorama.name }}</td>
+                <td>{{ panorama.gps_lat }}</td>
+                <td>{{ panorama.gps_lng }}</td>
+                <td>{{ panorama.gps_alt }}</td>
+                <!-- <td>{{ panorama.gps_direction }}</td> -->
+                <!-- <td>{{ panorama.orientation }}</td> -->
+                <td>{{ panorama.state.name }}</td>
+                <td>{{ panorama.date_taken|date:'d-m-Y h:m' }}</td>
+                <td>{{ panorama.date_uploaded|date:'d-m-Y h:m' }}</td>
+                <!-- <td class="actions_btns">
+                    <button class="action_btn">
+                        <i class="fa-regular fa-pen-to-square" title="Editar"></i>
+                        Editar
+                    </button>
+                </td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'panoramas/add_panorama.html' %}
+{% endblock %}

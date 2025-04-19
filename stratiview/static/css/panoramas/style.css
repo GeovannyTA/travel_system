@@ -1,0 +1,77 @@
+.table-panorama tbody tr > td {
+  max-width: 150px;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.panorama-data {
+  text-wrap: nowrap;
+  overflow: hidden;
+}
+
+.actions_btns {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+
+.action_btn {
+  border: none;
+  background: none;
+}
+
+.dropzone {
+  cursor: pointer;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  color: grey;
+  background: none;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+}
+
+.dropzone:hover,
+.dropzone:focus {
+  border-color: #007bff;
+  color: #333;
+}
+
+.dropzone.dragover {
+  border-color: #00bcd4;
+  color: #004d40;
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+}
+
+
+.dropzone.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.spinner-custom {
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.select-custom {
+  color: grey;
+  border: 2px dashed #ccc;
+  cursor: pointer;
+}
+
+.select-custom:hover,
+.select-custom:focus {
+  color: #333;
+  border-color: #007bff;
+  box-shadow: none;
+}
