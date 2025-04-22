@@ -1,3 +1,11 @@
+body {
+  background-image: url('/static/images/background_login.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 main {
   height: calc(100vh - 50px);
   display: flex;
@@ -23,6 +31,15 @@ footer p {
   color: white;
 }
 
+.form-signin {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.48);
+  border-radius: 10px;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  width: 35%;
+}
+
 .logo {
   height: 9rem;
 }
@@ -43,4 +60,19 @@ footer p {
   color: #0d6efd;
   border-radius: 0.25rem;
   margin-bottom: 1rem;
+}
+
+#alert {
+  position: fixed;
+  bottom: 40px;
+  right: 10px;
+  z-index: 1055;
+}
+
+.floating-alert {
+  pointer-events: auto; /* sí permite clic en el botón cerrar */
+  min-width: 250px;
+  max-width: 400px;
+  z-index: 1060;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

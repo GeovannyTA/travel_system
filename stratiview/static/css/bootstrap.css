@@ -3112,10 +3112,10 @@ textarea.form-control-lg {
 
 .btn-secondary {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #adb5bd;
-  --bs-btn-border-color: #adb5bd;
+  --bs-btn-bg: #6c6e71;
+  --bs-btn-border-color: #6c6e71;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #939aa1;
+  --bs-btn-hover-bg: #505153;
   --bs-btn-hover-border-color: #8a9197;
   --bs-btn-focus-shadow-rgb: 185, 192, 199;
   --bs-btn-active-color: #fff;
@@ -3247,11 +3247,11 @@ textarea.form-control-lg {
 }
 
 .btn-outline-secondary {
-  --bs-btn-color: #adb5bd;
-  --bs-btn-border-color: #adb5bd;
+  --bs-btn-color: #6c6e71;
+  --bs-btn-border-color: #6c6e71;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #adb5bd;
-  --bs-btn-hover-border-color: #adb5bd;
+  --bs-btn-hover-bg: #505153;
+  --bs-btn-hover-border-color: #505153;
   --bs-btn-focus-shadow-rgb: 173, 181, 189;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #adb5bd;
@@ -3999,8 +3999,8 @@ textarea.form-control-lg {
 .navbar {
   --bs-navbar-padding-x: 0;
   --bs-navbar-padding-y: 0.5rem;
-  --bs-navbar-color: rgba(var(--bs-emphasis-color-rgb), 0.65);
-  --bs-navbar-hover-color: rgba(var(--bs-emphasis-color-rgb), 0.8);
+  --bs-navbar-color: rgba(var(--bs-emphasis-color-rgb), 0.8);
+  --bs-navbar-hover-color: rgba(var(--bs-emphasis-color-rgb), 1);
   --bs-navbar-disabled-color: rgba(var(--bs-emphasis-color-rgb), 0.3);
   --bs-navbar-active-color: rgba(var(--bs-emphasis-color-rgb), 1);
   --bs-navbar-brand-padding-y: 0.29375rem;

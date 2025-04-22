@@ -8,15 +8,15 @@
   border-radius: 10px;
 }
 
-.table-panorama thead th:first-child {
+.table-users thead th:first-child {
   border-radius: 10px 0 0 0;
 }
 
-.table-panorama thead th:last-child {
+.table-users thead th:last-child {
   border-radius: 0 10px 0 0;
 }
 
-.table-panorama thead th {
+.table-users thead th {
   position: sticky;
   top: 0;
   background-color: #343a40;
@@ -24,18 +24,15 @@
   z-index: 10;
 }
 
-.table-panorama thead tr > th {
+.table-users thead tr > th {
   border: solid 1px #ffffff;
 }
 
-.table-panorama tbody tr > td {
+.table-users tbody tr > td {
   max-width: 150px;
   text-wrap: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-}
-
-.table-panorama tbody tr > td:last-child {
 }
 
 .actions_btns {
@@ -47,38 +44,6 @@
 .action_btn {
   border: none;
   background: none;
-}
-
-.dropzone {
-  cursor: pointer;
-  min-height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  color: grey;
-  background: none;
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-}
-
-.dropzone:hover,
-.dropzone:focus {
-  border-color: #007bff;
-  color: #333;
-}
-
-.dropzone.dragover {
-  border-color: #00bcd4;
-  color: #004d40;
-  box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
-}
-
-
-.dropzone.disabled {
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 .spinner-custom {

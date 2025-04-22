@@ -1,5 +1,4 @@
-from time import strftime
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import redirect, render
 from stratiview.models import PanoramaMetadata, State
 from stratiview.features.utils_amazon import upload_image_to_s3
@@ -131,3 +130,17 @@ def add_panoramas(request):
 
         # Redirigir a la página anterior o a una URL predeterminada
         return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def get_panorama_data(request, panorama_id):
+    panorama = PanoramaMetadata.objects.get(id=panorama_id)
+    return JsonResponse({
+        "id": panorama.id,
+        "state_id": panorama.state.id,
+        "name": panorama.name,
+        "latitude": panorama.gps_lat,
+        "longitude": panorama.gps_lng,
+        "altitude": panorama.gps_alt,
+        "direction": panorama.gps_direction,
+        "orientation": panorama.orientation,
+    })

@@ -1,0 +1,79 @@
+{% extends 'layout.html' %} {% block content %}
+<div class="d-flex justify-content-between align-items-center p-0">
+  <div>
+    <h2>Bienvenido a Stratiview</h2>
+    <p>
+      Bienvenido al sistema de gestión de recorridos virtuales. Explora,
+      administra y visualiza panoramas 360° con facilidad.
+    </p>
+  </div>
+</div>
+
+
+<div class="container">
+  <h2 class="section-title text-center">Accesos rápidos</h2>
+  <div class="row text-center">
+    <div class="col-md-3 mb-4">
+      <a
+        href="https://beautiful-einstein.51-79-98-210.plesk.page/recorrido3602/public/"
+        class="btn btn-outline-primary dashboard-btn w-100 py-4"
+      >
+        <i class="bi bi-globe"></i><br />Iniciar recorrido 360°
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a
+        href="/panoramas/"
+        class="btn btn-outline-dark dashboard-btn w-100 py-4"
+      >
+        <i class="bi bi-images"></i><br />Gestionar panoramas
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a
+        href="/usuarios/"
+        class="btn btn-outline-secondary dashboard-btn w-100 py-4"
+      >
+        <i class="bi bi-people"></i><br />Administrar usuarios
+      </a>
+    </div>
+    <div class="col-md-3 mb-4">
+      <a
+        href="/auth/perfil"
+        class="btn btn-outline-info dashboard-btn w-100 py-4"
+      >
+        <i class="bi bi-person-circle"></i><br />Mi perfil
+      </a>
+    </div>
+  </div>
+
+  <h2 class="section-title text-center">Resumen general</h2>
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total de panoramas</h5>
+          <p class="display-6">20</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Usuarios activos</h5>
+          <p class="display-6">5</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Última subida</h5>
+          <p class="display-6">21-04-2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

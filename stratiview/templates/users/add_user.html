@@ -1,0 +1,129 @@
+{% load static %}
+<div
+  class="modal fade"
+  id="modalAddUser"
+  tabindex="-1"
+  aria-labelledby="modalAddUserLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form 
+        method="post" 
+        action="{% url 'add_user' %}"
+      >
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAddUserLabel">
+            Agregar usuario
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            id="btn-close"
+            onclick="cancelUpload()"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="email" class="form-label">Correo electrónico</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              class="form-control"
+              placeholder="correo@ejemplo.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="first_name" class="form-label">Nombre/s</label>
+            <input
+              type="text"
+              name="first_name"
+              id="first_name"
+              class="form-control"
+              placeholder="Juan"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="last_name" class="form-label">Apellidos</label>
+            <input
+              type="text"
+              name="last_name"
+              id="last_name"
+              class="form-control"
+              placeholder="Pérez"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="username">Nombre de usuario</label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              class="form-control"
+              placeholder="juan_perez"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="phone" class="form-label">Teléfono</label>
+            <input
+              type="text"
+              name="phone"
+              id="phone"
+              class="form-control"
+              placeholder="5551234567"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="state" class="form-label">Entidad federativa</label>
+            <select name="state" id="state" class="form-select" required>
+              <option value="">-- Sin entidad --</option>
+              {% for state in states %}
+              <option value="{{ state.id }}">{{ state.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btn-clear"
+            onClick="clearFiles()"
+          >
+            <i class="fa-solid fa-eraser"></i>
+            Limpiar
+          </button>
+          <button type="submit" class="btn btn-primary" id="btn-save">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Agregar usuario
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            id="btn-cancel"
+            onClick="cancelUpload()"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          >
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/users/form.js' %}"></script>

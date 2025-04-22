@@ -153,3 +153,11 @@ AWS_S3_REGION_NAME = 'us-west-2'  # Ejemplo: us-east-1, us-west-2, etc.
 AWS_S3_FILE_OVERWRITE = True
 AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = False
+
+# Configuracion para el envio de correos
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "trejogeovannyaraujo@gmail.com"
+EMAIL_HOST_PASSWORD = "czrz rfbw ohwb zazo"

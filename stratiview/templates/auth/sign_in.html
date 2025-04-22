@@ -19,10 +19,29 @@
     <meta http-equiv="Expires" content="0">
   </head>
   <body>
+    <div id="alert">
+      {% if messages %}
+        {% for message in messages %}
+          {% if forloop.first %}
+            {% if message.tags == "warning" %}
+              <div class="alert alert-warning alert-dismissible fade show floating-alert" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+              </div>
+            {% elif message.tags == "info" %}
+              <div class="alert alert-info alert-dismissible fade show floating-alert" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
     <main>
       {% block content %}
       <form
-        class="bg-white px-4 py-3 d-flex flex-column rounded shadow"
+        class="px-4 py-3 d-flex flex-column form-signin"
         method="POST"
       >
         {% csrf_token %}
@@ -38,7 +57,7 @@
         <!-- Campo email con ícono -->
         <div class="mb-3 position-relative">
           <label for="email" class="form-label">Correo electrónico</label>
-          <div class="input-group" style="width: 400px;">
+          <div class="input-group rounded" style="border: solid 1px grey;">
             <span class="input-group-text"
               ><i class="fas fa-envelope"></i
             ></span>
@@ -56,7 +75,7 @@
         <!-- Campo contraseña con ícono -->
         <div class="mb-3 position-relative">
           <label for="password" class="form-label">Contraseña</label>
-          <div class="input-group" style="width: 400px;">
+          <div class="input-group rounded" style="border: solid 1px grey; overflow: hidden;">
             <span class="input-group-text"><i class="fas fa-lock"></i></span>
             <input
               type="password"
@@ -65,20 +84,25 @@
               name="password"
               placeholder="********"
             />
-            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password">
+            <button type="button" class="btn btn-outline-secondary toggle-password rounded-0" data-target="password" style="border: none;">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
-        <div style="text-align: center;" id="message">
+        <div style="text-align: center; word-wrap: break-word;" id="message">
           {% if messages %}
             {% for message in messages %}
               {% if forloop.first %}
-                <p class="message-{{ message.tags }}">{{ message }}</p>
+                {% if message.tags == "success" %}
+                  <p class="message-success">{{ message }}</p>
+                {% elif message.tags == "error" %}
+                  <p class="message-error">{{ message }}</p>
+                {% endif %}
               {% endif %}
             {% endfor %}
           {% endif %}
         </div>
+        
         <!-- Botón con ícono -->
         <button type="submit" class="btn btn-primary">
           <i class="fas fa-sign-in-alt me-2"></i> 
@@ -88,9 +112,10 @@
       {% endblock %}
     </main>
 
-    <footer class="bg-dark text-center" data-bs-theme="dark">
+    <footer class="bg-black text-center" data-bs-theme="dark">
       <p>&copy; 2025 Estrategas de México</p>
     </footer>
+
     <script src="{% static 'js/bootstrap.js' %}"></script>
     <script src="{% static 'js/auth/form.js' %}"></script>
     <!-- Tiempo para eliminar el mensaje -->
@@ -99,7 +124,16 @@
       if (alert) {
         setTimeout(() => {
           alert.style.display = "none";
-        }, 4000);
+        }, 3500);
+      }
+    </script>
+    <!-- Tiempo para eliminar la alerta -->
+    <script>
+      alert = document.getElementById("alert");
+      if (alert) {
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 3500);
       }
     </script>
   </body>

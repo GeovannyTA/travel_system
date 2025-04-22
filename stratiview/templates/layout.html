@@ -17,7 +17,30 @@
     <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div id="alert">
+      {% if messages %}
+        {% for message in messages %}
+          {% if forloop.first %}
+            {% if message.tags == "warning" %}
+              <div class="alert alert-warning alert-dismissible fade show floating-alert" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+              </div>
+            {% elif message.tags == "info" %}
+              <div class="alert alert-info alert-dismissible fade show floating-alert" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    
+    <nav class="navbar navbar-expand-lg bg-light shadow-sm" 
+      style="border-bottom: solid 1px; border-color: rgba(128, 128, 128, 0.44);"
+      data-bs-theme="light">
       <div class="container-fluid">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'home' %}">
@@ -40,7 +63,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul class="navbar-nav me-auto mb-lg-0">
             <li class="nav-item">
               <a 
                 class="nav-link {% if request.path == '/' %}active-route{% endif %}" 
@@ -64,9 +87,9 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link {% if request.path == '/panoramass/' %}active-route{% endif %}"
+                class="nav-link {% if request.path == '/users/' %}active-route{% endif %}"
                 style="display: inline-flex; align-items: center; width: fit-content;"
-                href="{% url 'panoramas' %}"
+                href="{% url 'users' %}"
               >
                 <i class="fas fa-users me-2"></i>
                 Usuarios
@@ -104,12 +127,26 @@
       </div>
     </nav>
 
-    <main>{% block content %} {% endblock %}</main>
+    <main class="p-2">{% block content %} {% endblock %}</main>
 
-    <footer class="bg-dark text-center" data-bs-theme="dark">
+    <footer 
+      class="text-center bg-dark" 
+      data-bs-theme="dark"
+    >
       <p>&copy; 2025 Estrategas de México</p>
     </footer>
-
     <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+    {% block extraJS %}
+    <!-- Tiempo para eliminar el mensaje -->
+    <script>
+      alert = document.getElementById("alert");
+      if (alert) {
+        setTimeout(() => {
+          alert.style.display = "none";
+        }, 3500);
+      }
+    </script>
+      
+    {% endblock %}
   </body>
 </html>

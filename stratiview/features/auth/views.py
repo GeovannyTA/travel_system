@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages  # opcional para mostrar errores
 from django.contrib.auth import get_user_model
-from datetime import datetime, timedelta
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 from django.urls import reverse, NoReverseMatch
@@ -44,15 +43,22 @@ def sign_in(request):
         # Bloqueado por administrador
         if user.is_locked:
             messages.error(
-                request, "Tu cuenta está bloqueada. " \
-                "Contacta al administrador."
+                request, "Tu cuenta está bloqueada. Contacta al administrador."
             )
             return render(request, "auth/sign_in.html", context={"email": email})
 
+        # Verificar si la cuenta está activa
         auth_user = authenticate(request, username=user.username, password=password)
 
+        if not user.is_active:
+            messages.error(
+                request,
+                "Tu cuenta no está activa. Contacta al administrador.",
+            )
+            return render(request, "auth/sign_in.html", context={"email": email})
+
         # Fallo de autenticación o cuenta inactiva
-        if auth_user is None or not user.is_active:
+        if not auth_user:
             user.failed_attempts += 1
             if user.failed_attempts >= MAX_ATTEMPTS:
                 user.is_locked = True
