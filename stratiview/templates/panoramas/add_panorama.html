@@ -1,9 +1,9 @@
 {% load static %}
 <div
   class="modal fade"
-  id="modalAgregarPanorama"
+  id="modalAddPanorama"
   tabindex="-1"
-  aria-labelledby="modalAgregarPanoramaLabel"
+  aria-labelledby="modalAddPanoramaLabel"
   aria-hidden="true"
   data-bs-backdrop="static"
   data-bs-keyboard="false"
@@ -17,21 +17,20 @@
       >
         {% csrf_token %}
         <div class="modal-header">
-          <h5 class="modal-title" id="modalAgregarPanoramaLabel">
+          <h5 class="modal-title" id="modalAddPanoramaLabel">
             Agregar panoramas
           </h5>
           <button
             type="button"
             class="btn-close"
             id="btn-close"
-            onclick="cancelUpload()"
             data-bs-dismiss="modal"
             aria-label="Cerrar"
           ></button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="owner" class="form-label" style="outline: none;">Entidad federativa</label>
+            <label for="state" class="form-label" style="outline: none;">Entidad federativa</label>
             <select class="form-select select-custom" id="state" name="state" required>
               <option selected disabled hidden>Selecciona la entidad correspondiente</option>
               {% for state in states %}
@@ -85,7 +84,6 @@
             type="button"
             class="btn btn-danger"
             id="btn-cancel"
-            onClick="cancelUpload()"
             data-bs-dismiss="modal"
             aria-label="Cerrar"
           >
@@ -99,6 +97,5 @@
 </div>
 
 {% block extraJS %}
-<script src="{% static 'js/panoramas/dropzone.js' %}"></script>
-<script src="{% static 'js/panoramas/form.js' %}"></script>
+<script src="{% static 'js/panoramas/add_panorama.js' %}"></script>
 {% endblock %}

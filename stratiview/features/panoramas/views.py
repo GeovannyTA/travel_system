@@ -1,12 +1,18 @@
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from stratiview.models import PanoramaMetadata, State
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
+from django.contrib import messages
+
 
 def get_panoramas(request):
-    panoramas = PanoramaMetadata.objects.all()
+    # Get the panoramas from the database if isn't deleted
+    panoramas = PanoramaMetadata.objects.filter(is_deleted=False).order_by(
+        "-date_uploaded"
+    ) 
     states = State.objects.all()
 
     # If there are no panoramas, return an empty list
@@ -27,9 +33,6 @@ def get_panoramas(request):
 
 # Extract the metadata from the panorama image
 def add_panoramas(request):
-    if request.method == "GET":
-        return HttpResponse("Método no permitido.")
-
     if request.method == "POST":
         # Obtener los archivos de imagen del formulario
         panoramas = request.FILES.getlist("images")
@@ -95,13 +98,11 @@ def add_panoramas(request):
 
             # Si es duplicado exacto
             if duplicate:
-                print("El panorama ya existe")
                 not_uploaded.append(f"{panorama_file.name}")
                 continue
 
             # Si está demasiado cerca de otra imagen
             if nearby:
-                print("El panorama se encuentra muy cerca de otro")
                 not_uploaded.append(f"{panorama_file.name}")
                 continue
 
@@ -132,15 +133,59 @@ def add_panoramas(request):
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
-def get_panorama_data(request, panorama_id):
-    panorama = PanoramaMetadata.objects.get(id=panorama_id)
-    return JsonResponse({
-        "id": panorama.id,
-        "state_id": panorama.state.id,
-        "name": panorama.name,
-        "latitude": panorama.gps_lat,
-        "longitude": panorama.gps_lng,
-        "altitude": panorama.gps_alt,
-        "direction": panorama.gps_direction,
-        "orientation": panorama.orientation,
-    })
+def get_panorama(request, panorama_id):
+    if request.method == "GET":
+        panorama = PanoramaMetadata.objects.get(id=panorama_id)
+        return JsonResponse({
+            "id": panorama.id,
+            "state_id": panorama.state.id,
+            "state_name": panorama.state.name,
+            "panorama_name": panorama.name,
+            "latitude": panorama.gps_lat,
+            "longitude": panorama.gps_lng,
+            "altitude": panorama.gps_alt,
+            "direction": panorama.gps_direction,
+            "orientation": panorama.orientation,
+            "url": panorama.url,
+        })
+    
+def edit_panorama(request):
+    if request.method == "POST":
+        panorama_id = request.POST.get("edit-panorama_id")
+        latitude = request.POST.get("edit-latitude")
+        longitude = request.POST.get("edit-longitude")
+        altitude = request.POST.get("edit-altitude")
+        state = request.POST.get("edit-state")
+        name = request.POST.get("edit-panorama_name")
+
+        panorama = PanoramaMetadata.objects.get(id=panorama_id)
+        
+        if latitude:
+            panorama.gps_lat = latitude
+
+        if longitude:
+            panorama.gps_lng = longitude
+
+        if altitude:
+            panorama.gps_alt = altitude
+
+        return JsonResponse({
+            "id": panorama.id,
+            "latitude": latitude,
+            "longitude": longitude,
+            "altitude": altitude,
+            "state": state,
+            "name": name,
+        })
+    
+
+
+
+def delete_panorama(request):
+    if request.method == "POST":
+        panorama_id = request.POST.get("panorama_id")
+        panorama = PanoramaMetadata.objects.get(id=panorama_id)
+        panorama.is_deleted = True
+        panorama.save()
+        messages.info(request, "Panorama eliminado correctamente")
+        return redirect(request.META.get("HTTP_REFERER", "/"))

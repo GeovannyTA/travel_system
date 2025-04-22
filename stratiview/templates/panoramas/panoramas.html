@@ -9,7 +9,7 @@
   <button
     class="btn btn-primary"
     data-bs-toggle="modal"
-    data-bs-target="#modalAgregarPanorama"
+    data-bs-target="#modalAddPanorama"
   >
     <i class="fa-solid fa-plus"></i>
     Agregar panorama
@@ -96,7 +96,7 @@
             data-bs-toggle="modal"
             title="Editar panorama"
             onclick="openEditModal({{ panorama.id }})"
-          >
+            >
             <i class="fa-solid fa-pen-to-square"></i>
           </button>
           <button
@@ -104,6 +104,7 @@
             style="display: inline-flex; align-items: center"
             type="button"
             title="Eliminar panorama"
+            onclick="openDeleteModal({{ panorama.id }})"
           >
             <i class="fa-solid fa-trash-can"></i>
           </button>
@@ -114,5 +115,6 @@
   </table>
 </div>
 {% include 'panoramas/add_panorama.html' %}
+{% include 'panoramas/delete_panorama.html' %}
 {% include 'panoramas/edit_panorama.html' %}
 {% endblock %}

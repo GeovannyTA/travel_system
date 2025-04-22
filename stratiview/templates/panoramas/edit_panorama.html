@@ -1,18 +1,28 @@
 {% load static %}
+{% block extraCSS %} 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css" />
+{% endblock %}
+
 <div
   class="modal fade"
-  id="modalEditarPanorama"
+  id="modalEditPanorama"
   tabindex="-1"
-  aria-labelledby="modalEditarPanoramaLabel"
+  aria-labelledby="modalEditPanoramaLabel"
   aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
 >
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <form method="post" enctype="multipart/form-data">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'edit_panorama' %}"
+      >
         {% csrf_token %}
-        <input type="hidden" name="panorama_id" id="panorama-id" />
+        <input type="hidden" name="edit-panorama_id" id="edit-panorama-id" />
         <div class="modal-header">
-          <h5 class="modal-title" id="modalEditarPanoramaLabel">
+          <h5 class="modal-title" id="modalEditPanoramaLabel">
             Editar panorama
           </h5>
           <button
@@ -24,61 +34,73 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="state">Entidad federativa</label>
-            <select class="form-select" id="edit-state" name="state" required>
+            <label for="edit-panorama-name" class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control bg-light text-muted"
+              id="edit-panorama-name"
+              name="edit-panorama_name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="edit-panorama-state-id">Entidad federativa</label>
+            <select class="form-select" id="edit-panorama-state-id" name="edit-state" required>
               {% for state in states %}
               <option value="{{ state.id }}">{{ state.name }}</option>
               {% endfor %}
             </select>
           </div>
           <div class="form-group">
-            <label for="edit-name" class="form-label">Nombre</label>
+            <label for="edit-panorama-latitude" class="form-label">Latitud</label>
             <input
               type="text"
               class="form-control"
-              id="name"
-              name="name"
-              disabled
+              id="edit-panorama-latitude"
+              name="edit-latitude"
             />
           </div>
           <div class="form-group">
-            <label for="latitude" class="form-label">Latitud</label>
+            <label for="edit-panorama-longitude" class="form-label">Longitud</label>
             <input
               type="text"
               class="form-control"
-              id="latitude"
-              name="latitude"
+              id="edit-panorama-longitude"
+              name="edit-longitude"
             />
           </div>
           <div class="form-group">
-            <label for="longitude" class="form-label">Longitud</label>
+            <label for="edit-panorama-altitude" class="form-label">Altitud</label>
             <input
               type="text"
               class="form-control"
-              id="longitude"
-              name="longitude"
+              id="edit-panorama-altitude"
+              name="edit-altitude"
             />
           </div>
           <div class="form-group">
-            <label for="altitude" class="form-label">Altitud</label>
+            <label for="panorama-direction" class="form-label">Direction</label>
             <input
               type="text"
               class="form-control"
-              id="altitude"
-              name="altitude"
+              id="edit-panorama-direction"
+              name="edit-direction"
             />
           </div>
-          <div class="mb-3 mt-3">
-            <label for="edit-image" class="form-label"
-              >Reemplazar imagen (opcional)</label
-            >
+          <div class="form-group">
+            <label for="panorama-orientation" class="form-label">Orientación</label>
             <input
-              type="file"
+              type="text"
               class="form-control"
-              id="edit-image"
-              name="image"
-              accept="image/*"
+              id="edit-panorama-orientation"
+              name="edit-orientation"
             />
+          <div class="mb-3 mt-3 d-flex flex-column justify-content-center align-items-center">
+            <div 
+            id="panorama-preview-image" 
+            src="" 
+            style="height: 320px; aspect-ratio: 16/9; overflow: hidden;" 
+            class="img-fluid rounded border"
+            alt="Vista previa">
           </div>
         </div>
         <div class="modal-footer">
@@ -99,5 +121,14 @@
 </div>
 
 {% block extraJS %}
-<script src="{% static 'js/panoramas/getPanorama.js' %}"></script>
+<script type="importmap">
+  {
+      "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
+          "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.module.js"
+      }
+  }
+</script>
+
+<script type="module" src="{% static 'js/panoramas/edit_panorama.js' %}"></script>
 {% endblock %}
