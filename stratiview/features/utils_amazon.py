@@ -1,12 +1,9 @@
 import boto3
-from botocore.exceptions import BotoCoreError, ClientError
 from django.conf import settings
-from uuid import uuid4
-from django.contrib.auth.decorators import login_required
 
 
-@login_required
 def upload_image_to_s3(file_obj, file_name):
+    # Funcion para subir imagenes a S3 de AWS
     s3 = boto3.client(
         's3',
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,

@@ -7,8 +7,10 @@ from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from stratiview.features.utils.permisions import area_and_rol_required
 
 @login_required
+# @area_and_rol_required(allowed_areas=['admin', 'desarrollo'], allowed_roles=['admin'])
 def get_panoramas(request):
     # Get the panoramas from the database if isn't deleted
     panoramas = PanoramaMetadata.objects.filter(is_deleted=False).order_by(
@@ -33,6 +35,7 @@ def get_panoramas(request):
 
 
 @login_required
+@area_and_rol_required(allowed_areas=['admin'], allowed_roles=['admin'])
 # Extract the metadata from the panorama image
 def add_panoramas(request):
     if request.method == "POST":
@@ -112,7 +115,7 @@ def add_panoramas(request):
             try:
                 # Si falla algo no almacenar la iamgen en la db
                 with transaction.atomic():
-                    panorama_file.seek(0)
+                    panorama_file.seek(0)  # Ensure the file pointer is at the beginning
                     url = upload_image_to_s3(panorama_file, file_name)
                     PanoramaMetadata.objects.create(
                         url=url,
@@ -128,6 +131,8 @@ def add_panoramas(request):
                         date_taken=metadata["date_taken"],
                         state=state_obj,
                     )
+            except PanoramaMetadata.DoesNotExist:
+                return HttpResponse("No se pudo guardar la panorama.")
             except Exception as e:
                 return HttpResponse(f"Error al guardar los metadatos.{e}")
 
@@ -138,7 +143,13 @@ def add_panoramas(request):
 @login_required
 def get_panorama(request, panorama_id):
     if request.method == "GET":
-        panorama = PanoramaMetadata.objects.get(id=panorama_id)
+        if request.headers.get("x-requested-with") != "XMLHttpRequest":
+            return redirect(reverse("panoramas"))
+
+        panorama = PanoramaMetadata.objects.filter(id=panorama_id).first()
+        if not panorama:
+            return JsonResponse({})
+        
         return JsonResponse({
             "id": panorama.id,
             "state_id": panorama.state.id,
@@ -154,13 +165,17 @@ def get_panorama(request, panorama_id):
     
 
 @login_required
-def edit_panorama(request):
+def edit_panorama(request, panorama_id):
+    if request.method == "GET":
+        panorama = PanoramaMetadata.objects.filter(id=panorama_id).first()
+        return render(request, "panoramas/edit_panorama.html", context={"panorama": panorama})
+    
     if request.method == "POST":
         panorama_id = request.POST.get("edit-panorama_id")
         latitude = request.POST.get("edit-latitude")
         longitude = request.POST.get("edit-longitude")
         state = request.POST.get("edit-state")
-        name = request.POST.get("edit-panorama_name")
+        direction = request.POST.get("edit-direction")
 
         panorama = PanoramaMetadata.objects.get(id=panorama_id)
         
@@ -170,6 +185,15 @@ def edit_panorama(request):
         if longitude:
             panorama.gps_lng = longitude
 
+        if state:
+            state_obj = State.objects.filter(id=state).first()
+            if state_obj:
+                panorama.state = state_obj
+
+        if direction:
+            panorama.gps_direction = direction
+
+        panorama.save()
         messages.info(request, "Panorama editado correctamente")
         return redirect(request.META.get("HTTP_REFERER", "/"))
     

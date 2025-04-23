@@ -2,72 +2,84 @@ import { Viewer } from "@photo-sphere-viewer/core";
 let viewer = null;
 
 function openEditModal(panoramaId) {
-  fetch(`/panoramas/get_panorama/${panoramaId}/`)
+  fetch(`/panoramas/get_panorama/${panoramaId}/`, {
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  })
     .then((response) => {
       if (!response.ok) throw new Error("Error al cargar panorama.");
       return response.json();
     })
     .then((data) => {
-      document.getElementById("edit-panorama-id").value = data.id;
-      document.getElementById("edit-panorama-state-id").value = data.state_id;
-      document.getElementById("edit-panorama-name").value = data.panorama_name;
-      document.getElementById("edit-panorama-latitude").value = data.latitude;
-      document.getElementById("edit-panorama-longitude").value = data.longitude;
-      document.getElementById("edit-panorama-direction").value = data.direction;
+      const id = (sel) => document.getElementById(sel);
+      const loading = id("loading-edit-panorama");
+      const content = id("modal-content");
 
-      // Cargar visor
+      // Mostrar loader y ocultar contenido
+      loading.style.display = "block";
+      content.style.display = "none";
+
+      const modalEl = id("modalEditPanorama");
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      
+      id("edit-panorama-id").value = data.id;
+      id("edit-panorama-state-id").value = data.state_id;
+      id("edit-panorama-name").value = data.panorama_name;
+      id("edit-panorama-latitude").value = data.latitude;
+      id("edit-panorama-longitude").value = data.longitude;
+      id("edit-panorama-direction").value = data.direction;
+
+      // Crear visor
       viewer = new Viewer({
-        container: document.querySelector("#panorama-preview-image"),
+        container: id("panorama-preview-image"),
         panorama: data.url,
         defaultYaw: data.direction,
-        defaultZoomLvl: 50,
-        mousewheel: false, 
-        keyboard: false,   
-        navbar: false,    
-        touchmoveTwoFingers: false, 
-        useXmpData: false, 
+        mousewheel: false,
+        keyboard: false,
+        navbar: false,
+        touchmoveTwoFingers: false,
         moveInertia: false,
         mousemove: false,
         fisheye: false,
-        draggable: false, 
       });
-      
-      const modal = new bootstrap.Modal(
-        document.getElementById("modalEditPanorama")
-      );
-      modal.show();
+
+      viewer.addEventListener("ready", () => {
+        setTimeout(() => viewer.zoom(0), 100);
+      });
+
+      // Input de dirección
+      const directionInput = id("edit-panorama-direction");
+      if (directionInput) {
+        directionInput.addEventListener("input", () => {
+          const yawDegrees = parseFloat(directionInput.value) || 0;
+          viewer.setOption("sphereCorrection", { pan: `${yawDegrees}deg` });
+        });
+      }
+
+      // Ocultar loader y mostrar contenido
+      loading.style.display = "none";
+      content.style.display = "flex";
+
+      // Al cerrar modal
+      modalEl.addEventListener("hidden.bs.modal", () => {
+        if (viewer) viewer.destroy();
+        viewer = null;
+        id("panorama-preview-image").innerHTML = "";
+      });
     })
     .catch((error) => {
-      alert("Hubo un error al cargar los datos de la panorámica.");
+      alert("Error al abrir el modal de edición.");
+      console.error(error);
     });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const directionInput = document.getElementById("edit-panorama-direction");
-
-  function aplicarDireccion() {
-    const yawDegrees = parseFloat(directionInput.value) || 0;
-    console.log("Aplicando dirección:", yawDegrees);
-
-    if (viewer) {
-      viewer.setOption("sphereCorrection", {
-        pan: `${yawDegrees}deg`,
-      });
-    }
-  }
-
-  directionInput.addEventListener("input", aplicarDireccion);
+  document.querySelectorAll(".btn-edit-panorama").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const panoramaId = btn.dataset.panoramaId;
+      openEditModal(panoramaId);
+    });
+  });
 });
-
-
-// Agregar evento para destruir el visor al cerrar el modal y limpiar el contenedor
-document.getElementById("modalEditPanorama").addEventListener("hidden.bs.modal", () => {
-  if (viewer) {
-    viewer.destroy();
-    viewer = null;
-  }
-
-  document.getElementById("panorama-preview-image").innerHTML = "";
-});
-
-window.openEditModal = openEditModal;

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def users(request):
-    users = User.objects.all()
+    users = User.objects.filter(is_superuser=False).order_by("-date_joined")
     states  = State.objects.all()
 
     return render(request, "users/users.html", {

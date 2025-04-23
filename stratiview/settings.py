@@ -80,15 +80,30 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'recorrido',
-        'USER': 'geovanny',
-        'PASSWORD': '2832455882',
-        'HOST': 'Dell\MSSQLSERVER01',  # o IP del servidor
+        'USER': 'sa',
+        'PASSWORD': '=JeFGm[jFd%J?7j',
+        'HOST': '51.79.98.210',  # o IP del servidor
         'PORT': '',  # normalmente vacío para el puerto por defecto
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         },
     }
 }
+
+# Base de datos para pruebas locales
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'recorrido',
+#         'USER': 'geovanny',
+#         'PASSWORD': '2832455882',
+#         'HOST': 'Dell\MSSQLSERVER01',  # o IP del servidor
+#         'PORT': '',  # normalmente vacío para el puerto por defecto
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     }
+# }
 
 
 # Password validation

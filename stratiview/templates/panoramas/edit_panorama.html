@@ -1,6 +1,8 @@
-{% load static %}
-{% block extraCSS %} 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css" />
+{% load static %} {% block extraCSS %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css"
+/>
 {% endblock %}
 
 <div
@@ -12,17 +14,22 @@
   data-bs-backdrop="static"
   data-bs-keyboard="false"
 >
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <form
         method="post"
         enctype="multipart/form-data"
-        class="d-flex flex-column gap-4"
+        class="d-flex flex-column"
         action="{% url 'edit_panorama' %}"
       >
         {% csrf_token %}
-        <input type="hidden" name="edit-panorama_id" id="edit-panorama-id" required/>
-        <div class="modal-header">
+        <input
+          type="hidden"
+          name="edit-panorama_id"
+          id="edit-panorama-id"
+          required
+        />
+        <div class="modal-header m-0">
           <h5 class="modal-title" id="modalEditPanoramaLabel">
             Editar panorama
           </h5>
@@ -33,86 +40,98 @@
             aria-label="Cerrar"
           ></button>
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="edit-panorama-name" class="form-label">Nombre</label>
-            <input
-              type="text"
-              class="form-control bg-light text-muted"
-              id="edit-panorama-name"
-              name="edit-panorama_name"
-              required
-            />
+        <div class="modal-body d-flex gap-3">
+          <div id="modal-loading" class="w-100 text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando panorama...</p>
           </div>
-          <div class="form-group">
-            <label for="edit-panorama-state-id">Entidad federativa</label>
-            <select class="form-select" id="edit-panorama-state-id" name="edit-state" required>
-              {% for state in states %}
-              <option value="{{ state.id }}">{{ state.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group d-flex justify-content-between gap-2">
-            <div class="form-group w-100">
-              <label for="edit-panorama-latitude" class="form-label">Latitud</label>
-              <input
-                type="text"
-                class="form-control"
-                id="edit-panorama-latitude"
-                name="edit-latitude"
-                required
-              />
-            </div>
+          <div id="modal-content" class="d-flex gap-3 w-100" style="display: none;">
+            <div style="width: 100%;">
+              <div class="form-group">
+                <label for="edit-panorama-name" class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  class="form-control bg-light text-muted"
+                  id="edit-panorama-name"
+                  name="edit-panorama_name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="edit-panorama-state-id">Entidad federativa</label>
+                <select
+                  class="form-select"
+                  id="edit-panorama-state-id"
+                  name="edit-state"
+                  required
+                >
+                  {% for state in states %}
+                  <option value="{{ state.id }}">{{ state.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group d-flex justify-content-between gap-2">
+                <div class="form-group w-100">
+                  <label for="edit-panorama-latitude" class="form-label"
+                    >Latitud</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit-panorama-latitude"
+                    name="edit-latitude"
+                    required
+                  />
+                </div>
   
-            <div class="form-group w-100">
-              <label for="edit-panorama-longitude" class="form-label">Longitud</label>
-              <input
-                type="text"
-                class="form-control"
-                id="edit-panorama-longitude"
-                name="edit-longitude"
-                required
-              />
+                <div class="form-group w-100">
+                  <label for="edit-panorama-longitude" class="form-label"
+                    >Longitud</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="edit-panorama-longitude"
+                    name="edit-longitude"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group d-flex justify-content-between gap-2">
+                <div class="form-group w-100">
+                  <label for="edit-panorama-direction" class="form-label"
+                    >Dirección</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="edit-panorama-direction"
+                    name="edit-direction"
+                    required
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="form-group d-flex justify-content-between gap-2">
-            <div class="form-group w-100">
-              <label for="edit-panorama-direction" class="form-label">Direction</label>
-              <input
-                type="number"
-                class="form-control"
-                id="edit-panorama-direction"
-                name="edit-direction"
-                required
-              />
+            <div style="width: 100%;">
+              <div
+                class="mb-3 mt-3 d-flex flex-column justify-content-center align-items-center"
+              >
+                <div
+                  id="panorama-preview-image"
+                  src=""
+                  style="overflow: hidden; width: 100%; aspect-ratio: 16/9;"
+                  class="img-fluid rounded border bg-light text-muted shadow"
+                  alt="Vista previa"
+                ></div>
+              </div>
             </div>
-          </div>
-          <div class="mb-3 mt-3 d-flex flex-column justify-content-center align-items-center">
-            <div 
-              id="panorama-preview-image" 
-              src="" 
-              style="height: 320px; aspect-ratio: 16/9; overflow: hidden;" 
-              class="img-fluid rounded border bg-light text-muted"
-              alt="Vista previa"
-            ></div>
           </div>
         </div>
         <div class="modal-footer">
-          <button 
-            type="button"
-            class="btn btn-outline-secondary"
-            id="btn-aplicar-direccion"
-          >
-            <i class="fa-solid fa-arrows-rotate"></i> Aplicar dirección
-          </button>
           <button type="submit" class="btn btn-primary">
             <i class="fa-solid fa-save"></i> Guardar cambios
           </button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-dismiss="modal"
-          >
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
             <i class="fa-solid fa-ban"></i>
             Cancelar
           </button>
@@ -125,11 +144,14 @@
 {% block extraJS %}
 <script type="importmap">
   {
-      "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
-          "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.module.js"
-      }
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
+      "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.module.js"
+    }
   }
 </script>
-<script type="module" src="{% static 'js/panoramas/edit_panorama.js' %}"></script>
+<script
+  type="module"
+  src="{% static 'js/panoramas/edit_panorama.js' %}"
+></script>
 {% endblock %}

@@ -1,5 +1,9 @@
 function openDeleteModal(panoramaId) {
-  fetch(`/panoramas/get_panorama/${panoramaId}/`)
+  fetch(`/panoramas/get_panorama/${panoramaId}/`, {
+    headers: {
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  })
     .then((response) => {
       if (!response.ok) throw new Error("Error al cargar panorama.");
       return response.json();
