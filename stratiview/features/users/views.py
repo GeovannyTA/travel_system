@@ -5,8 +5,9 @@ from django.utils.crypto import get_random_string
 from stratiview.models import User, State  # Asegúrate de que los imports estén correctos
 from django.db import transaction
 from stratiview.features.users.utils import send_credentials_email
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def users(request):
     users = User.objects.all()
     states  = State.objects.all()
@@ -16,6 +17,8 @@ def users(request):
         "states": states,
     })
 
+
+@login_required
 def add_user(request):
     email = request.POST.get("email")
     username = request.POST.get("username")

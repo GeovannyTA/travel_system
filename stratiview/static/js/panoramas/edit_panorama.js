@@ -8,20 +8,28 @@ function openEditModal(panoramaId) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       document.getElementById("edit-panorama-id").value = data.id;
       document.getElementById("edit-panorama-state-id").value = data.state_id;
       document.getElementById("edit-panorama-name").value = data.panorama_name;
       document.getElementById("edit-panorama-latitude").value = data.latitude;
       document.getElementById("edit-panorama-longitude").value = data.longitude;
-      document.getElementById("edit-panorama-altitude").value = data.altitude;
       document.getElementById("edit-panorama-direction").value = data.direction;
-      document.getElementById("edit-panorama-orientation").value = data.orientation;
 
       // Cargar visor
-      const viewer = new Viewer({
+      viewer = new Viewer({
         container: document.querySelector("#panorama-preview-image"),
         panorama: data.url,
+        defaultYaw: data.direction,
+        defaultZoomLvl: 50,
+        mousewheel: false, 
+        keyboard: false,   
+        navbar: false,    
+        touchmoveTwoFingers: false, 
+        useXmpData: false, 
+        moveInertia: false,
+        mousemove: false,
+        fisheye: false,
+        draggable: false, 
       });
       
       const modal = new bootstrap.Modal(
@@ -30,22 +38,27 @@ function openEditModal(panoramaId) {
       modal.show();
     })
     .catch((error) => {
-      console.error(error);
       alert("Hubo un error al cargar los datos de la panorámica.");
     });
 }
 
-function aplicarDireccion() {
-  const yawDegrees =
-    parseFloat(document.getElementById("panorama-direction").value) || 0;
-  const yawRadians = (yawDegrees * Math.PI) / 180;
-  if (viewer && panorama) {
-    viewer.tweenControlCenter(
-      new THREE.Vector3(Math.sin(yawRadians), 0, Math.cos(yawRadians)),
-      500
-    );
+document.addEventListener("DOMContentLoaded", () => {
+  const directionInput = document.getElementById("edit-panorama-direction");
+
+  function aplicarDireccion() {
+    const yawDegrees = parseFloat(directionInput.value) || 0;
+    console.log("Aplicando dirección:", yawDegrees);
+
+    if (viewer) {
+      viewer.setOption("sphereCorrection", {
+        pan: `${yawDegrees}deg`,
+      });
+    }
   }
-}
+
+  directionInput.addEventListener("input", aplicarDireccion);
+});
+
 
 // Agregar evento para destruir el visor al cerrar el modal y limpiar el contenedor
 document.getElementById("modalEditPanorama").addEventListener("hidden.bs.modal", () => {

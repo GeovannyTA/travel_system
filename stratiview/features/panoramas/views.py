@@ -6,8 +6,9 @@ from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def get_panoramas(request):
     # Get the panoramas from the database if isn't deleted
     panoramas = PanoramaMetadata.objects.filter(is_deleted=False).order_by(
@@ -31,6 +32,7 @@ def get_panoramas(request):
     return render(request, "panoramas/panoramas.html", context=context)
 
 
+@login_required
 # Extract the metadata from the panorama image
 def add_panoramas(request):
     if request.method == "POST":
@@ -133,6 +135,7 @@ def add_panoramas(request):
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@login_required
 def get_panorama(request, panorama_id):
     if request.method == "GET":
         panorama = PanoramaMetadata.objects.get(id=panorama_id)
@@ -149,12 +152,13 @@ def get_panorama(request, panorama_id):
             "url": panorama.url,
         })
     
+
+@login_required
 def edit_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("edit-panorama_id")
         latitude = request.POST.get("edit-latitude")
         longitude = request.POST.get("edit-longitude")
-        altitude = request.POST.get("edit-altitude")
         state = request.POST.get("edit-state")
         name = request.POST.get("edit-panorama_name")
 
@@ -166,25 +170,20 @@ def edit_panorama(request):
         if longitude:
             panorama.gps_lng = longitude
 
-        if altitude:
-            panorama.gps_alt = altitude
-
-        return JsonResponse({
-            "id": panorama.id,
-            "latitude": latitude,
-            "longitude": longitude,
-            "altitude": altitude,
-            "state": state,
-            "name": name,
-        })
+        messages.info(request, "Panorama editado correctamente")
+        return redirect(request.META.get("HTTP_REFERER", "/"))
     
 
-
-
+@login_required
 def delete_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("panorama_id")
         panorama = PanoramaMetadata.objects.get(id=panorama_id)
+
+        if not panorama:
+            messages.warning(request, "Panorama no encontrado.")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
         panorama.is_deleted = True
         panorama.save()
         messages.info(request, "Panorama eliminado correctamente")

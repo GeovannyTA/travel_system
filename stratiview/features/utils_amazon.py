@@ -2,7 +2,10 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from django.conf import settings
 from uuid import uuid4
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def upload_image_to_s3(file_obj, file_name):
     s3 = boto3.client(
         's3',

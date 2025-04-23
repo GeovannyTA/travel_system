@@ -17,10 +17,11 @@
       <form
         method="post"
         enctype="multipart/form-data"
+        class="d-flex flex-column gap-4"
         action="{% url 'edit_panorama' %}"
       >
         {% csrf_token %}
-        <input type="hidden" name="edit-panorama_id" id="edit-panorama-id" />
+        <input type="hidden" name="edit-panorama_id" id="edit-panorama-id" required/>
         <div class="modal-header">
           <h5 class="modal-title" id="modalEditPanoramaLabel">
             Editar panorama
@@ -40,6 +41,7 @@
               class="form-control bg-light text-muted"
               id="edit-panorama-name"
               name="edit-panorama_name"
+              required
             />
           </div>
           <div class="form-group">
@@ -50,69 +52,69 @@
               {% endfor %}
             </select>
           </div>
-          <div class="form-group">
-            <label for="edit-panorama-latitude" class="form-label">Latitud</label>
-            <input
-              type="text"
-              class="form-control"
-              id="edit-panorama-latitude"
-              name="edit-latitude"
-            />
+          <div class="form-group d-flex justify-content-between gap-2">
+            <div class="form-group w-100">
+              <label for="edit-panorama-latitude" class="form-label">Latitud</label>
+              <input
+                type="text"
+                class="form-control"
+                id="edit-panorama-latitude"
+                name="edit-latitude"
+                required
+              />
+            </div>
+  
+            <div class="form-group w-100">
+              <label for="edit-panorama-longitude" class="form-label">Longitud</label>
+              <input
+                type="text"
+                class="form-control"
+                id="edit-panorama-longitude"
+                name="edit-longitude"
+                required
+              />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="edit-panorama-longitude" class="form-label">Longitud</label>
-            <input
-              type="text"
-              class="form-control"
-              id="edit-panorama-longitude"
-              name="edit-longitude"
-            />
+          <div class="form-group d-flex justify-content-between gap-2">
+            <div class="form-group w-100">
+              <label for="edit-panorama-direction" class="form-label">Direction</label>
+              <input
+                type="number"
+                class="form-control"
+                id="edit-panorama-direction"
+                name="edit-direction"
+                required
+              />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="edit-panorama-altitude" class="form-label">Altitud</label>
-            <input
-              type="text"
-              class="form-control"
-              id="edit-panorama-altitude"
-              name="edit-altitude"
-            />
-          </div>
-          <div class="form-group">
-            <label for="panorama-direction" class="form-label">Direction</label>
-            <input
-              type="text"
-              class="form-control"
-              id="edit-panorama-direction"
-              name="edit-direction"
-            />
-          </div>
-          <div class="form-group">
-            <label for="panorama-orientation" class="form-label">Orientación</label>
-            <input
-              type="text"
-              class="form-control"
-              id="edit-panorama-orientation"
-              name="edit-orientation"
-            />
           <div class="mb-3 mt-3 d-flex flex-column justify-content-center align-items-center">
             <div 
-            id="panorama-preview-image" 
-            src="" 
-            style="height: 320px; aspect-ratio: 16/9; overflow: hidden;" 
-            class="img-fluid rounded border"
-            alt="Vista previa">
+              id="panorama-preview-image" 
+              src="" 
+              style="height: 320px; aspect-ratio: 16/9; overflow: hidden;" 
+              class="img-fluid rounded border bg-light text-muted"
+              alt="Vista previa"
+            ></div>
           </div>
         </div>
         <div class="modal-footer">
+          <button 
+            type="button"
+            class="btn btn-outline-secondary"
+            id="btn-aplicar-direccion"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i> Aplicar dirección
+          </button>
           <button type="submit" class="btn btn-primary">
             <i class="fa-solid fa-save"></i> Guardar cambios
           </button>
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-danger"
             data-bs-dismiss="modal"
           >
-            <i class="fa-solid fa-xmark"></i> Cancelar
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
           </button>
         </div>
       </form>
@@ -129,6 +131,5 @@
       }
   }
 </script>
-
 <script type="module" src="{% static 'js/panoramas/edit_panorama.js' %}"></script>
 {% endblock %}

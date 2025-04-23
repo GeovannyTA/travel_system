@@ -9,6 +9,7 @@ from django.urls import reverse, NoReverseMatch
 from django.contrib.auth import logout
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 
 
 User = get_user_model()
@@ -42,19 +43,14 @@ def sign_in(request):
 
         # Bloqueado por administrador
         if user.is_locked:
-            messages.error(
-                request, "Tu cuenta está bloqueada. Contacta al administrador."
-            )
+            messages.warning(request, "Tu cuenta está bloqueada. Contacta al administrador.")
             return render(request, "auth/sign_in.html", context={"email": email})
 
         # Verificar si la cuenta está activa
         auth_user = authenticate(request, username=user.username, password=password)
 
         if not user.is_active:
-            messages.error(
-                request,
-                "Tu cuenta no está activa. Contacta al administrador.",
-            )
+            messages.warning(request, "Tu cuenta no está activa. Contacta al administrador.")
             return render(request, "auth/sign_in.html", context={"email": email})
 
         # Fallo de autenticación o cuenta inactiva
@@ -62,11 +58,7 @@ def sign_in(request):
             user.failed_attempts += 1
             if user.failed_attempts >= MAX_ATTEMPTS:
                 user.is_locked = True
-                messages.error(
-                    request,
-                    "Demasiados intentos fallidos. " \
-                    "Tu cuenta ha sido bloqueada.",
-                )
+                messages.warning(request, "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada.")
             else:
                 restantes = MAX_ATTEMPTS - user.failed_attempts
                 messages.error(
@@ -91,6 +83,7 @@ def sign_in(request):
 
 @require_POST
 @csrf_protect
+@login_required
 def sign_out(request):
     if request.user.is_authenticated:
         logout(request)
@@ -102,6 +95,7 @@ def sign_out(request):
         return redirect("/auth/sign_in/")
 
 
+@login_required
 def change_password_view(request):
     if request.method == "GET":
         if not request.user.must_change_password:
