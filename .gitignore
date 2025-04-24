@@ -1,98 +1,91 @@
-. { @"
-> # Python
-> __pycache__/
-> *.py[cod]
-> *$py.class
-> *.so
-> .Python
-> build/
-> develop-eggs/
-> dist/
-> downloads/
-> eggs/
-> .eggs/
-> lib/
-> lib64/
-> parts/
-> sdist/
-> var/
-> wheels/
-> *.egg-info/
-> .installed.cfg
-> *.egg
-> 
-> # Django
-> *.log
-> local_settings.py
-> db.sqlite3
-> db.sqlite3-journal
-> media/
-> staticfiles/
-> 
-> # Virtual Environment
-> .env
-> .venv
-> env/
-> venv/
-> ENV/
-> 
-> # IDE - VSCode
-> .vscode/
-> *.code-workspace
-> .history
-> 
-> # IDE - PyCharm
-> .idea/
-> *.iws
-> *.iml
-> *.ipr
-> 
-> # Windows
-> Thumbs.db
-> ehthumbs.db
-> Desktop.ini
-> $RECYCLE.BIN/
-> 
-> # macOS
-> .DS_Store
-> .AppleDouble
-> .LSOverride
-> ._*
-> 
-> # Backup files
-> *.bak
-> *.swp
-> *~
-> 
-> # Coverage reports
-> htmlcov/
-> .tox/
-> .coverage
-> .coverage.*
-> .cache
-> coverage.xml
-> *.cover
-> 
-> # Logs
-> logs/
-> *.log
-> npm-debug.log*
-> yarn-debug.log*
-> yarn-error.log*
-> 
-> # Environment variables
-> .env
-> .env.local
-> .env.development.local
-> .env.test.local
-> .env.production.local
-> 
-> # Django stuff
-> *.pot
-> *.pyc
-> __pycache__
-> media
-> 
-> # Database
-> *.sqlite3
-> " | Out-File -FilePath .gitignore -Encoding utf8 }
+# ============================================
+# ✅ Python general
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ============================================
+# ✅ Entornos virtuales
+.env
+.venv
+env/
+venv/
+ENV/
+
+# ============================================
+# ✅ Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Solo archivos generados por collectstatic
+staticfiles/
+
+# ¡NO ignoramos la carpeta static fuente!
+# static/  ← NO excluir
+
+# Archivos temporales y backups
+*.bak
+*.swp
+*~
+*.tmp
+*.orig
+
+# ============================================
+# ✅ Archivos de entorno
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+*.env
+secrets.json
+
+# ============================================
+# ✅ IDEs y editores
+.vscode/
+.idea/
+*.code-workspace
+.history
+
+# ============================================
+# ✅ macOS y Windows
+.DS_Store
+.AppleDouble
+.LSOverride
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# ✅ Node.js y JS tooling (si usas)
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+build/
+
+# ============================================
+# ✅ Cobertura, testing y otros
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+.pytest_cache/
+
+# ============================================
+# ✅ Archivos de traducción y compilación
+*.pot
+*.mo
+
+# ============================================
+# ✅ Archivos de ejecución
+*.pid
+celerybeat-schedule
