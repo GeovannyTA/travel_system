@@ -6,11 +6,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('stratiview/admin/', admin.site.urls),
     path('', login_required(views.home), name='home'),
-    path('panoramas/', include('stratiview.features.panoramas.urls')),
-    path('auth/', include('stratiview.features.auth.urls')),
-    path('users/', include('stratiview.features.users.urls')),
+    path('stratiview/panoramas/', include('stratiview.features.panoramas.urls')),
+    path('stratiview/auth/', include('stratiview.features.auth.urls')),
+    path('stratiview/users/', include('stratiview.features.users.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

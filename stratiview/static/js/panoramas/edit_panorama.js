@@ -7,7 +7,6 @@ function openEditModal(panoramaId) {
   const content = id("content-edit-panorama");
   const modalEl = id("modalEditPanorama");
   const modal = new bootstrap.Modal(modalEl);
-  const baseUrl = 'https://photo-sphere-viewer-data.netlify.app/assets/';
 
   // Mostrar el modal
   loading.style.display = "block";
@@ -15,7 +14,7 @@ function openEditModal(panoramaId) {
   modal.show();
 
   // Obtener los datos de la panorama
-  fetch(`/panoramas/get_panorama/${panoramaId}/`, {
+  fetch(`/stratiview/panoramas/get_panorama/${panoramaId}/`, {
     headers: {
       "X-Requested-With": "XMLHttpRequest",
     },

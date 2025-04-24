@@ -11,7 +11,7 @@ function openDeleteModal(panoramaId) {
   modal.show();
 
   // Obtener los datos del panorama a eliminar
-  fetch(`/panoramas/get_panorama/${panoramaId}/`, {
+  fetch(`/stratiview/panoramas/get_panorama/${panoramaId}/`, {
     headers: {
       "X-Requested-With": "XMLHttpRequest"
     }
