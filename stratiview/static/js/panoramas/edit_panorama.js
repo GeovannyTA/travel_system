@@ -7,6 +7,7 @@ function openEditModal(panoramaId) {
   const content = id("content-edit-panorama");
   const modalEl = id("modalEditPanorama");
   const modal = new bootstrap.Modal(modalEl);
+  const baseUrl = 'https://photo-sphere-viewer-data.netlify.app/assets/';
 
   // Mostrar el modal
   loading.style.display = "block";
@@ -30,12 +31,13 @@ function openEditModal(panoramaId) {
       id("edit-panorama-latitude").value = data.latitude;
       id("edit-panorama-longitude").value = data.longitude;
       id("edit-panorama-direction").value = data.direction;
+      console.log(data.direction)
 
       // Crear visor
       viewer = new Viewer({
         container: id("panorama-preview-image"),
         panorama: data.url,
-        defaultYaw: data.direction,
+        loadingImg: "https://beautiful-einstein.51-79-98-210.plesk.page/recorrido3602/public/assets/img/lgstratimex.webp",
         mousewheel: false,
         keyboard: false,
         navbar: false,
@@ -46,7 +48,11 @@ function openEditModal(panoramaId) {
       });
 
       viewer.addEventListener("ready", () => {
-        setTimeout(() => viewer.zoom(0), 100);
+        setTimeout(() => {
+          viewer.zoom(0);
+          const yawDegrees = parseFloat(data.direction) || 0;
+          viewer.setOption("sphereCorrection", { pan: `${yawDegrees}deg` });
+        }, 100);
       });
 
       const directionInput = id("edit-panorama-direction");

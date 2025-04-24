@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s^shu%g(_g72ld(q6c@rq#r8%@s%mn$fuarcqp#20+k2ql)kuu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'fontawesomefree',
     'stratiview',
     'storages',
+    'wfastcgi', 
 ]
 
 MIDDLEWARE = [
@@ -68,13 +69,6 @@ WSGI_APPLICATION = 'stratiview.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
@@ -97,7 +91,7 @@ DATABASES = {
 #         'USER': 'geovanny',
 #         'PASSWORD': '2832455882',
 #         'HOST': 'Dell\MSSQLSERVER01',  # o IP del servidor
-#         'PORT': '',  # normalmente vacío para el puerto por defecto
+#         'PORT': '', # Vacio para utilizar el puerto por defecto
 #         'OPTIONS': {
 #             'driver': 'ODBC Driver 17 for SQL Server',
 #         },

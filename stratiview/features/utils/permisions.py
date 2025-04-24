@@ -18,6 +18,8 @@ def area_and_rol_required(allowed_areas=[], allowed_roles=[]):
             if user.is_superuser:
                 return view_func(request, *args, **kwargs)
 
+            print(allowed_areas)
+            print(allowed_roles)
             # Verificar si el usuario pertenece a alguna de las áreas
             area_match = UserArea.objects.filter(
                 user=request.user,

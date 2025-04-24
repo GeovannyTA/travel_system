@@ -120,11 +120,11 @@ def add_panoramas(request):
                     PanoramaMetadata.objects.create(
                         url=url,
                         name=file_name,
-                        gps_lat=metadata["lat"],
-                        gps_lng=metadata["lon"],
-                        gps_alt=metadata["alt"],
-                        gps_direction=metadata["direction"],
-                        orientation=metadata["orientation"],
+                        gps_lat=float(metadata["lat"]),
+                        gps_lng=float(metadata["lon"]),
+                        gps_alt=float(metadata["alt"]),
+                        gps_direction=float(metadata["direction"] + 180),
+                        orientation=float(metadata["orientation"]),
                         camera_make=metadata["marca"],
                         camera_model=metadata["model"],
                         software=metadata["software"],
@@ -146,7 +146,18 @@ def get_panorama(request, panorama_id):
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return redirect(reverse("panoramas"))
 
-        panorama = PanoramaMetadata.objects.select_related('state').filter(id=panorama_id).first()
+        panorama = PanoramaMetadata.objects.select_related('state').only(
+            "id",
+            "state__id",
+            "state__name",
+            "name",
+            "gps_lat",
+            "gps_lng",
+            "gps_alt",
+            "gps_direction",
+            "orientation",
+            "url",
+        ).filter(id=panorama_id).first()
         if not panorama:
             return JsonResponse({})
         
