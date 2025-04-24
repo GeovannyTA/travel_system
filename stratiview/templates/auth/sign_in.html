@@ -6,14 +6,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EstratiView {% block title %} - Sign in {% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/auth/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+    <link rel="stylesheet" href="{% static 'css/auth/style.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+    <noscript>
+      <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+      <link rel="stylesheet" href="{% static 'css/auth/style.css' %}">
+    </noscript>
     <link
       rel="shortcut icon"
       href="{% static 'images/favicon.ico' %}"
       type="image/x-icon"
     />
-    <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+    <!-- Iconos -->
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -116,8 +122,8 @@
       <p>&copy; 2025 Estrategas de México</p>
     </footer>
 
-    <script src="{% static 'js/bootstrap.js' %}"></script>
-    <script src="{% static 'js/auth/form.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}" defer></script>
+    <script src="{% static 'js/auth/form.js' %}" defer></script>
     <!-- Tiempo para eliminar el mensaje -->
     <script>
       alert = document.getElementById("message");

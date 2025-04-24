@@ -6,15 +6,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EstratiView {% block title %} Manager {% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}" />
+    <link rel="preload" href="{% static 'css/bootstrap.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{% static 'css/layout.css' %}"  as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+      <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    </noscript>
     <link
       rel="shortcut icon"
       href="{% static 'images/favicon.ico' %}"
       type="image/x-icon"
     />
     {% block extraCSS %} {% endblock %}
-    <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="alert">
@@ -44,6 +49,8 @@
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'home' %}">
             <img
+              rel="preload"
+              as="iamge"
               src="{% static 'images/lgstratimex.webp' %}"
               alt="Logo"
               class="logo"
@@ -134,7 +141,7 @@
     >
       <p>&copy; 2025 Estrategas de México</p>
     </footer>
-    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.js' %}" defer></script>
     {% block extraJS %}
     <!-- Tiempo para eliminar el mensaje -->
     <script>

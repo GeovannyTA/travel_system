@@ -1,0 +1,98 @@
+. { @"
+> # Python
+> __pycache__/
+> *.py[cod]
+> *$py.class
+> *.so
+> .Python
+> build/
+> develop-eggs/
+> dist/
+> downloads/
+> eggs/
+> .eggs/
+> lib/
+> lib64/
+> parts/
+> sdist/
+> var/
+> wheels/
+> *.egg-info/
+> .installed.cfg
+> *.egg
+> 
+> # Django
+> *.log
+> local_settings.py
+> db.sqlite3
+> db.sqlite3-journal
+> media/
+> staticfiles/
+> 
+> # Virtual Environment
+> .env
+> .venv
+> env/
+> venv/
+> ENV/
+> 
+> # IDE - VSCode
+> .vscode/
+> *.code-workspace
+> .history
+> 
+> # IDE - PyCharm
+> .idea/
+> *.iws
+> *.iml
+> *.ipr
+> 
+> # Windows
+> Thumbs.db
+> ehthumbs.db
+> Desktop.ini
+> $RECYCLE.BIN/
+> 
+> # macOS
+> .DS_Store
+> .AppleDouble
+> .LSOverride
+> ._*
+> 
+> # Backup files
+> *.bak
+> *.swp
+> *~
+> 
+> # Coverage reports
+> htmlcov/
+> .tox/
+> .coverage
+> .coverage.*
+> .cache
+> coverage.xml
+> *.cover
+> 
+> # Logs
+> logs/
+> *.log
+> npm-debug.log*
+> yarn-debug.log*
+> yarn-error.log*
+> 
+> # Environment variables
+> .env
+> .env.local
+> .env.development.local
+> .env.test.local
+> .env.production.local
+> 
+> # Django stuff
+> *.pot
+> *.pyc
+> __pycache__
+> media
+> 
+> # Database
+> *.sqlite3
+> " | Out-File -FilePath .gitignore -Encoding utf8 }

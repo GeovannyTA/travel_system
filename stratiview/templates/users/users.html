@@ -1,6 +1,10 @@
 {% extends 'layout.html' %} {% load static %} 
 {% block extraCSS %}
-<link rel="stylesheet" href="{% static 'css/users/style.css' %}" />
+<link rel="stylesheet" href="{% static 'css/users/style.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+<noscript>
+  <link rel="stylesheet" href="{% static 'css/users/style.css' %}">
+</noscript>
+
 {% endblock %} {% block content %}
 <div class="d-flex justify-content-between align-items-center p-0">
   <div>

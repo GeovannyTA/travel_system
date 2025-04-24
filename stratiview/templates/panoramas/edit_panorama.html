@@ -14,7 +14,7 @@
   data-bs-backdrop="static"
   data-bs-keyboard="false"
 >
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <form
         method="post"
@@ -40,12 +40,12 @@
             aria-label="Cerrar"
           ></button>
         </div>
-        <div class="modal-body d-flex gap-3">
-          <div id="modal-loading" class="w-100 text-center text-muted py-5">
+        <div class="modal-body">
+          <div id="loading-edit-panorama" class="w-100 text-center text-muted py-5">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2">Cargando panorama...</p>
           </div>
-          <div id="modal-content" class="d-flex gap-3 w-100" style="display: none;">
+          <div id="content-edit-panorama" class="gap-3 w-100" >
             <div style="width: 100%;">
               <div class="form-group">
                 <label for="edit-panorama-name" class="form-label">Nombre</label>
@@ -129,7 +129,8 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-save"></i> Guardar cambios
+            <i class="fa-solid fa-save"></i> 
+            Guardar cambios
           </button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
             <i class="fa-solid fa-ban"></i>
@@ -145,7 +146,7 @@
 <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
+      "three": "https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.module.js",
       "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.module.js"
     }
   }

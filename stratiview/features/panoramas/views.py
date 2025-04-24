@@ -146,7 +146,7 @@ def get_panorama(request, panorama_id):
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return redirect(reverse("panoramas"))
 
-        panorama = PanoramaMetadata.objects.filter(id=panorama_id).first()
+        panorama = PanoramaMetadata.objects.select_related('state').filter(id=panorama_id).first()
         if not panorama:
             return JsonResponse({})
         
@@ -165,11 +165,7 @@ def get_panorama(request, panorama_id):
     
 
 @login_required
-def edit_panorama(request, panorama_id):
-    if request.method == "GET":
-        panorama = PanoramaMetadata.objects.filter(id=panorama_id).first()
-        return render(request, "panoramas/edit_panorama.html", context={"panorama": panorama})
-    
+def edit_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("edit-panorama_id")
         latitude = request.POST.get("edit-latitude")

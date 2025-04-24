@@ -1,0 +1,70 @@
+.table-container::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: rgb(101, 157, 236);
+  border-radius: 10px;
+}
+
+.table-users thead th:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+.table-users thead th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+.table-users thead th {
+  position: sticky;
+  top: 0;
+  background-color: #343a40;
+  color: white;
+  z-index: 10;
+}
+
+.table-users thead tr > th {
+  border: solid 1px #ffffff;
+}
+
+.table-users tbody tr > td {
+  max-width: 150px;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.actions_btns {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+
+.action_btn {
+  border: none;
+  background: none;
+}
+
+.spinner-custom {
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.select-custom {
+  color: grey;
+  border: 2px dashed #ccc;
+  cursor: pointer;
+}
+
+.select-custom:hover,
+.select-custom:focus {
+  color: #333;
+  border-color: #007bff;
+  box-shadow: none;
+}
