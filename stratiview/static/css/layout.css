@@ -42,7 +42,7 @@ footer p {
 }
 
 .active-route {
-  color: #3181dc;
+  color: #2582ec !important;
 }
 
 .dropdown-item-custom:hover {
@@ -62,4 +62,8 @@ footer p {
   max-width: 400px;
   z-index: 1060;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link:hover {
+  color: #196ccb !important;
 }

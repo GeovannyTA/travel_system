@@ -73,7 +73,7 @@
           <ul class="navbar-nav me-auto mb-lg-0">
             <li class="nav-item">
               <a 
-                class="nav-link {% if request.path == '/' %}active-route{% endif %}" 
+                class="nav-link {% if request.path == '/stratiview/' %}active-route{% endif %}" 
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 aria-current="page" 
                 href="{% url 'home' %}"
@@ -84,7 +84,17 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link {% if request.path == '/panoramas/' %}active-route{% endif %}"
+                class="nav-link {% if request.path == '/stratiview/routes/' %}active-route{% endif %}"
+                style="display: inline-flex; align-items: center; width: fit-content;"
+                href="{% url 'panoramas' %}"
+              >
+                <i class="fa-solid fa-road me-2"></i>
+                Recorridos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/stratiview/panoramas/' %}active-route{% endif %}"
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 href="{% url 'panoramas' %}"
               >
@@ -94,7 +104,7 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link {% if request.path == '/users/' %}active-route{% endif %}"
+                class="nav-link {% if request.path == '/stratiview/users/' %}active-route{% endif %}"
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 href="{% url 'users' %}"
               >
@@ -110,7 +120,7 @@
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <i class="fas fa-user-cog me-2"></i>
+                <i class="fas fa-user-cog me-1"></i>
                 {{ request.user.username }}
               </a>
               <ul class="dropdown-menu dropdown-menu-end">

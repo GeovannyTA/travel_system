@@ -26,9 +26,11 @@
 
 .table-panorama thead tr > th {
   border: solid 1px #ffffff;
+  width: min-content;
 }
 
 .table-panorama tbody tr > td {
+  width: 10px;
   max-width: 150px;
   text-wrap: nowrap;
   text-overflow: ellipsis;

@@ -1,4 +1,4 @@
-{% extends 'layout.html' %} {% load static %} {% load custom_filters %} {% block extraCSS %}
+{% extends 'layout.html' %} {% load static %} {% block extraCSS %}
 <link rel="preload" as="style" href="{% static 'css/panoramas/style.css' %}" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
   <link rel="stylesheet" href="{% static 'css/panoramas/style.css' %}">
@@ -9,7 +9,7 @@
     <h2>Gestión de panoramas</h2>
     <p>Administra las coordenadas y datos geográficos</p>
   </div>
-  {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
+  {% if request.user.area_name|lower in "administracion, soporte tecnico" %}
     <button
       class="btn btn-primary"
       data-bs-toggle="modal"
@@ -79,10 +79,7 @@
         <th scope="col">Recorrido</th>
         <th scope="col">Fecha de toma</th>
         <th scope="col">Fecha de subida</th>
-        {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
-        <th scope="col">Responsable</th>
         <th scope="col">Acciones</th>
-        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -96,8 +93,6 @@
         <td>{{ panorama.state.name }}</td>
         <td>{{ panorama.date_taken|date:'d-m-Y H:i' }}</td>
         <td>{{ panorama.date_uploaded|date:'d-m-Y H:i' }}</td>
-        {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
-        <td>{{ panorama.upload_by.first_name }} {{ panorama.upload_by.last_name }}</td>
         <td class="text-center p-1">
           <button
             class="btn btn-secondary rounded-3 btn-edit-panorama"
@@ -113,18 +108,13 @@
             style="display: inline-flex; align-items: center"
             type="button"
             title="Eliminar panorama"
-            onclick="openDeleteModal({{ panorama.id }})"
           >
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </td>
-        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-{% include 'panoramas/add_panorama.html' %}
-{% include 'panoramas/delete_panorama.html' %}
-{% include 'panoramas/edit_panorama.html' %}
 {% endblock %}

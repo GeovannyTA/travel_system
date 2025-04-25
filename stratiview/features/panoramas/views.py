@@ -1,24 +1,76 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from stratiview.models import PanoramaMetadata, State
+from stratiview.models import PanoramaMetadata, State, UserRol, UserArea
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from stratiview.features.utils.permisions import area_and_rol_required
+from stratiview.features.utils.permisions import area_matrix, role_matrix
+from django.db.models.functions import Lower
+
 
 @login_required
-# @area_and_rol_required(allowed_areas=['admin', 'desarrollo'], allowed_roles=['admin'])
+# Decoradores para verificar permisos de área y/o rol
+# Nota: el nombre de la area en el decorador debe estar en minusculas, sin 
+# incluir caracteres especiales y el metodo en mayusculas
+@area_matrix(rules=[
+    {"areas": ["administracion", "sistemas"], "methods": ["GET"]},
+])
+@role_matrix(rules=[
+    {"roles": ["administrador"], "methods": ["GET"]},
+])
 def get_panoramas(request):
     # Get the panoramas from the database if isn't deleted
-    panoramas = PanoramaMetadata.objects.filter(is_deleted=False).order_by(
-        "-date_uploaded"
-    ) 
     states = State.objects.all()
 
-    # If there are no panoramas, return an empty list
+    user_areas = set(
+        UserArea.objects.filter(user=request.user)
+        .annotate(lower_area=Lower('area__name'))
+        .values_list('lower_area', flat=True)
+    )
+
+    user_roles = set(
+        UserRol.objects.filter(user=request.user)
+        .annotate(lower_rol=Lower('rol__name'))
+        .values_list('lower_rol', flat=True)
+    )
+
+    if any(area in ["administracion"] for area in user_areas) or any(role in ["administrador"] for role in user_roles):
+        # If the user is in the "administracion" area, get all panoramas
+        panoramas = PanoramaMetadata.objects.select_related('state', 'upload_by').only(
+            "id",
+            "name",
+            "gps_lng",
+            "gps_alt",
+            "gps_lat",
+            "gps_direction",
+            "date_taken",
+            "date_uploaded",
+            "is_deleted",
+            "state",
+            "upload_by",
+        ).filter(is_deleted=False).order_by("-date_uploaded")
+        print("panoramas administracion")
+    else:
+        panoramas = PanoramaMetadata.objects.select_related('state', 'upload_by').only(
+            "id",
+            "name",
+            "gps_lng",
+            "gps_alt",
+            "gps_lat",
+            "gps_direction",
+            "date_taken",
+            "date_uploaded",
+            "is_deleted",
+            "state",
+            "upload_by",
+        ).filter(
+            is_deleted = False,
+            upload_by = request.user 
+        ).order_by("-date_uploaded") 
+
     if not panoramas:
         return render(
             request,
@@ -35,8 +87,13 @@ def get_panoramas(request):
 
 
 @login_required
-@area_and_rol_required(allowed_areas=['admin'], allowed_roles=['admin'])
-# Extract the metadata from the panorama image
+@area_matrix(rules=[
+    {"areas": ["administracion"], "methods": ["POST"]},
+])
+
+@role_matrix(rules=[
+    {"roles": ["administrador"], "methods": ["POST"]},
+])
 def add_panoramas(request):
     if request.method == "POST":
         # Obtener los archivos de imagen del formulario
@@ -44,6 +101,7 @@ def add_panoramas(request):
         state_id = request.POST.get("state")
 
         if not state_id:
+            messages.warning_alert(request, "No se seleccionó la entidad federativa.")
             return HttpResponse("No se selecciono la entidad federativa.")
 
         # Obtener la entidad federativa seleccionada
@@ -130,6 +188,8 @@ def add_panoramas(request):
                         software=metadata["software"],
                         date_taken=metadata["date_taken"],
                         state=state_obj,
+                        upload_by=request.user,
+                        is_deleted=False,
                     )
             except PanoramaMetadata.DoesNotExist:
                 return HttpResponse("No se pudo guardar la panorama.")
@@ -140,6 +200,11 @@ def add_panoramas(request):
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
+"""
+No se implementan los decoradores de permisos para la siguiente funcion ya que 
+se utiliza en el frontend para obtener los metadatos de la panorama y no se 
+requiere permisos especiales para acceder a ella.
+"""
 @login_required
 def get_panorama(request, panorama_id):
     if request.method == "GET":
@@ -176,6 +241,9 @@ def get_panorama(request, panorama_id):
     
 
 @login_required
+@area_matrix(rules=[
+    {"areas": ["administracion"], "methods": ["POST"]},
+])
 def edit_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("edit-panorama_id")
@@ -206,6 +274,9 @@ def edit_panorama(request):
     
 
 @login_required
+@area_matrix(rules=[
+    {"areas": ["administracion"], "methods": ["POST"]},
+])
 def delete_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("panorama_id")

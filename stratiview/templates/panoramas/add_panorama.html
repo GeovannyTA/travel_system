@@ -30,9 +30,9 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="state" class="form-label" style="outline: none;">Entidad federativa</label>
+            <label for="state" class="form-label" style="outline: none;">Recorrido</label>
             <select class="form-select select-custom" id="state" name="state" required>
-              <option selected disabled hidden>Selecciona la entidad correspondiente</option>
+              <option selected disabled hidden>Selecciona el recorrido correspondiente</option>
               {% for state in states %}
                 <option value="{{ state.id }}">{{ state.name }}</option>
               {% endfor %}

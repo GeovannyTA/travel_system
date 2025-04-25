@@ -22,6 +22,14 @@ class User(AbstractUser):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
+    @property
+    def area_names(self):
+        return list(self.userarea_set.values_list('area__name', flat=True))
+
+    @property
+    def rol_names(self):
+        return list(self.userrol_set.values_list('rol__name', flat=True))
+    
     class Meta:
         db_table = 'user'
 
@@ -41,6 +49,7 @@ class PanoramaMetadata(models.Model):
     date_taken = models.DateTimeField(blank=False, null=False)
     date_uploaded = models.DateTimeField(auto_now_add=True)
     state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False)
+    upload_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
