@@ -12,10 +12,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s^shu%g(_g72ld(q6c@rq#r8%@s%mn$fuarcqp#20+k2ql)kuu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    'beautiful-einstein.51-79-98-210.plesk.page']
 
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://beautiful-einstein.51-79-98-210.plesk.page",
+]
 
 # Application definition
 
@@ -152,9 +161,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'stratiview.User' 
-LOGIN_URL = 'sign_in'
-LOGOUT_REDIRECT_URL = 'sign_in'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = '/stratiview/auth/sign_in'
+LOGOUT_REDIRECT_URL = '/stratiview/auth/sign_in'
+LOGIN_REDIRECT_URL = '/stratiview/home'
 
 DATA_UPLOAD_MAX_NUMBER_FILES = 1000  # Numero maximo de imagenes permitidos
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024 * 1024  # Numero maximo de gigas 50GB
@@ -180,3 +189,31 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "trejogeovannyaraujo@gmail.com"
 EMAIL_HOST_PASSWORD = "czrz rfbw ohwb zazo"
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django.request': {
+#             'handlers': ['console'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#     },
+# }

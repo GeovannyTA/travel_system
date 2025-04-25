@@ -7,7 +7,7 @@ class ForceRedirectHomeMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated and request.path == '/auth/sign_in/':
+        if request.user.is_authenticated and request.path == 'stratiview/auth/sign_in/':
             return redirect(reverse('home'))
         
         return self.get_response(request)

@@ -76,7 +76,7 @@
                 class="nav-link {% if request.path == '/' %}active-route{% endif %}" 
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 aria-current="page" 
-                href="/"
+                href="{% url 'home' %}"
               >
                 <i class="fas fa-home me-2"></i>
                 Home

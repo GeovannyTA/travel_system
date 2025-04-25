@@ -2,9 +2,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 EXCLUDED_PATHS = [
-    '/auth/sign_in/',
-    '/auth/sign_out/',
-    '/auth/password/change/',
+    '/stratiview/auth/sign_in/',
+    '/stratiview/auth/sign_out/',
+    '/stratiview/auth/password_change/',
 ]
 
 class ForcePasswordChangeMiddleware:
