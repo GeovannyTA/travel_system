@@ -30,11 +30,11 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="state" class="form-label" style="outline: none;">Recorrido</label>
-            <select class="form-select select-custom" id="state" name="state" required>
+            <label for="route" class="form-label" style="outline: none;">Recorrido</label>
+            <select class="form-select select-custom" id="route" name="route" required>
               <option selected disabled hidden>Selecciona el recorrido correspondiente</option>
-              {% for state in states %}
-                <option value="{{ state.id }}">{{ state.name }}</option>
+              {% for route in routes %}
+                <option value="{{ route.id }}">{{ route.name }}</option>
               {% endfor %}
             </select>
           </div>

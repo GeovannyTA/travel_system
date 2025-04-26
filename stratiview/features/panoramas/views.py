@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from stratiview.models import PanoramaMetadata, State, UserRol, UserArea
+from stratiview.models import PanoramaMetadata, State, UserRol, UserArea, Route
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
@@ -23,7 +23,7 @@ from django.db.models.functions import Lower
 ])
 def get_panoramas(request):
     # Get the panoramas from the database if isn't deleted
-    states = State.objects.all()
+    routes = Route.objects.all()
 
     user_areas = set(
         UserArea.objects.filter(user=request.user)
@@ -39,7 +39,7 @@ def get_panoramas(request):
 
     if any(area in ["administracion"] for area in user_areas) or any(role in ["administrador"] for role in user_roles):
         # If the user is in the "administracion" area, get all panoramas
-        panoramas = PanoramaMetadata.objects.select_related('state', 'upload_by').only(
+        panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').only(
             "id",
             "name",
             "gps_lng",
@@ -49,12 +49,12 @@ def get_panoramas(request):
             "date_taken",
             "date_uploaded",
             "is_deleted",
-            "state",
+            "route",
             "upload_by",
         ).filter(is_deleted=False).order_by("-date_uploaded")
         print("panoramas administracion")
     else:
-        panoramas = PanoramaMetadata.objects.select_related('state', 'upload_by').only(
+        panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').only(
             "id",
             "name",
             "gps_lng",
@@ -64,7 +64,7 @@ def get_panoramas(request):
             "date_taken",
             "date_uploaded",
             "is_deleted",
-            "state",
+            "route",
             "upload_by",
         ).filter(
             is_deleted = False,
@@ -75,12 +75,12 @@ def get_panoramas(request):
         return render(
             request,
             "panoramas/panoramas.html",
-            context={"panoramas": [], "states": states},
+            context={"panoramas": [], "routes": routes},
         )
 
     context = {
         "panoramas": panoramas,
-        "states": states,
+        "routes": routes,
     }
 
     return render(request, "panoramas/panoramas.html", context=context)
@@ -98,14 +98,14 @@ def add_panoramas(request):
     if request.method == "POST":
         # Obtener los archivos de imagen del formulario
         panoramas = request.FILES.getlist("images")
-        state_id = request.POST.get("state")
+        route_id = request.POST.get("route")
 
-        if not state_id:
-            messages.warning_alert(request, "No se seleccionó la entidad federativa.")
-            return HttpResponse("No se selecciono la entidad federativa.")
+        if not route_id:
+            messages.warning_alert(request, "No se seleccionó la ruta.")
+            return HttpResponse("No se selecciono la ruta.")
 
         # Obtener la entidad federativa seleccionada
-        state_obj = State.objects.get(id=state_id)
+        route_obj = Route.objects.get(id=route_id)
 
         # Arreglo para las imagenes que no se subieron
         not_uploaded = []
@@ -123,11 +123,10 @@ def add_panoramas(request):
             gps_lat = metadata["lat"]
             gps_lng = metadata["lon"]
             gps_alt = metadata["alt"]
-            # file_name = f'{metadata["date_taken"].strftime("%Y%m%d_%H%M")}_{gps_lat}_{gps_lng}'
-            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{state_obj.name}"
+            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name}"
 
             # Obtener todos los panoramas del estado una sola vez
-            existing_panoramas = list(PanoramaMetadata.objects.filter(state=state_obj))
+            existing_panoramas = list(PanoramaMetadata.objects.filter(route=route_obj))
 
             # Verificar si ya existe uno con los mismos metadatos o está muy cerca
             duplicate = False
@@ -187,7 +186,7 @@ def add_panoramas(request):
                         camera_model=metadata["model"],
                         software=metadata["software"],
                         date_taken=metadata["date_taken"],
-                        state=state_obj,
+                        route=route_obj,
                         upload_by=request.user,
                         is_deleted=False,
                     )
@@ -211,10 +210,10 @@ def get_panorama(request, panorama_id):
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return redirect(reverse("panoramas"))
 
-        panorama = PanoramaMetadata.objects.select_related('state').only(
+        panorama = PanoramaMetadata.objects.select_related('route').only(
             "id",
-            "state__id",
-            "state__name",
+            "route_id",
+            "route_name",
             "name",
             "gps_lat",
             "gps_lng",
@@ -228,8 +227,8 @@ def get_panorama(request, panorama_id):
         
         return JsonResponse({
             "id": panorama.id,
-            "state_id": panorama.state.id,
-            "state_name": panorama.state.name,
+            "route_id": panorama.route.id,
+            "route_name": panorama.route.name,
             "panorama_name": panorama.name,
             "latitude": panorama.gps_lat,
             "longitude": panorama.gps_lng,
@@ -249,7 +248,7 @@ def edit_panorama(request):
         panorama_id = request.POST.get("edit-panorama_id")
         latitude = request.POST.get("edit-latitude")
         longitude = request.POST.get("edit-longitude")
-        state = request.POST.get("edit-state")
+        route = request.POST.get("edit-route")
         direction = request.POST.get("edit-direction")
 
         panorama = PanoramaMetadata.objects.get(id=panorama_id)
@@ -260,10 +259,10 @@ def edit_panorama(request):
         if longitude:
             panorama.gps_lng = longitude
 
-        if state:
-            state_obj = State.objects.filter(id=state).first()
-            if state_obj:
-                panorama.state = state_obj
+        if route:
+            route_obj = Route.objects.filter(id=route).first()
+            if route_obj:
+                panorama.route = route_obj
 
         if direction:
             panorama.gps_direction = direction

@@ -11,6 +11,16 @@ class State(models.Model):
         db_table = 'state'
 
 
+class Route(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(unique=True, max_length=100, blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
+    state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False)
+
+    class Meta:
+        db_table = 'route'
+
+
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
@@ -19,8 +29,7 @@ class User(AbstractUser):
     failed_attempts = models.IntegerField(default=0)
     is_locked = models.BooleanField(default=False)
     
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    
 
     @property
     def area_names(self):
@@ -48,7 +57,7 @@ class PanoramaMetadata(models.Model):
     software = models.CharField(max_length=100, blank=False, null=False)
     date_taken = models.DateTimeField(blank=False, null=False)
     date_uploaded = models.DateTimeField(auto_now_add=True)
-    state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=False, null=False)
     upload_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     is_deleted = models.BooleanField(default=False)
 
@@ -56,7 +65,7 @@ class PanoramaMetadata(models.Model):
         db_table = 'panorama_metadata'
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'gps_lat', 'gps_lng', 'gps_alt', 'state'], 
+                fields=['name', 'gps_lat', 'gps_lng', 'gps_alt', 'route'], 
                 name='unique_panorama_fields')
         ]
 
