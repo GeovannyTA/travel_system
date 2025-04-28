@@ -68,3 +68,8 @@
   border-color: #007bff;
   box-shadow: none;
 }
+
+.user-inactive {
+  color: red;
+  background-color: rgb(92, 65, 65) !important;
+}

@@ -44,7 +44,7 @@
               <label for="edit-user-email" class="form-label">Correo electrónico</label>
               <input
                 type="email"
-                name="email"
+                name="edit-user-email"
                 id="edit-user-email"
                 class="form-control"
                 placeholder="correo@ejemplo.com"
@@ -55,7 +55,7 @@
               <label for="edit-user-first_name" class="form-label">Nombre/s</label>
               <input
                 type="text"
-                name="first_name"
+                name="edit-user-first_name"
                 id="edit-user-first_name"
                 class="form-control"
                 placeholder="Juan"
@@ -66,7 +66,7 @@
               <label for="edit-user-last_name" class="form-label">Apellidos</label>
               <input
                 type="text"
-                name="last_name"
+                name="edit-user-last_name"
                 id="edit-user-last_name"
                 class="form-control"
                 placeholder="Pérez"
@@ -77,7 +77,7 @@
               <label for="edit-user-username">Nombre de usuario</label>
               <input
                 type="text"
-                name="username"
+                name="edit-user-username"
                 id="edit-user-username"
                 class="form-control"
                 placeholder="juan_perez"
@@ -89,7 +89,7 @@
                 <label for="edit-user-phone" class="form-label">Teléfono</label>
                 <input
                   type="text"
-                  name="phone"
+                  name="edit-user-phone"
                   id="edit-user-phone"
                   class="form-control"
                   placeholder="5551234567"
@@ -98,7 +98,7 @@
               </div>
               <div class="form-group w-100">
                 <label for="edit-user-state" class="form-label">Entidad federativa</label>
-                <select name="state" id="edit-user-state" class="form-select" required>
+                <select name="edit-user-state" id="edit-user-state" class="form-select" required>
                   <option value="">-- Sin entidad --</option>
                   {% for state in states %}
                   <option value="{{ state.id }}">{{ state.name }}</option>
@@ -106,9 +106,36 @@
                 </select>
               </div>
             </div>
+            <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+              <div class="form-group w-100">
+                <label for="edit-user-area" class="form-label">Area</label>
+                <select name="edit-user-area" id="edit-user-area" class="form-select" required>
+                  {% for area in areas %}
+                  <option value="{{ area.id }}">{{ area.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group w-100">
+                <label for="edit-user-rol" class="form-label">Rol</label>
+                <select name="edit-user-rol" id="edit-user-rol" class="form-select" required>
+                  {% for rol in roles %}
+                  <option value="{{ rol.id }}">{{ rol.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-outline-primary"
+            id="edit-btn-enable_user" 
+            name="action" 
+            value="enable_user">
+            <i class="fa-solid fa-user-check"></i>
+            Habilitar
+          </button>
           <button 
             type="submit" 
             class="btn btn-outline-secondary" 

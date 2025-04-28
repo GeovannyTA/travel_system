@@ -3,7 +3,10 @@ from fractions import Fraction
 from datetime import datetime
 from django.utils import timezone
 from math import radians, cos, sin, asin, sqrt
-
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
 
 def extract_metadata(file_obj):
     try:
@@ -86,3 +89,30 @@ def calculate_distance_meters(lat1, lon1, alt1, lat2, lon2, alt2):
     # Distancia real incluyendo altitud
     distancia_total = sqrt(distancia_horizontal**2 + dalt**2)
     return distancia_total
+
+
+def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas,first_name, last_name, email):
+    full_name = f"{first_name} {last_name}"
+    not_upload_panoramas = not_upload_panoramas
+    upload_panoramas = upload_panoramas
+
+    subject = "Carga de panoras"
+
+    html_content = render_to_string(
+        "emails/upload_and_not_upload_panoramas.html",
+        {
+            "full_name": full_name,
+            "email": email,
+            "upload_panoramas": upload_panoramas,
+            "not_upload_panoramas": not_upload_panoramas,
+            "login_url": "https://beautiful-einstein.51-79-98-210.plesk.page/stratiview/auth/sign_in/",
+        },
+    )
+
+    email_msg = EmailMultiAlternatives(
+        subject=subject,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[email]
+    )
+    email_msg.attach_alternative(html_content, "text/html")
+    email_msg.send()

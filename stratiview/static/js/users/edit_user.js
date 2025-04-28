@@ -1,4 +1,4 @@
-function openEditModal(panoramaId) {
+function openEditModal(userId) {
   const id = (sel) => document.getElementById(sel);
   const loading = id("loading-edit-user");
   const content = id("content-edit-user");
@@ -7,16 +7,21 @@ function openEditModal(panoramaId) {
   const btnUnlock = id("edit-btn-unlock");
   const btnSave = id("edit-btn-save");
   const btnResetPassword = id("edit-btn-reset_password");
+  const btnEnableUser = id("edit-btn-enable_user")
+  const areaSelect = id("edit-user-area");
+  const rolSelect = id("edit-user-rol"); 
+
   // Mostrar el modal
   loading.style.display = "block";
   content.style.display = "none";
   btnUnlock.hidden = true;
   btnResetPassword.hidden = true;
   btnSave.hidden = true;
+  btnEnableUser.hidden = true;
   modal.show();
 
   // Obtener los datos de la panorama
-  fetch(`/stratiview/users/get_user/${panoramaId}/`, {
+  fetch(`/stratiview/users/get_user/${userId}/`, {
     headers: {
       "X-Requested-With": "XMLHttpRequest",
     },
@@ -26,6 +31,7 @@ function openEditModal(panoramaId) {
       return response.json();
     })
     .then((data) => {
+      console.log(data);
       id("edit-user-id").value = data.id;
       id("edit-user-email").value = data.email;
       id("edit-user-first_name").value = data.first_name;
@@ -43,6 +49,54 @@ function openEditModal(panoramaId) {
       if (data.is_locked) {
         btnUnlock.hidden = false;
       }
+
+      if (data.is_active === false) {
+        btnEnableUser.hidden = true;
+      }
+
+      // Configurar Área y Rol
+      if (data.area_id) {
+        areaSelect.value = data.area_id;
+        rolSelect.innerHTML = "";
+
+        if (areaRolesMap[data.area_id]) {
+          areaRolesMap[data.area_id].forEach(function (rol) {
+            const option = document.createElement("option");
+            option.value = rol.id;
+            option.textContent = rol.name;
+            rolSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement("option");
+          option.value = "";
+          option.textContent = "-- Sin roles disponibles --";
+          rolSelect.appendChild(option);
+        }
+
+        if (data.rol_id) {
+          rolSelect.value = data.rol_id;
+        }
+      }
+
+      areaSelect.addEventListener("change", function () {
+        const selectedAreaId = this.value;
+      
+        rolSelect.innerHTML = "";
+      
+        if (areaRolesMap[selectedAreaId]) {
+          areaRolesMap[selectedAreaId].forEach(function (rol) {
+            const option = document.createElement("option");
+            option.value = rol.id;
+            option.textContent = rol.name;
+            rolSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement("option");
+          option.value = "";
+          option.textContent = "-- Sin roles disponibles --";
+          rolSelect.appendChild(option);
+        }
+      });
     })
     .catch((error) => {
       window.alert("Error al abrir el modal de edición.");

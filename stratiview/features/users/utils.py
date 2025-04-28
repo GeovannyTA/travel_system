@@ -4,7 +4,6 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 
 
-
 def send_credentials_email(temp_password, first_name, last_name, email):
     full_name = f"{first_name} {last_name}"
     temp_password = temp_password

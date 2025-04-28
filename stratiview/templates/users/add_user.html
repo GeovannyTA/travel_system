@@ -35,7 +35,7 @@
               name="email"
               id="email"
               class="form-control"
-              placeholder="correo@ejemplo.com"
+              placeholder="Ingresa el correo electrónico"
               required
             />
           </div>
@@ -46,7 +46,7 @@
               name="first_name"
               id="first_name"
               class="form-control"
-              placeholder="Juan"
+              placeholder="Ingresa el nombre"
               required
             />
           </div>
@@ -57,7 +57,7 @@
               name="last_name"
               id="last_name"
               class="form-control"
-              placeholder="Pérez"
+              placeholder="Ingresa los apellidos"
               required
             />
           </div>
@@ -68,18 +68,18 @@
               name="username"
               id="username"
               class="form-control"
-              placeholder="juan_perez"
+              placeholder="Ingresa el nombre de usuario ejemplo: juan_perez"
               required
             />
           </div>
           <div class="form-group">
             <label for="phone" class="form-label">Teléfono</label>
             <input
-              type="text"
+              type="number"
               name="phone"
               id="phone"
               class="form-control"
-              placeholder="5551234567"
+              placeholder="Ingresa el número de teléfono"
               required
             />
           </div>
@@ -91,6 +91,26 @@
               <option value="{{ state.id }}">{{ state.name }}</option>
               {% endfor %}
             </select>
+          </div>
+          <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+            <div class="form-group w-100">
+              <label for="add-user-area" class="form-label">Area</label>
+              <select name="add-user-area" id="add-user-area" class="form-select" required>
+                <option value="">-- Sin area --</option>
+                {% for area in areas %}
+                <option value="{{ area.id }}">{{ area.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group w-100">
+              <label for="add-user-rol" class="form-label">Rol</label>
+              <select name="add-user-rol" id="add-user-rol" class="form-select" required>
+                <option value="">-- Sin rol --</option>
+                {% for rol in roles %}
+                <option value="{{ rol.id }}">{{ rol.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
         </div>
 

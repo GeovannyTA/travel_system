@@ -89,7 +89,7 @@
       <tbody>
         {% if panoramas|length == 0 %}
         <tr>
-          <td colspan="9" class="text-center">
+          <td colspan='{% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %} 10 {% else %} 9 {% endif %}' class="text-center">
             <strong>No hay panoramas disponibles</strong>
           </td>
         </tr>

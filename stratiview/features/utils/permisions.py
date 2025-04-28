@@ -1,10 +1,9 @@
 from django.http import HttpResponseForbidden
 from functools import wraps
-from django.shortcuts import redirect
 from stratiview.models import UserArea, UserRol
 from django.contrib import messages
 from django.db.models.functions import Lower
-
+from stratiview.features.utils.utils import soft_redirect
 
 # Decorado para verificar permisos de área o rol
 def area_matrix(rules=None):
@@ -28,13 +27,13 @@ def area_matrix(rules=None):
 
             user_areas = set(
                 UserArea.objects.filter(user=user)
-                .annotate(lower_area=Lower('area__name'))
-                .values_list('lower_area', flat=True)
+                .annotate(lower_area=Lower("area__name"))
+                .values_list("lower_area", flat=True)
             )
 
             if not user_areas:
                 messages.info(request, "No tienes los permisos requeridos")
-                return redirect(request.META.get("HTTP_REFERER", "/"))
+                return soft_redirect(request.META.get("HTTP_REFERER", "/"))
 
             for rule in rules:
                 rule_areas = set(rule.get("areas", []))
@@ -47,7 +46,8 @@ def area_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+            return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+
 
         return _wrapped_view
 
@@ -75,11 +75,11 @@ def role_matrix(rules=None):
                 return view_func(request, *args, **kwargs)
 
             method = request.method.upper()
-            
+
             user_roles = set(
                 UserRol.objects.filter(user=user)
-                .annotate(lower_rol=Lower('rol__name'))
-                .values_list('lower_rol', flat=True)
+                .annotate(lower_rol=Lower("rol__name"))
+                .values_list("lower_rol", flat=True)
             )
 
             for rule in rules:
@@ -93,7 +93,7 @@ def role_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+            return soft_redirect(request.META.get("HTTP_REFERER", "/"))
 
         return _wrapped_view
 

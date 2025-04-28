@@ -1,14 +1,15 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.shortcuts import render
 from django.urls import reverse
 from stratiview.models import PanoramaMetadata, State, UserRol, UserArea, Route
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
-from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters
+from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters, send_upload_and_not_upload_panoramas
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from stratiview.features.utils.permisions import area_matrix, role_matrix
 from django.db.models.functions import Lower
+from stratiview.features.utils.utils import soft_redirect
 
 
 @login_required
@@ -107,7 +108,7 @@ requiere permisos especiales para acceder a ella.
 def get_panorama(request, panorama_id):
     if request.method == "GET":
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
-            return redirect(reverse("panoramas"))
+            return soft_redirect(reverse("panoramas"))
 
         panorama = PanoramaMetadata.objects.select_related('route').only(
             "id",
@@ -152,14 +153,15 @@ def add_panoramas(request):
         route_id = request.POST.get("route")
 
         if not route_id:
-            messages.warning_alert(request, "No se seleccionó la ruta.")
-            return HttpResponse("No se selecciono la ruta.")
+            messages.warning(request, "No se seleccionó la ruta")
+            return soft_redirect(reverse("panoramas"))
 
         # Obtener la entidad federativa seleccionada
         route_obj = Route.objects.get(id=route_id)
 
         # Arreglo para las imagenes que no se subieron
         not_uploaded = []
+        uploaded = []
 
         for panorama_file in panoramas:
             # Extraer metadatos de la imagen
@@ -167,7 +169,10 @@ def add_panoramas(request):
 
             # Si no se pudieron extraer los metadatos, agregar a la lista de no subidos
             if not metadata:
-                not_uploaded.append(panorama_file.name)
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "No se pudieron extraer los metadatos de la imagen",
+                })
                 continue
 
             # Generar el nombre del panorama
@@ -211,18 +216,28 @@ def add_panoramas(request):
 
             # Si es duplicado exacto
             if duplicate:
-                not_uploaded.append(f"{panorama_file.name}")
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "La imagen ya existe en la base de datos",
+                })
                 continue
 
             # Si está demasiado cerca de otra imagen
             if nearby:
-                not_uploaded.append(f"{panorama_file.name}")
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "La panoramas está demasiado cerca de otra imagen",
+                })
                 continue
 
             # Almacenar la panorama y sus metadastos en la db
             try:
                 # Si falla algo no almacenar la iamgen en la db
                 with transaction.atomic():
+                    # Almacennar en la variable uploaded para enviar el correo
+                    uploaded.append({
+                        "name": panorama_file.name,
+                    })
                     panorama_file.seek(0)  # Ensure the file pointer is at the beginning
                     url = upload_image_to_s3(panorama_file, file_name)
                     PanoramaMetadata.objects.create(
@@ -241,13 +256,25 @@ def add_panoramas(request):
                         upload_by=request.user,
                         is_deleted=False,
                     )
+
+                    # Enviera correo al usuario con las panroamas que no se subieron
+                    if not_uploaded:
+                        send_upload_and_not_upload_panoramas(
+                            not_uploaded,
+                            uploaded,
+                            request.user.first_name,
+                            request.user.last_name,
+                            request.user.email,
+                        )
             except PanoramaMetadata.DoesNotExist:
-                return HttpResponse("No se pudo guardar la panorama.")
+                messages.warning(request, "No se pudo guardar la panorama.")
+                return soft_redirect(reverse("panoramas"))
             except Exception as e:
-                return HttpResponse(f"Error al guardar los metadatos.{e}")
+                messages.warning(request, f"Error al guardar la panorama: {e}")
+                return soft_redirect(reverse("panoramas"))  
 
         # Redirigir a la página anterior o a una URL predeterminada
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
     
 
 @login_required
@@ -280,7 +307,7 @@ def edit_panorama(request):
 
         panorama.save()
         messages.info(request, "Panorama editado correctamente")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
     
 
 @login_required
@@ -294,9 +321,9 @@ def delete_panorama(request):
 
         if not panorama:
             messages.warning(request, "Panorama no encontrado.")
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+            return soft_redirect(request.META.get("HTTP_REFERER", "/"))
         
         panorama.is_deleted = True
         panorama.save()
         messages.info(request, "Panorama eliminado correctamente")
-        return redirect(request.META.get("HTTP_REFERER", "/"))
+        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
