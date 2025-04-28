@@ -179,7 +179,7 @@ def add_panoramas(request):
             gps_lat = metadata["lat"]
             gps_lng = metadata["lon"]
             gps_alt = metadata["alt"]
-            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name}"
+            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name.replace(' ', '_')}"
 
             # Obtener todos los panoramas del estado una sola vez
             existing_panoramas = list(PanoramaMetadata.objects.filter(route=route_obj))
@@ -244,7 +244,7 @@ def add_panoramas(request):
                         gps_lat=float(metadata["lat"]),
                         gps_lng=float(metadata["lon"]),
                         gps_alt=float(metadata["alt"]),
-                        gps_direction=float(metadata["direction"] + 180),
+                        gps_direction=float(metadata["direction"]),
                         orientation=float(metadata["orientation"]),
                         camera_make=metadata["marca"],
                         camera_model=metadata["model"],
