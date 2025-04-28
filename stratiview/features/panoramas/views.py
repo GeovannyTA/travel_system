@@ -235,9 +235,7 @@ def add_panoramas(request):
                 # Si falla algo no almacenar la iamgen en la db
                 with transaction.atomic():
                     # Almacennar en la variable uploaded para enviar el correo
-                    uploaded.append({
-                        "name": panorama_file.name,
-                    })
+                    
                     panorama_file.seek(0)  # Ensure the file pointer is at the beginning
                     url = upload_image_to_s3(panorama_file, file_name)
                     PanoramaMetadata.objects.create(
@@ -257,21 +255,25 @@ def add_panoramas(request):
                         is_deleted=False,
                     )
 
-                    # Enviera correo al usuario con las panroamas que no se subieron
-                    if not_uploaded:
-                        send_upload_and_not_upload_panoramas(
-                            not_uploaded,
-                            uploaded,
-                            request.user.first_name,
-                            request.user.last_name,
-                            request.user.email,
-                        )
+                    uploaded.append({
+                        "name": panorama_file.name,
+                    })
             except PanoramaMetadata.DoesNotExist:
                 messages.warning(request, "No se pudo guardar la panorama.")
                 return soft_redirect(reverse("panoramas"))
             except Exception as e:
                 messages.warning(request, f"Error al guardar la panorama: {e}")
                 return soft_redirect(reverse("panoramas"))  
+
+        # Enviar correo con las panoramas subidas y no subidas
+        if uploaded or not_uploaded:
+            send_upload_and_not_upload_panoramas(
+                not_upload_panoramas=not_uploaded,
+                upload_panoramas=uploaded,
+                first_name=request.user.first_name,
+                last_name=request.user.last_name,
+                email=request.user.email
+            )
 
         # Redirigir a la página anterior o a una URL predeterminada
         return soft_redirect(request.META.get("HTTP_REFERER", "/"))

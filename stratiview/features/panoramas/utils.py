@@ -91,15 +91,17 @@ def calculate_distance_meters(lat1, lon1, alt1, lat2, lon2, alt2):
     return distancia_total
 
 
-def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas,first_name, last_name, email):
-    full_name = f"{first_name} {last_name}"
-    not_upload_panoramas = not_upload_panoramas
-    upload_panoramas = upload_panoramas
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
 
-    subject = "Carga de panoras"
+def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas, first_name, last_name, email):
+    full_name = f"{first_name} {last_name}"
+
+    subject = "Resumen de carga de panoramas"
 
     html_content = render_to_string(
-        "emails/upload_and_not_upload_panoramas.html",
+        "emails/upload_and_not_upload_panoramas.html",  # Asegúrate que este template existe
         {
             "full_name": full_name,
             "email": email,
@@ -115,4 +117,4 @@ def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas,
         to=[email]
     )
     email_msg.attach_alternative(html_content, "text/html")
-    email_msg.send()
+    email_msg.send(fail_silently=False)

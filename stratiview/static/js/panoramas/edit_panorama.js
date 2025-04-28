@@ -2,6 +2,21 @@ import { Viewer } from "@photo-sphere-viewer/core";
 let viewer = null;
 
 function openEditModal(panoramaId) {
+  fetch('/stratiview/check_sesion/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then((response) => {
+    if (response.status === 403) {
+      window.location.href = '/stratiview/auth/sign_in/'; 
+    }
+  })
+  .catch((error) => {
+    console.error('Error en keep-alive:', error);
+  });
+
   const id = (sel) => document.getElementById(sel);
   const loading = id("loading-edit-panorama");
   const content = id("content-edit-panorama");

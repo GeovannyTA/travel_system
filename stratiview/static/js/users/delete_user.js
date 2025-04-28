@@ -1,10 +1,27 @@
 function openDeleteModal(userId) {
+  fetch('/stratiview/check_sesion/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then((response) => {
+    console.log('keep-alive response:', response);
+    if (response.status === 403) {
+      window.location.href = '/stratiview/auth/sign_in/'; 
+    }
+  })
+  .catch((error) => {
+    console.error('Error en keep-alive:', error);
+  });
+  
   const id = (sel) => document.getElementById(sel);
   const loading = id("loading-delete-user");
   const content = id("content-delete-user");
   const modalEl = id("modalDeleteUser");
   const modal = new bootstrap.Modal(modalEl);
   const btnDeleteUser = id("btn-delete-user");
+
 
   // Mostrar el modal
   loading.style.display = "block";

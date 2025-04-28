@@ -1,4 +1,19 @@
 function openDeleteModal(panoramaId) {
+  fetch('/stratiview/check_sesion/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then((response) => {
+    if (response.status === 403) {
+      window.location.href = '/stratiview/auth/sign_in/'; 
+    }
+  })
+  .catch((error) => {
+    console.error('Error en keep-alive:', error);
+  });
+  
   // Funcion flecha para obtener el elemento por su id
   const id = (sel) => document.getElementById(sel);
   const loading = id("loader");

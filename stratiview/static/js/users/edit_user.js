@@ -1,4 +1,19 @@
 function openEditModal(userId) {
+  fetch('/stratiview/check_sesion/', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then((response) => {
+    if (response.status === 403) {
+      window.location.href = '/stratiview/auth/sign_in/'; 
+    }
+  })
+  .catch((error) => {
+    console.error('Error en keep-alive:', error);
+  });
+
   const id = (sel) => document.getElementById(sel);
   const loading = id("loading-edit-user");
   const content = id("content-edit-user");
@@ -10,6 +25,7 @@ function openEditModal(userId) {
   const btnEnableUser = id("edit-btn-enable_user")
   const areaSelect = id("edit-user-area");
   const rolSelect = id("edit-user-rol"); 
+
 
   // Mostrar el modal
   loading.style.display = "block";
@@ -51,7 +67,7 @@ function openEditModal(userId) {
       }
 
       if (data.is_active === false) {
-        btnEnableUser.hidden = true;
+        btnEnableUser.hidden = false;
       }
 
       // Configurar Área y Rol

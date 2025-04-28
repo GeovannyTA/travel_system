@@ -25,38 +25,50 @@
             </td>
         </tr>
         
-        <!-- Account Information -->
+        <!-- User Info -->
         <tr>
-            <td style="padding: 0 30px 30px 30px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border-radius: 6px; padding: 20px;">
-                    <tr>
-                        <td>
-                            <h2 style="margin: 0 0 15px 0; font-size: 18px; font-weight: 600; color: #333333;">Información de tu cuenta</h2>
-                            <p style="margin: 0 0 10px 0; font-size: 15px; line-height: 1.5;">
-                                <strong>Correo electrónico:</strong> {{email}}
-                            </p>
-                            <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.5;">
-                                <strong>Contraseña:</strong> <span style="background-color: #e9ecef; padding: 3px 8px; border-radius: 4px; font-family: monospace;">{{temp_password}}</span>
-                            </p>
-                            <p style="margin: 0; font-size: 14px; color: #666666; font-style: italic;">
-                                Por seguridad, al iniciar sesión te pedira realizar un cambio de contraseña.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
+            <td style="padding: 20px 30px;">
+                <h2 style="font-size: 18px; margin-bottom: 10px;">Hola {{ full_name }},</h2>
+                <p style="margin: 0; font-size: 15px;">Te enviamos el resumen de la carga de panoramas realizada con tu cuenta: <strong>{{ email }}</strong>.</p>
             </td>
         </tr>
-        
+
+        <!-- Uploaded Panoramas -->
+        {% if upload_panoramas %}
+        <tr>
+            <td style="padding: 20px 30px;">
+                <h3 style="font-size: 16px; color: #28a745;">Panoramas subidos correctamente:</h3>
+                <ul style="padding-left: 20px; margin-top: 10px; margin-bottom: 0;">
+                    {% for panorama in upload_panoramas %}
+                        <li style="font-size: 14px;">{{ panorama.name }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+
+        <!-- Not Uploaded Panoramas -->
+        {% if not_upload_panoramas %}
+        <tr>
+            <td style="padding: 20px 30px;">
+                <h3 style="font-size: 16px; color: #dc3545;">Panoramas que no se pudieron subir:</h3>
+                <ul style="padding-left: 20px; margin-top: 10px; margin-bottom: 0;">
+                    {% for panorama in not_upload_panoramas %}
+                        <li style="font-size: 14px;">
+                            {{ panorama.name }} - <em>{{ panorama.error }}</em>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+
         <!-- Login Button -->
         <tr>
-            <td style="padding: 0 30px 30px 30px; text-align: center;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: auto;">
-                    <tr>
-                        <td style="background-color: #4F46E5; border-radius: 6px; text-align: center;">
-                            <a href="{{login_url}}" target="_blank" style="display: inline-block; padding: 14px 30px; font-size: 16px; color: #ffffff; text-decoration: none; font-weight: 600;">Iniciar Sesión</a>
-                        </td>
-                    </tr>
-                </table>
+            <td style="padding: 30px; text-align: center;">
+                <a href="{{ login_url }}" target="_blank" style="display: inline-block; padding: 12px 25px; background-color: #4F46E5; color: #ffffff; text-decoration: none; font-size: 16px; border-radius: 6px;">
+                    Iniciar sesión
+                </a>
             </td>
         </tr>
         
