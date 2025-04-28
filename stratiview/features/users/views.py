@@ -46,7 +46,7 @@ def users(request):
             "date_joined", 
             "is_active",
             "state",
-        ).filter(is_superuser=False, is_active = True).order_by("-date_joined")
+        ).filter(is_superuser=False).order_by("-date_joined")
 
         return render(request, "users/users.html", {
             "users": users,

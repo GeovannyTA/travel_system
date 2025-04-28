@@ -74,7 +74,7 @@
         id="users-table"
       >
         <thead class="table-dark">
-          <tr>
+          <tr class="">
             <th scope="col">Id</th>
             <th scope="col">Nombre/s</th>
             <th scope="col">Apellidos</th>
@@ -89,7 +89,7 @@
         </thead>
         <tbody>
           {% for user in users %}
-          <tr class="{% if user.is_active == false %}user-inactive{% endif %}">
+          <tr class="{% if user.is_active == False %}user-inactive{% endif %}">
             <td>{{ user.id }}</td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
