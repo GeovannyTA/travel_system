@@ -27,9 +27,7 @@ class User(AbstractUser):
     must_change_password = models.BooleanField(default=False)
     state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False, default=1)
     failed_attempts = models.IntegerField(default=0)
-    is_locked = models.BooleanField(default=False)
-    
-    
+    is_locked = models.BooleanField(default=False)    
 
     @property
     def area_names(self):

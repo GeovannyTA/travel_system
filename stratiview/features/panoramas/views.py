@@ -22,9 +22,6 @@ from django.db.models.functions import Lower
     {"roles": ["administrador"], "methods": ["GET"]},
 ])
 def get_panoramas(request):
-    # Get the panoramas from the database if isn't deleted
-    routes = Route.objects.all()
-
     user_areas = set(
         UserArea.objects.filter(user=request.user)
         .annotate(lower_area=Lower('area__name'))
@@ -38,6 +35,12 @@ def get_panoramas(request):
     )
 
     if any(area in ["administracion"] for area in user_areas) or any(role in ["administrador"] for role in user_roles):
+        # Si el usuario es administrador, obtener todas las rutas
+        routes = Route.objects.filter(
+            state__in = State.objects.all()
+        )
+
+        # Get the panoramas from the database if isn't deleted
         # If the user is in the "administracion" area, get all panoramas
         panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').only(
             "id",
@@ -52,8 +55,15 @@ def get_panoramas(request):
             "route",
             "upload_by",
         ).filter(is_deleted=False).order_by("-date_uploaded")
-        print("panoramas administracion")
     else:
+        # Si el usuario no es administrador, obtener solo las rutas de su entidad federativa
+        # y los panoramas que subió
+        routes = Route.objects.filter(
+            state = State.objects.filter(
+                id = request.user.state.id
+            )
+        )
+
         panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').only(
             "id",
             "name",
@@ -71,6 +81,8 @@ def get_panoramas(request):
             upload_by = request.user 
         ).order_by("-date_uploaded") 
 
+    # Si no hay panoramas, redirigir a la página de panoramas
+    # y retornar un arreglo vacio
     if not panoramas:
         return render(
             request,
@@ -86,6 +98,45 @@ def get_panoramas(request):
     return render(request, "panoramas/panoramas.html", context=context)
 
 
+"""
+No se implementan los decoradores de permisos para la siguiente funcion ya que 
+se utiliza en el frontend para obtener los metadatos de la panorama y no se 
+requiere permisos especiales para acceder a ella.
+"""
+@login_required
+def get_panorama(request, panorama_id):
+    if request.method == "GET":
+        if request.headers.get("x-requested-with") != "XMLHttpRequest":
+            return redirect(reverse("panoramas"))
+
+        panorama = PanoramaMetadata.objects.select_related('route').only(
+            "id",
+            "route",
+            "name",
+            "gps_lat",
+            "gps_lng",
+            "gps_alt",
+            "gps_direction",
+            "orientation",
+            "url",
+        ).filter(id=panorama_id).first()
+        if not panorama:
+            return JsonResponse({})
+        
+        return JsonResponse({
+            "id": panorama.id,
+            "route_id": panorama.route.id,
+            "route_name": panorama.route.name,
+            "panorama_name": panorama.name,
+            "latitude": panorama.gps_lat,
+            "longitude": panorama.gps_lng,
+            "altitude": panorama.gps_alt,
+            "direction": panorama.gps_direction,
+            "orientation": panorama.orientation,
+            "url": panorama.url,
+        })
+    
+    
 @login_required
 @area_matrix(rules=[
     {"areas": ["administracion"], "methods": ["POST"]},
@@ -197,46 +248,6 @@ def add_panoramas(request):
 
         # Redirigir a la página anterior o a una URL predeterminada
         return redirect(request.META.get("HTTP_REFERER", "/"))
-
-
-"""
-No se implementan los decoradores de permisos para la siguiente funcion ya que 
-se utiliza en el frontend para obtener los metadatos de la panorama y no se 
-requiere permisos especiales para acceder a ella.
-"""
-@login_required
-def get_panorama(request, panorama_id):
-    if request.method == "GET":
-        if request.headers.get("x-requested-with") != "XMLHttpRequest":
-            return redirect(reverse("panoramas"))
-
-        panorama = PanoramaMetadata.objects.select_related('route').only(
-            "id",
-            "route_id",
-            "route_name",
-            "name",
-            "gps_lat",
-            "gps_lng",
-            "gps_alt",
-            "gps_direction",
-            "orientation",
-            "url",
-        ).filter(id=panorama_id).first()
-        if not panorama:
-            return JsonResponse({})
-        
-        return JsonResponse({
-            "id": panorama.id,
-            "route_id": panorama.route.id,
-            "route_name": panorama.route.name,
-            "panorama_name": panorama.name,
-            "latitude": panorama.gps_lat,
-            "longitude": panorama.gps_lng,
-            "altitude": panorama.gps_alt,
-            "direction": panorama.gps_direction,
-            "orientation": panorama.orientation,
-            "url": panorama.url,
-        })
     
 
 @login_required

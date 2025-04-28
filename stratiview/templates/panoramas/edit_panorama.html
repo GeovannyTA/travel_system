@@ -35,7 +35,7 @@
           </h5>
           <button
             type="button"
-            class="btn-close"
+            class="btn-close shadow-none"
             data-bs-dismiss="modal"
             aria-label="Cerrar"
           ></button>
@@ -45,7 +45,7 @@
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2">Cargando...</p>
           </div>
-          <div id="content-edit-panorama" class="gap-3 w-100" >
+          <div id="content-edit-panorama" class="flex-column flex-lg-row gap-2 gap-lg-3 w-100">
             <div style="width: 100%;">
               <div class="form-group">
                 <label for="edit-panorama-name" class="form-label">Nombre</label>
@@ -62,12 +62,12 @@
                 <label for="edit-panorama-state-id">Recorrido</label>
                 <select
                   class="form-select"
-                  id="edit-panorama-state-id"
+                  id="edit-panorama-route-id"
                   name="edit-state"
                   required
                 >
-                  {% for state in states %}
-                  <option value="{{ state.id }}">{{ state.name }}</option>
+                  {% for route in routes %}
+                  <option value="{{ route.id }}">{{ route.name }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -111,6 +111,8 @@
                     class="form-control"
                     id="edit-panorama-direction"
                     name="edit-direction"
+                    min="-360"
+                    max="360"
                     required
                   />
                 </div>
@@ -132,7 +134,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" id="btn-save-edit-panorama">
             <i class="fa-solid fa-save"></i> 
             Guardar cambios
           </button>

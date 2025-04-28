@@ -33,7 +33,7 @@ def area_matrix(rules=None):
             )
 
             if not user_areas:
-                messages.info(request, "No tienes los permisos requeridos.")
+                messages.info(request, "No tienes los permisos requeridos")
                 return redirect(request.META.get("HTTP_REFERER", "/"))
 
             for rule in rules:
@@ -46,7 +46,7 @@ def area_matrix(rules=None):
                 if area_match and method_match:
                     return view_func(request, *args, **kwargs)
 
-            messages.info(request, "No tienes los permisos requeridos.")
+            messages.info(request, "No tienes los permisos requeridos")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
         return _wrapped_view
@@ -69,7 +69,7 @@ def role_matrix(rules=None):
             user = request.user
 
             if not user.is_authenticated:
-                return HttpResponseForbidden("No autenticado.")
+                return HttpResponseForbidden("No autenticado")
 
             if user.is_superuser:
                 return view_func(request, *args, **kwargs)
@@ -92,7 +92,7 @@ def role_matrix(rules=None):
                 if role_match and method_match:
                     return view_func(request, *args, **kwargs)
 
-            messages.info(request, "No tienes los permisos requeridos.")
+            messages.info(request, "No tienes los permisos requeridos")
             return redirect(request.META.get("HTTP_REFERER", "/"))
 
         return _wrapped_view

@@ -43,10 +43,11 @@
       {% endif %}
     </div>
     
-    <nav class="navbar navbar-expand-lg bg-light shadow-sm" 
+    <nav class="navbar navbar-expand-lg bg-light shadow-sm p-0" 
       style="border-bottom: solid 1px; border-color: rgba(128, 128, 128, 0.44);"
       data-bs-theme="light">
-      <div class="container-fluid">
+      <div id="navbar-backdrop" style="display: none;"></div>
+      <div class="container-fluid" style="flex-wrap: initial;">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'home' %}">
             <img
@@ -59,7 +60,7 @@
           </a>
         </div>
         <button
-          class="navbar-toggler"
+          class="navbar-toggler shadow-none"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent"
@@ -70,7 +71,8 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-lg-0">
+          <button type="button" class="btn-close ms-auto mb-4 d-lg-none" aria-label="Cerrar" id="closeMenuBtn"></button>
+          <ul class="navbar-nav mb-lg-0">
             <li class="nav-item">
               <a 
                 class="nav-link {% if request.path == '/stratiview/' %}active-route{% endif %}" 
@@ -154,16 +156,7 @@
     </footer>
     <script src="{% static 'js/bootstrap.bundle.js' %}" defer></script>
     {% block extraJS %}
-    <!-- Tiempo para eliminar el mensaje -->
-    <script>
-      alert = document.getElementById("alert");
-      if (alert) {
-        setTimeout(() => {
-          alert.style.display = "none";
-        }, 3500);
-      }
-    </script>
-      
+    <script src="{% static 'js/layout.js' %}"></script>
     {% endblock %}
   </body>
 </html>

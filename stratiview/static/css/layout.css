@@ -67,3 +67,43 @@ footer p {
 .nav-link:hover {
   color: #196ccb !important;
 }
+
+.navbar-collapse.show {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80%;
+  height: 100vh; 
+  background-color: white; 
+  backdrop-filter: blur(10px);
+  z-index: 1050; 
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.navbar-collapse.show .navbar-nav {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.navbar-collapse.show .nav-link {
+  font-size: 1.5rem;
+  padding: 1rem 0;
+}
+
+.navbar-collapse.show .dropdown-menu {
+  position: static; 
+  transform: none !important; 
+  width: 100%;
+}
+
+
+#navbar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); 
+  z-index: 1040; 
+}

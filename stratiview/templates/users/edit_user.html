@@ -1,0 +1,152 @@
+{% load static %}
+<div
+  class="modal fade"
+  id="modalEditUser"
+  tabindex="-1"
+  aria-labelledby="modalEditUserLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        class="d-flex flex-column"
+        action="{% url 'edit_user' %}"
+      >
+        {% csrf_token %}
+        <input
+          type="hidden"
+          name="edit-user-id"
+          id="edit-user-id"
+          required
+        />
+        <div class="modal-header m-0">
+          <h5 class="modal-title" id="modalEditUserLabel">
+            Editar usuario
+          </h5>
+          <button
+            type="button"
+            class="btn-close shadow-none"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div id="loading-edit-user" class="w-100 text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando...</p>
+          </div>
+          <div id="content-edit-user" class="flex-column gap-2 gap-lg-3 w-100">
+            <div class="form-group">
+              <label for="edit-user-email" class="form-label">Correo electrónico</label>
+              <input
+                type="email"
+                name="email"
+                id="edit-user-email"
+                class="form-control"
+                placeholder="correo@ejemplo.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="edit-user-first_name" class="form-label">Nombre/s</label>
+              <input
+                type="text"
+                name="first_name"
+                id="edit-user-first_name"
+                class="form-control"
+                placeholder="Juan"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="edit-user-last_name" class="form-label">Apellidos</label>
+              <input
+                type="text"
+                name="last_name"
+                id="edit-user-last_name"
+                class="form-control"
+                placeholder="Pérez"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="edit-user-username">Nombre de usuario</label>
+              <input
+                type="text"
+                name="username"
+                id="edit-user-username"
+                class="form-control"
+                placeholder="juan_perez"
+                required
+              />
+            </div>
+            <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+              <div class="form-group w-100">
+                <label for="edit-user-phone" class="form-label">Teléfono</label>
+                <input
+                  type="text"
+                  name="phone"
+                  id="edit-user-phone"
+                  class="form-control"
+                  placeholder="5551234567"
+                  required
+                />
+              </div>
+              <div class="form-group w-100">
+                <label for="edit-user-state" class="form-label">Entidad federativa</label>
+                <select name="state" id="edit-user-state" class="form-select" required>
+                  <option value="">-- Sin entidad --</option>
+                  {% for state in states %}
+                  <option value="{{ state.id }}">{{ state.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-outline-secondary" 
+            id="edit-btn-reset_password" 
+            name="action" 
+            value="reset_password">
+            <i class="fa-solid fa-key"></i>
+            Restablecer contraseña
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-warning" 
+            id="edit-btn-unlock" 
+            name="action" 
+            value="unlock">
+            <i class="fa-solid fa-lock-open"></i> 
+            Desbloquear
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            id="edit-btn-save"
+            name="action"
+            value="save"
+          >
+            <i class="fa-solid fa-save"></i> 
+            Guardar cambios
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extraJS %}
+<script src="{% static 'js/users/edit_user.js' %}" ></script>
+{% endblock %}

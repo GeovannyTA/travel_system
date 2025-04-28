@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+import re
 
 
 User = get_user_model()
@@ -109,17 +110,27 @@ def change_password_view(request):
         new_password2 = request.POST.get("new_password2")
 
         if not old_password or not new_password1 or not new_password2:
-            messages.error(request, "Todos los campos son obligatorios.")
+            messages.error(request, "Todos los campos son obligatorios")
             return redirect("password_change")
 
         if new_password1 != new_password2:
-            messages.error(request, "Las nuevas contraseñas no coinciden.")
+            messages.error(request, "Las nuevas contraseñas no coinciden")
             return redirect("password_change")
 
         if not request.user.check_password(old_password):
-            messages.error(request, "La contraseña actual es incorrecta.")
+            messages.error(request, "La contraseña actual es incorrecta")
             return redirect("password_change")
 
+        # Validación de fuerza
+        regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+        if not re.match(regex, new_password1):
+            messages.error(
+                request, 
+                "La nueva contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo"
+            )
+            return redirect("password_change")
+
+        # Todo correcto, guardar nueva contraseña
         request.user.set_password(new_password1)
         request.user.must_change_password = False
         request.user.save()

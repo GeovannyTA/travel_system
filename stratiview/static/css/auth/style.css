@@ -40,6 +40,15 @@ footer p {
   width: 32rem;
 }
 
+.form-password-change {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.48);
+  border-radius: 10px;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  width: 30rem;
+}
+
 .logo {
   height: 9rem;
 }

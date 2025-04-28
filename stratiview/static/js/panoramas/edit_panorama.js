@@ -7,10 +7,12 @@ function openEditModal(panoramaId) {
   const content = id("content-edit-panorama");
   const modalEl = id("modalEditPanorama");
   const modal = new bootstrap.Modal(modalEl);
+  const btnSaveEditPanorama = id("btn-save-edit-panorama");
 
   // Mostrar el modal
   loading.style.display = "block";
   content.style.display = "none";
+  btnSaveEditPanorama.hidden = true;
   modal.show();
 
   // Obtener los datos de la panorama
@@ -24,13 +26,13 @@ function openEditModal(panoramaId) {
       return response.json();
     })
     .then((data) => {
+      console.log(data);
       id("edit-panorama-id").value = data.id;
-      id("edit-panorama-state-id").value = data.state_id;
-      id("edit-panorama-name").value = data.panorama_name;
+      id("edit-panorama-route-id").value = data.route_id;
+      id("edit-panorama-name").value = data.name;
       id("edit-panorama-latitude").value = data.latitude;
       id("edit-panorama-longitude").value = data.longitude;
       id("edit-panorama-direction").value = data.direction;
-      console.log(data.direction)
 
       // Crear visor
       viewer = new Viewer({
@@ -65,6 +67,7 @@ function openEditModal(panoramaId) {
       // Mostrar contenido real y ocultar spinner
       loading.style.display = "none";
       content.style.display = "flex";
+      btnSaveEditPanorama.hidden = false;
 
       // Destruir visor al cerrar
       modalEl.addEventListener("hidden.bs.modal", () => {
@@ -86,11 +89,4 @@ function openEditModal(panoramaId) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".btn-edit-panorama").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const panoramaId = btn.dataset.panoramaId;
-      openEditModal(panoramaId);
-    });
-  });
-});
+window.openEditModal = openEditModal;

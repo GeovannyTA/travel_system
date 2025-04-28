@@ -21,7 +21,7 @@
           </h5>
           <button
             type="button"
-            class="btn-close"
+            class="btn-close shadow-none"
             data-bs-dismiss="modal"
             aria-label="Cerrar"
           ></button>
@@ -38,31 +38,31 @@
             </div>
             <div class="form-group d-flex justify-content-between gap-2">
               <div>
-                <label for="panorama-id">Clave</label>
-                <input type="text" class="form-control bg-light text-muted" id="panorama-id" name="panorama_id" readonly/>
+                <label for="delete-panorama-id">Clave</label>
+                <input type="text" class="form-control bg-light text-muted" id="delete-panorama-id" name="panorama_id" readonly/>
               </div>
               <div>
-                <label for="panorama-state-name">Recorrido</label>
-                <input type="text" class="form-control bg-light text-muted" id="panorama-state-name" readonly/>
+                <label for="delete-panorama-route-name">Recorrido</label>
+                <input type="text" class="form-control bg-light text-muted" id="delete-panorama-route-name" readonly/>
               </div>
             </div>
             <div class="form-group">
-              <label for="panorama-name" class="form-label">Nombre</label>
+              <label for="delete-panorama-name" class="form-label">Nombre</label>
               <input
                 type="text"
                 class="form-control bg-light text-muted"
-                id="panorama-name"
+                id="delete-panorama-name"
                 readonly
               />
               <small class="text-muted mt-2 d-block">
                 <i class="fa-solid fa-circle-info"></i>
-                <strong>Nota:</strong> El nombre corresponde a las <strong>coordenadas</strong> y <strong>recorrido</strong> seleccionada al momento del almacenamiento de la misma.
+                <strong>Nota:</strong> El nombre corresponde a las <strong>coordenadas</strong> y <strong>recorrido</strong> seleccionado al momento del almacenamiento de la misma.
               </small>
             </div>
           </div>
         </div>
         <div class="modal-footer" id="modal-footer">
-          <button class="btn btn-danger">
+          <button class="btn btn-danger" id="btn-delete-panorama">
             <i class="fa-solid fa-trash"></i>
             Eliminar definitivamente
           </button>

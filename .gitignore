@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+django_cache/
 
 # ============================================
 # ✅ Entornos virtuales

@@ -1,0 +1,97 @@
+{% load static %} {% block extraCSS %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css"
+/>
+{% endblock %}
+
+<div
+  class="modal fade"
+  id="modalDeleteUser"
+  tabindex="-1"
+  aria-labelledby="modalDeleteUserLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        class="d-flex flex-column"
+        action="{% url 'delete_user' %}"
+      >
+        {% csrf_token %}
+        <input
+          type="hidden"
+          name="edit-user-id"
+          id="edit-user-id"
+          required
+        />
+        <div class="modal-header m-0">
+          <h5 class="modal-title" id="modalDeleteUserLabel">
+            Eliminar usuario
+          </h5>
+          <button
+            type="button"
+            class="btn-close shadow-none"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div id="loading-delete-user" class="w-100 text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando...</p>
+          </div>
+          <div id="content-delete-user" class="flex-column gap-2 gap-lg-3 w-100">
+            <div class="d-flex flex-column gap-0 mb-2 p-0">
+              <p class="m-0 p-0">¿Estas seguro de eliminar el usuario?</p>
+              <small>La información correspondiente al usuario es la siguiente:</s>
+            </div>
+            <div class="form-group">
+              <label for="delete-user-id">Clave</label>
+              <input type="text" class="form-control bg-light text-muted" id="delete-user-id" name="delete-user-id" readonly/>
+            </div>
+            <div class="form-group">
+              <label for="delete-user-username">Nombre de usuario</label>
+              <input type="text" class="form-control bg-light text-muted" id="delete-user-username" readonly/>
+            </div>
+            <div class="form-group w-100">
+              <label for="delete-user-first_name">Nombre/s</label>
+              <input type="text" class="form-control bg-light text-muted" id="delete-user-first_name" readonly/>
+            </div>
+            <div class="form-group w-100">
+              <label for="delete-user-last_name" class="form-label">Apellidos</label>
+              <input
+                type="text"
+                class="form-control bg-light text-muted"
+                id="delete-user-last_name"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-danger" 
+            id="btn-delete-user"
+          >
+            <i class="fa-solid fa-trash"></i>
+            Elimianr definitivamente
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extraJS %}
+<script src="{% static 'js/users/delete_user.js' %}" ></script>
+{% endblock %}

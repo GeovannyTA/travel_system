@@ -27,7 +27,11 @@ dropzone.addEventListener("dragleave", () => {
 dropzone.addEventListener("drop", (e) => {
   e.preventDefault();
   dropzone.classList.remove("bg-light");
-  const newFiles = Array.from(e.dataTransfer.files);
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+  const newFiles = Array.from(e.dataTransfer.files).filter(file => 
+    allowedTypes.includes(file.type)
+  );
   addFiles(newFiles);
 });
 

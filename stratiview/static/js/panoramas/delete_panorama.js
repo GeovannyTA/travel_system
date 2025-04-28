@@ -5,9 +5,11 @@ function openDeleteModal(panoramaId) {
   const content = id("modal-content");
   const modalEl = id("modalDeletePanorama");
   const modal = new bootstrap.Modal(modalEl);
+  const btnDeletePanorama = id("btn-delete-panorama");
 
   loading.style.display = "block";
   content.style.display = "none";
+  btnDeletePanorama.hidden = true;
   modal.show();
 
   // Obtener los datos del panorama a eliminar
@@ -21,18 +23,19 @@ function openDeleteModal(panoramaId) {
       return response.json();
     })
     .then((data) => {
-      id("panorama-id").value = data.id;
-      id("panorama-state-name").value = data.state_name;
-      id("panorama-name").value = data.panorama_name;
+      id("delete-panorama-id").value = data.id;
+      id("delete-panorama-route-name").value = data.route_name;
+      id("delete-panorama-name").value = data.panorama_name;
 
       loading.style.display = "none";
       content.style.display = "block";
+      btnDeletePanorama.hidden = false;
 
       modalEl.addEventListener("hidden.bs.modal", () => {
         // Limpiar el modal al cerrarlo
-        id("panorama-id").value = "";
-        id("panorama-state-name").value = "";
-        id("panorama-name").value = "";
+        id("delete-panorama-id").value = "";
+        id("delete-panorama-route-name").value = "";
+        id("delete-panorama-name").value = "";
 
         if (modalEl.contains(document.activeElement)) {
           document.activeElement.blur(); // Quitar foco del botón activo
