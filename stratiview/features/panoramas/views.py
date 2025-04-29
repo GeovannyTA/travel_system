@@ -244,7 +244,7 @@ def add_panoramas(request):
                         gps_lat=float(metadata["lat"]),
                         gps_lng=float(metadata["lon"]),
                         gps_alt=float(metadata["alt"]),
-                        gps_direction=float(metadata["direction"]),
+                        gps_direction=float(metadata["direction"] + 180),
                         orientation=float(metadata["orientation"]),
                         camera_make=metadata["marca"],
                         camera_model=metadata["model"],

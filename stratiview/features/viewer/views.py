@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from stratiview.models import PanoramaMetadata, UserRoute, Route
-from django.http import JsonResponse
+from stratiview.models import UserArea, UserRol, PanoramaMetadata, Route, UserRoute
 import math
 from django.shortcuts import render
 from django.urls import reverse
 from stratiview.features.utils.utils import soft_redirect
+from django.db.models.functions import Lower
+from django.http import JsonResponse
+from itertools import combinations
 
 
 @login_required
@@ -16,44 +18,63 @@ def viewer(request):
 @login_required
 def get_nodes(request):
     if request.method == "GET":
-        if request.headers.get("x-requested-with") != "XMLHttpRequest":
-            return soft_redirect(reverse("viewer"))
+        # if request.headers.get("x-requested-with") != "XMLHttpRequest":
+        #     return soft_redirect(reverse("viewer"))
         
-        # Obtener las rutas o ruta del usuario
-        routes = Route.objects.filter(
-            id__in = UserRoute.objects.filter(user=request.user).values_list('route', flat=True)
+        user = request.user
+
+        # Obtener las áreas y roles del usuario en minúscula
+        user_areas = set(
+            UserArea.objects.filter(user=user)
+            .annotate(lower_area=Lower('area__name'))
+            .values_list('lower_area', flat=True)
         )
-        
-        nodes = []
-        for node in PanoramaMetadata.objects.filter(route__in=routes):
-            nodes.append({
-                        "id": node.id,
-                        "panorama": node.url,
-                        "name": f"Imagen {node.id}",
-                        "caption": f"Imagen {node.id}",
-                        "gps": [node.gps_lng, node.gps_lat],
-                        "altitude": node.gps_alt,
-                        "direction": node.gps_direction,
-                        "sphereCorrection": {
-                            "pan": f"{node.gps_direction}deg"
-                        },
-                        "links": [] 
-                    })
-        
-        # Calcular los links entre los nodos basado en la distancia GPS
-        # Si la distancia entre dos nodos es menor a 10.7 metros, se crea un link entre ellos
-        for i in range(len(nodes)):
-            for j in range(len(nodes)):
-                if i == j:
-                    continue
+        user_roles = set(
+            UserRol.objects.filter(user=user)
+            .annotate(lower_rol=Lower('rol__name'))
+            .values_list('lower_rol', flat=True)
+        )
 
-                dist = distance(nodes[i]['gps'], nodes[j]['gps'])
+        # Determinar si es administrador o no
+        is_admin = "administracion" in user_areas or "administrador" in user_roles
 
-                if dist <= 10.7:
-                    nodes[i]['links'].append({"nodeId": nodes[j]['id']})
+        # Obtener las rutas correspondientes
+        if is_admin:
+            routes_ids = Route.objects.values_list('id', flat=True)
+        else:
+            routes_ids = UserRoute.objects.filter(user=user).values_list('route_id', flat=True)
+
+        # Precargar las relaciones necesarias para evitar consultas extra
+        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id__in=routes_ids)
+
+        # Preparar nodos
+        nodes = [
+            {
+                "id": node.id,
+                "panorama": node.url,
+                "gps": [node.gps_lng, node.gps_lat],
+                "altitude": node.gps_alt,
+                "direction": node.gps_direction,
+                "state": node.route.state.name,
+                "route": node.route.name,
+                "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
+                "links": []
+            }
+            for node in panoramas
+        ]
+
+        # Mapeo rápido para buscar nodos por ID si se requiere
+        id_to_node = {node["id"]: node for node in nodes}
+
+        # Calcular conexiones entre nodos (optimizando combinaciones únicas)
+        for node_a, node_b in combinations(nodes, 2):
+            dist = distance(node_a['gps'], node_b['gps'])
+            if dist <= 10.7:
+                node_a['links'].append({"nodeId": node_b['id']})
+                node_b['links'].append({"nodeId": node_a['id']})
 
         return JsonResponse(nodes, safe=False)
-    
+        
 
 # Calcular distancia entre dos puntos GPS
 def distance(gps1, gps2):

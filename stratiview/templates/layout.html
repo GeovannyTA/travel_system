@@ -49,7 +49,9 @@
       <div id="navbar-backdrop" style="display: none;"></div>
       <div class="container-fluid" style="flex-wrap: initial;">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'viewer' %}">
+          <a 
+            class="navbar-brand" 
+            href="{% url 'viewer' %}">
             <img
               rel="preload"
               as="iamge"
@@ -75,7 +77,7 @@
           <ul class="navbar-nav mb-lg-0">
             <li class="nav-item">
               <a 
-                class="nav-link {% if request.path == '/stratiview/' %}active-route{% endif %}" 
+                class="nav-link {% if request.path == '/stratiview/viewer/' %}active-route{% endif %}" 
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 aria-current="page" 
                 href="{% url 'viewer' %}"
@@ -84,6 +86,7 @@
                 Visor
               </a>
             </li>
+            {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/routes/' %}active-route{% endif %}"
@@ -104,7 +107,6 @@
                 Panoramas
               </a>
             </li>
-            {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/users/' %}active-route{% endif %}"
@@ -148,7 +150,7 @@
       </div>
     </nav>
 
-    <main>
+    <main class="{% if request.path == '/stratiview/viewer/' %}h-viewer{% endif %}">
       {% block viewer %}
       <div class="p-2 container-content">
         {% block content %} {% endblock %}
@@ -157,7 +159,7 @@
     </main>
 
     <footer 
-      class="text-center bg-dark" 
+      class="text-center bg-dark {% if request.path == '/stratiview/viewer/' %}d-none{% endif %}" 
       data-bs-theme="dark"
     >
       <p>&copy; 2025 Estrategas de México</p>

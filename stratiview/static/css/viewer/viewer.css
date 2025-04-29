@@ -13,7 +13,6 @@ body,
   width: 100%;
   height: 100%;
   margin: 0;
-  font-family: sans-serif;
 }
 
 .psv-compass {
@@ -24,7 +23,96 @@ body,
 .logo-viewer {
   width: 5rem;
   position: absolute;
-  top: calc(35px + 2rem);
+  bottom: calc(15px + 2rem);
   right: 15px;
-  filter: drop-shadow(0px 3px 2px black) brightness(10);
+  filter: drop-shadow(0px 3px 2px black) brightness(10) opacity(0.3);
 }
+
+/* Botón flotante */
+.toggle-menu-btn {
+  position: absolute;
+  top: calc(55px + 25px);
+  right: 10px;
+  transform: translate(0, -30%);
+  z-index: 1000;
+  padding: 0.5rem 0.8rem;
+  font-size: 1.2rem;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.toggle-menu-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+.panel-navegacion {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  max-width: 260px;
+  max-height: 400px;
+  overflow-y: auto;
+  transform: translate(0, -50%);
+  background-color: rgba(255, 255, 255, 0.696);
+  backdrop-filter: blur(12px);
+  border-radius: 8px;
+  z-index: 999;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.48);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.panel-navegacion.show {
+  opacity: 1;
+}
+
+.estado-header {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.estado-header:hover {
+  color: #3181dc;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.estado-header.active {
+  color: #2582ec !important;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.rutas-list {
+  padding-left: 0.5rem;
+}
+
+.rutas-list.hidden {
+  display: none;
+}
+
+.nodo-btn {
+  display: block;
+  width: 100%;
+  padding: 0.2rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.nodo-btn:hover {
+  color: #196ccb !important;
+}
+

@@ -6,6 +6,7 @@
 
 body {
   background-color: #f1f5f9;
+  font-family: sans-serif;
 }
 
 
@@ -19,6 +20,10 @@ main {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.h-viewer {
+  height: calc(100vh - 55px);
 }
 
 .container-content {

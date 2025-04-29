@@ -22,15 +22,14 @@ fetch("/stratiview/viewer/get_nodes/", {
     const viewer = new Viewer({
       container: document.getElementById("photosphere"),
       loadingImg: baseUrl + "loader.gif",
-      // loadingImg: "/recorrido3602/public/assets/img/loader.gif",
       caption: "&copy; Estrategas de México",
-      navbar: false,
+      navbar: true,
       minFov: 70,
       plugins: [
         [
           PlanPlugin,
           {
-            visibleOnLoad: true,
+            visibleOnLoad: false,
             defaultZoom: 18,
             position: "bottom left",
             layers: [
@@ -49,13 +48,12 @@ fetch("/stratiview/viewer/get_nodes/", {
           },
         ],
         [CompassPlugin],
-        // [MarkersPlugin, {}],
         [
           VirtualTourPlugin,
           {
             positionMode: "gps",
             renderMode: "3d",
-            startNodeId: nodes[0].id, // Usamos el primero como punto inicial
+            startNodeId: nodes[0].id,
             dataMode: "client",
             preload: true,
             transitionOptions: {
@@ -70,28 +68,86 @@ fetch("/stratiview/viewer/get_nodes/", {
       ],
     });
 
-    const planPlugin = viewer.getPlugin(PlanPlugin);
+    const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
+    const toggleBtn = document.getElementById("toggle-menu-btn");
+    const panelMenu = document.getElementById("panel-nodos");
 
-    // Espera a que el mapa esté completamente cargado
-    viewer.once("ready", () => {
-      const leafletMap = planPlugin.map;
-
-      // Recorremos todos los marcadores
-      leafletMap.eachLayer((layer) => {
-        if (layer instanceof L.Marker) {
-          // Cambiar el ícono del marcador
-          const customIcon = L.icon({
-            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-          });
-
-          layer.setIcon(customIcon);
-        }
-      });
+    toggleBtn.addEventListener("click", () => {
+      panelMenu.classList.toggle("show");
     });
 
-    const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
+    // Generar panel jerárquico de navegación
+    const panel = document.getElementById("panel-nodos");
+
+    // Agrupar nodos por estado y ruta
+    const estructura = {};
+
+    nodes.forEach((nodo) => {
+      const estado = nodo.state;
+      const ruta = nodo.route;
+
+      if (!estructura[estado]) estructura[estado] = {};
+      if (!estructura[estado][ruta]) estructura[estado][ruta] = [];
+
+      estructura[estado][ruta].push(nodo);
+    });
+
+    let isFirstEstado = true;
+    const estadoElements = [];
+
+    for (const estado in estructura) {
+      const estadoContainer = document.createElement("div");
+      estadoContainer.className = "estado-container";
+
+      const estadoHeader = document.createElement("button");
+      estadoHeader.className = "estado-header";
+      estadoHeader.innerText = `⏷ ${estado}`; // por defecto desplegado
+
+      const rutasDiv = document.createElement("div");
+      rutasDiv.className = "rutas-list";
+
+      if (!isFirstEstado) {
+        rutasDiv.classList.add("hidden");
+        estadoHeader.innerText = `⏵ ${estado}`;
+      } else {
+        estadoHeader.classList.add("active"); // color por defecto
+      }
+
+      estadoHeader.addEventListener("click", () => {
+        estadoElements.forEach(({ header, rutas }) => {
+          rutas.classList.add("hidden");
+          header.innerText = `⏵ ${header.dataset.estado}`;
+          header.classList.remove("active");
+        });
+
+        rutasDiv.classList.remove("hidden");
+        estadoHeader.innerText = `⏷ ${estado}`;
+        estadoHeader.classList.add("active");
+      });
+
+      for (const ruta in estructura[estado]) {
+        const btn = document.createElement("button");
+        btn.innerText = ruta;
+        btn.className = "nodo-btn";
+        btn.addEventListener("click", () => {
+          const primerNodo = estructura[estado][ruta][0];
+          if (primerNodo) {
+            tourPlugin.setCurrentNode(primerNodo.id);
+          }
+        });
+        rutasDiv.appendChild(btn);
+      }
+
+      estadoHeader.dataset.estado = estado;
+
+      estadoContainer.appendChild(estadoHeader);
+      estadoContainer.appendChild(rutasDiv);
+      panel.appendChild(estadoContainer);
+
+      estadoElements.push({ header: estadoHeader, rutas: rutasDiv });
+
+      isFirstEstado = false;
+    }
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);

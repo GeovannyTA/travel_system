@@ -1,6 +1,6 @@
 from django.http import HttpResponseForbidden
 from functools import wraps
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from stratiview.models import UserArea, UserRol
 from django.contrib import messages
 from django.db.models.functions import Lower
@@ -47,9 +47,7 @@ def area_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return render(request, "viewer/viewer.html")
-        
-
+            return redirect('viewer')
 
         return _wrapped_view
 
@@ -95,7 +93,7 @@ def role_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return render(request, "viewer/viewer.html")
+            return redirect('viewer')
 
         return _wrapped_view
 
