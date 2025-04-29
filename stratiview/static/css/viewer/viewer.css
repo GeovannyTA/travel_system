@@ -34,7 +34,7 @@ body,
   top: calc(55px + 25px);
   right: 10px;
   transform: translate(0, -30%);
-  z-index: 1000;
+  z-index: 995;
   padding: 0.5rem 0.8rem;
   font-size: 1.2rem;
   background-color: white;
