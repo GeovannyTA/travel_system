@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponseForbidden
 
 
 def soft_redirect(url):
@@ -36,3 +37,11 @@ def soft_redirect(url):
         </html>
     """
     )
+
+def check_sesion(request):
+    if not request.user.is_authenticated:
+        # Si ya no está autenticado, devolver 403 Forbidden
+        return HttpResponseForbidden("Session expired")
+
+    # Si sigue autenticado, responder OK
+    return JsonResponse({"status": "alive"})

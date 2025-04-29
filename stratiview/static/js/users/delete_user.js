@@ -52,7 +52,6 @@ function openDeleteModal(userId) {
     })
     .catch((error) => {
       window.alert("Error al abrir el modal de edición.");
-      console.error(error);
     });
 }
 

@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -80,8 +80,8 @@
                 aria-current="page" 
                 href="{% url 'home' %}"
               >
-                <i class="fas fa-home me-2"></i>
-                Home
+                <i class="fa-solid fa-street-view me-2"></i>
+                Visor
               </a>
             </li>
             <li class="nav-item">
@@ -104,6 +104,7 @@
                 Panoramas
               </a>
             </li>
+            {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/users/' %}active-route{% endif %}"
@@ -115,6 +116,7 @@
               </a
               >
             </li>
+            {% endif %}
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -146,7 +148,13 @@
       </div>
     </nav>
 
-    <main class="p-2">{% block content %} {% endblock %}</main>
+    <main>
+      {% block viewer %}
+      <div class="p-2 container-content">
+        {% block content %} {% endblock %}
+      </div>
+      {% endblock %}
+    </main>
 
     <footer 
       class="text-center bg-dark" 

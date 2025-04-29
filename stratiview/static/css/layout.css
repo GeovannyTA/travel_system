@@ -21,6 +21,12 @@ main {
   gap: 0.5rem;
 }
 
+.container-content {
+  height: calc(100vh - 105px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 
 footer {
   position: fixed;

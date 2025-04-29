@@ -41,6 +41,20 @@ class User(AbstractUser):
         db_table = 'user'
 
 
+class UserRoute(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=False, null=False)
+
+    class Meta:
+        db_table = 'user_route'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'route'], 
+                name='unique_user_route_fields')
+        ]
+
+
 class PanoramaMetadata(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=300, blank=False, null=False)

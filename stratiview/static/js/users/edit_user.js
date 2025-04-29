@@ -47,7 +47,6 @@ function openEditModal(userId) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       id("edit-user-id").value = data.id;
       id("edit-user-email").value = data.email;
       id("edit-user-first_name").value = data.first_name;

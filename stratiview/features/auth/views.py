@@ -79,7 +79,7 @@ def sign_in(request):
         if user.must_change_password:
             return redirect("password_change")
 
-        return redirect("home")
+        return redirect("viewer")
 
 
 @require_POST
@@ -100,7 +100,7 @@ def sign_out(request):
 def change_password_view(request):
     if request.method == "GET":
         if not request.user.must_change_password:
-            return redirect(reverse("home"))
+            return redirect(reverse("viewer"))
         
         return render(request, "auth/password_change.html")
 
@@ -135,4 +135,4 @@ def change_password_view(request):
         request.user.must_change_password = False
         request.user.save()
         update_session_auth_hash(request, request.user)
-        return redirect("home")
+        return redirect("viewer")

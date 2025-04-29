@@ -34,7 +34,7 @@ def area_matrix(rules=None):
 
             if not user_areas:
                 messages.info(request, "No tienes los permisos requeridos")
-                return render(request, "home/home.html")
+                return render(request, "viewer/viewer.html")
 
             for rule in rules:
                 rule_areas = set(rule.get("areas", []))
@@ -47,7 +47,7 @@ def area_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return render(request, "home/home.html")
+            return render(request, "viewer/viewer.html")
         
 
 
@@ -95,7 +95,7 @@ def role_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return render(request, "home/home.html")
+            return render(request, "viewer/viewer.html")
 
         return _wrapped_view
 
