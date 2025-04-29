@@ -71,6 +71,7 @@ body,
 
 .panel-navegacion.show {
   opacity: 1;
+  pointer-events: all;
 }
 
 .estado-header {
