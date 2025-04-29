@@ -1,10 +1,9 @@
 from django.http import HttpResponseForbidden
 from functools import wraps
+from django.shortcuts import render
 from stratiview.models import UserArea, UserRol
 from django.contrib import messages
 from django.db.models.functions import Lower
-from stratiview.features.utils.utils import soft_redirect
-from django.urls import reverse
 
 
 # Decorado para verificar permisos de área o rol
@@ -35,7 +34,7 @@ def area_matrix(rules=None):
 
             if not user_areas:
                 messages.info(request, "No tienes los permisos requeridos")
-                return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+                return render(request, "home/home.html")
 
             for rule in rules:
                 rule_areas = set(rule.get("areas", []))
@@ -48,7 +47,8 @@ def area_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return soft_redirect(reverse("home"))
+            return render(request, "home/home.html")
+        
 
 
         return _wrapped_view
@@ -95,7 +95,7 @@ def role_matrix(rules=None):
                     return view_func(request, *args, **kwargs)
 
             messages.info(request, "No tienes los permisos requeridos")
-            return soft_redirect(reverse("home"))
+            return render(request, "home/home.html")
 
         return _wrapped_view
 

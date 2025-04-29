@@ -1,9 +1,11 @@
-body {
-  background-image: url('/static/images/background_login.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+@media (min-width: 770px ) {
+  body {
+    background-image: url('/static/images/background_login.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
 }
 
 main {
@@ -38,6 +40,16 @@ footer p {
   background-color: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(12px);
   width: 32rem;
+}
+
+@media (max-width: 768px) {
+  .form-signin {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    justify-content: space-around;
+  }
 }
 
 .form-password-change {
