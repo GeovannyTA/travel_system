@@ -49,7 +49,7 @@
       <div id="navbar-backdrop" style="display: none;"></div>
       <div class="container-fluid" style="flex-wrap: initial;">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'home' %}">
+          <a class="navbar-brand" href="{% url 'viewer' %}">
             <img
               rel="preload"
               as="iamge"
@@ -78,7 +78,7 @@
                 class="nav-link {% if request.path == '/stratiview/' %}active-route{% endif %}" 
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 aria-current="page" 
-                href="{% url 'home' %}"
+                href="{% url 'viewer' %}"
               >
                 <i class="fa-solid fa-street-view me-2"></i>
                 Visor
