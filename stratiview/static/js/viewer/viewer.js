@@ -23,7 +23,12 @@ fetch("/stratiview/viewer/get_nodes/", {
       container: document.getElementById("photosphere"),
       loadingImg: baseUrl + "loader.gif",
       caption: "&copy; Estrategas de México",
-      navbar: true,
+      navbar: [
+        'zoom',
+        'caption',
+        'move',
+        'fullscreen',
+      ],
       minFov: 70,
       plugins: [
         [
