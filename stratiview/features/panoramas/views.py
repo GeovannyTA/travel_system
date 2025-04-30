@@ -210,7 +210,7 @@ def add_panoramas(request):
                 )
 
                 # Verificar si una panorama se encuentra muy cerca de otra
-                if distance < 5:
+                if distance < 10:
                     nearby = True
                     break
 

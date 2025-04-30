@@ -46,7 +46,7 @@ def get_nodes(request):
             routes_ids = UserRoute.objects.filter(user=user).values_list('route_id', flat=True)
 
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id__in=routes_ids)
+        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id__in=routes_ids, is_deleted=False)
 
         # Preparar nodos
         for node in panoramas:
@@ -57,6 +57,7 @@ def get_nodes(request):
                 "id": node.id,
                 "panorama": generate_url_presigned(node.name),
                 "gps": [node.gps_lng, node.gps_lat],
+                "caption": node.id,
                 "altitude": node.gps_alt,
                 "direction": node.gps_direction,
                 "state": node.route.state.name,
@@ -70,7 +71,7 @@ def get_nodes(request):
         # Calcular conexiones entre nodos (optimizando combinaciones únicas)
         for node_a, node_b in combinations(nodes, 2):
             dist = distance(node_a['gps'], node_b['gps'])
-            if dist <= 15:
+            if dist <= 16:
                 node_a['links'].append({"nodeId": node_b['id']})
                 node_b['links'].append({"nodeId": node_a['id']})
 
