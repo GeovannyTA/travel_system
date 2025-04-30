@@ -6,7 +6,7 @@
 
 body {
   background-color: #f1f5f9;
-  font-family: sans-serif;
+  font-family: sans-serif !important;
 }
 
 
