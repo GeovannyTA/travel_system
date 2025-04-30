@@ -8,6 +8,7 @@ from stratiview.features.utils.utils import soft_redirect
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 from itertools import combinations
+from stratiview.features.utils_amazon import generate_url_presigned
 
 
 @login_required
@@ -48,10 +49,13 @@ def get_nodes(request):
         panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id__in=routes_ids)
 
         # Preparar nodos
+        for node in panoramas:
+            node.url = generate_url_presigned(node.name)
+            
         nodes = [
             {
                 "id": node.id,
-                "panorama": node.url,
+                "panorama": generate_url_presigned(node.name),
                 "gps": [node.gps_lng, node.gps_lat],
                 "altitude": node.gps_alt,
                 "direction": node.gps_direction,
@@ -63,13 +67,10 @@ def get_nodes(request):
             for node in panoramas
         ]
 
-        # Mapeo rápido para buscar nodos por ID si se requiere
-        id_to_node = {node["id"]: node for node in nodes}
-
         # Calcular conexiones entre nodos (optimizando combinaciones únicas)
         for node_a, node_b in combinations(nodes, 2):
             dist = distance(node_a['gps'], node_b['gps'])
-            if dist <= 10.7:
+            if dist <= 15:
                 node_a['links'].append({"nodeId": node_b['id']})
                 node_b['links'].append({"nodeId": node_a['id']})
 

@@ -21,3 +21,18 @@ def upload_image_to_s3(file_obj, file_name):
 
     url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{file_name}"
     return url
+
+
+def generate_url_presigned(file_name):
+    expiracion=86400
+    s3 = boto3.client('s3', region_name='us-east-1')
+
+    url = s3.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 
+            'Key': file_name
+        },
+        ExpiresIn=expiracion  # segundos (86400   = 1 dia)
+    )
+    return url

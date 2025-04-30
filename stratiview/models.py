@@ -58,7 +58,6 @@ class UserRoute(models.Model):
 class PanoramaMetadata(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=300, blank=False, null=False)
-    url = models.CharField(max_length=400, blank=False, null=False)
     gps_lat = models.FloatField(blank=False, null=False)
     gps_lng = models.FloatField(blank=False, null=False)
     gps_alt = models.FloatField(blank=False, null=False)

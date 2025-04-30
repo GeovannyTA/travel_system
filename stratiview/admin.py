@@ -43,7 +43,7 @@ class UserRolAdmin(admin.ModelAdmin):
 
 @admin.register(PanoramaMetadata)
 class PanoramaMetadataAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'url', 'gps_lat', 'gps_lng', 'gps_alt', 'gps_direction', 'orientation', 'camera_make', 'upload_by', 'camera_model', 'software', 'date_taken', 'date_uploaded')
+    list_display = ('id', 'name', 'gps_lat', 'gps_lng', 'gps_alt', 'gps_direction', 'orientation', 'camera_make', 'upload_by', 'camera_model', 'software', 'date_taken', 'date_uploaded')
     search_fields = ('name', 'camera_make', 'camera_model', 'upload_by')
 
 @admin.register(Route)

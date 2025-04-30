@@ -42,9 +42,10 @@ function openEditModal(panoramaId) {
     })
     .then((data) => {
       console.log(data);
+      
       id("edit-panorama-id").value = data.id;
       id("edit-panorama-route-id").value = data.route_id;
-      id("edit-panorama-name").value = data.name;
+      id("edit-panorama-name").value = data.panorama_name;
       id("edit-panorama-latitude").value = data.latitude;
       id("edit-panorama-longitude").value = data.longitude;
       id("edit-panorama-direction").value = data.direction;

@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from stratiview.features.utils.permisions import area_matrix, role_matrix
 from django.db.models.functions import Lower
 from stratiview.features.utils.utils import soft_redirect
+from stratiview.features.utils_amazon import generate_url_presigned
 
 
 @login_required
@@ -119,7 +120,6 @@ def get_panorama(request, panorama_id):
             "gps_alt",
             "gps_direction",
             "orientation",
-            "url",
         ).filter(id=panorama_id).first()
         if not panorama:
             return JsonResponse({})
@@ -134,7 +134,7 @@ def get_panorama(request, panorama_id):
             "altitude": panorama.gps_alt,
             "direction": panorama.gps_direction,
             "orientation": panorama.orientation,
-            "url": panorama.url,
+            "url": generate_url_presigned(panorama.name),
         })
     
     
@@ -237,14 +237,13 @@ def add_panoramas(request):
                     # Almacennar en la variable uploaded para enviar el correo
                     
                     panorama_file.seek(0)  # Ensure the file pointer is at the beginning
-                    url = upload_image_to_s3(panorama_file, file_name)
+                    upload_image_to_s3(panorama_file, file_name)
                     PanoramaMetadata.objects.create(
-                        url=url,
                         name=file_name,
                         gps_lat=float(metadata["lat"]),
                         gps_lng=float(metadata["lon"]),
                         gps_alt=float(metadata["alt"]),
-                        gps_direction=float(metadata["direction"] + 180),
+                        gps_direction=float(metadata["direction"]),
                         orientation=float(metadata["orientation"]),
                         camera_make=metadata["marca"],
                         camera_model=metadata["model"],
