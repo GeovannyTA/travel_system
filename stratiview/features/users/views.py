@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
-from stratiview.models import User, Area, Rol, UserArea, UserRol  # Asegúrate de que los imports estén correctos
+from stratiview.models import User, Area, Rol, UserArea, UserRol, Route, UserRoute # Asegúrate de que los imports estén correctos
 from django.db import transaction
 from stratiview.features.users.utils import send_credentials_email, generate_password, send_password_reset_email
 from django.contrib.auth.decorators import login_required
@@ -29,6 +29,8 @@ def users(request):
             "name",
             "area",
         )
+        # Obtener todas la rutas
+        routes = Route.objects.all()
         # Obtener todos los usuarios que no son superusuarios y están activos
         users = User.objects.only(
             "id", 
@@ -45,6 +47,7 @@ def users(request):
             "users": users,
             "areas": areas,
             "roles": roles,
+            "routes": routes
         })
 
 
@@ -87,6 +90,32 @@ def get_user(request, user_id):
             "is_active": user.is_active,
             "area_id": user_area.area.id,
             "rol_id": user_rol.rol.id,
+        })
+
+
+@login_required
+def get_user_routes(request, user_id):
+    if request.method == "GET":
+        # if request.headers.get("x-requested-with") != "XMLHttpRequest":
+        #     return soft_redirect(reverse("users"))
+
+        user = User.objects.only(
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+        ).filter(id=user_id).first()
+        if not user:
+            return JsonResponse({})
+
+        user_routes = UserRoute.objects.filter(user=user).values_list("route_id", flat=True)        
+        
+        return JsonResponse({
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name, 
+            "last_name": user.last_name,
+            "routes": list(user_routes),
         })
 
 
@@ -297,3 +326,38 @@ def delete_user(request):
         except Exception as e:
             messages.warning(request, f"Error al eliminar el usuario: {e}")
             return soft_redirect(reverse("users"))
+        
+
+@login_required
+@area_matrix(rules=[
+    {"areas": ["administracion"], "methods": ["POST"]},
+])
+@role_matrix(rules=[
+    {"roles": ["administrador"], "methods": ["POST"]},
+])
+def assign_routes(request):
+    routes_checked = request.POST.getlist("routes")
+    user_id = request.POST.get("asign-user-id")
+
+    user = User.objects.get(id=user_id)
+    if not user:
+        messages.warning(request, "Usuario no encontrado")
+        return soft_redirect(reverse("users"))
+
+    user_routes = UserRoute.objects.filter(user=user)
+    user_routes.delete()
+
+    for route_id in routes_checked:
+        route = Route.objects.filter(id=route_id).first()
+        if not route:
+            messages.warning(request, "Recorrido no encontrado")
+            return soft_redirect(reverse("users"))
+    
+        UserRoute.objects.create(
+            user=user,
+            route=route,
+        )
+    user_routes = UserRoute.objects.filter(user=user).values_list("route_id", flat=True)
+    print(user_routes)
+    messages.info(request, "Recorridos asignados exitosamente")
+    return soft_redirect(reverse("users"))

@@ -1,0 +1,104 @@
+{% load static %}
+<div
+  class="modal fade"
+  id="modalAsignRoutes"
+  tabindex="-1"
+  aria-labelledby="modalAsignRoutesLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        class="d-flex flex-column"
+        action="{% url 'assign_routes' %}"
+      >
+        {% csrf_token %}
+        <input
+          type="hidden"
+          name="asign-user-id"
+          id="asign-user-id"
+          required
+        />
+        <div class="modal-header m-0">
+          <h5 class="modal-title" id="modalAsignRoutesLabel">
+            Asignar recorridos al usuario
+          </h5>
+          <button
+            type="button"
+            class="btn-close shadow-none"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div id="loading-asign-user" class="w-100 text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando...</p>
+          </div>
+          <div id="content-asign-user" class="flex-column gap-2 gap-lg-3 w-100">
+            <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+              <div class="form-group w-100">
+                <label for="asign-user-full_name" class="form-label">Nombre completo</label>
+                <input
+                  type="text"
+                  name="asign-user-full_name"
+                  id="asign-user-full_name"
+                  class="form-control"
+                  placeholder="Juan Ramirez"
+                  required
+                />
+              </div>
+              <div class="form-group w-100">
+                <label for="asign-user-email" class="form-label">Correo electrónico</label>
+                <input
+                  type="email"
+                  name="asign-user-email"
+                  id="asign-user-email"
+                  class="form-control"
+                  placeholder="correo@ejemplo.com"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="routeSearch" class="form-label">Rutas disponibles</label>
+              <input type="text" id="routeSearch" class="form-control search-input mb-2" placeholder="Buscar ruta...">
+              <div class="overflow-hidden rounded-3" style="border: dashed 2px #007bff;">
+                <div class="checkbox-list overflow-y-auto p-2 rounded-3" id="routesContainer" style="max-height: 200px;">
+                  {% for route in routes %}
+                  <div class="form-check">
+                    <input class="form-check-input" name="routes" type="checkbox" value="{{ route.id }}" id="{{ route.id }}">
+                    <label class="form-check-label" for="{{ route.id }}">{{ route.name }}</label>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            id="edit-btn-save"
+          >
+            <i class="fa-solid fa-save"></i> 
+            Guardar cambios
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extraJS %}
+<script src="{% static 'js/users/asign_user.js' %}" ></script>
+{% endblock %}

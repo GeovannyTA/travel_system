@@ -36,7 +36,7 @@
 
 .table-panorama tbody tr > td {
   width: 10px;
-  max-width: 300px;
+  max-width: 240px;
   text-wrap: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
