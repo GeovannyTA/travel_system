@@ -82,7 +82,6 @@
           <th scope="col">Nombre de usuario</th>
           <th scope="col">Correo</th>
           <th scope="col">Telefono</th>
-          <th scope="col">Estado</th>
           {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
           <th scope="col">Acciones</th>
           {% endif %}
@@ -97,7 +96,6 @@
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.phone }}</td>
-          <td>{{ user.state.name }}</td>
           {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
           <td class="text-center p-1">
             <button
@@ -109,6 +107,7 @@
               >
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
+            {% if user.is_active == True %}
             <button
               class="btn btn-danger rounded-3"
               style="display: inline-flex; align-items: center"
@@ -117,6 +116,15 @@
               onclick="openDeleteModal({{ user.id }})"
             >
               <i class="fa-solid fa-trash-can"></i>
+            </button>
+            {% endif %}
+            <button
+              class="btn btn-warning rounded-3"
+              style="display: inline-flex; align-items: center"
+              type="button"
+              title="Gestionar recorridos"
+            >
+              <i class="fa-solid fa-screwdriver-wrench"></i>
             </button>
           </td>
           {% endif %}

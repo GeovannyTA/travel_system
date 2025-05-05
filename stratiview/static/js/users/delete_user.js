@@ -6,7 +6,6 @@ function openDeleteModal(userId) {
     }
   })
   .then((response) => {
-    console.log('keep-alive response:', response);
     if (response.status === 403) {
       window.location.href = '/stratiview/auth/sign_in/'; 
     }

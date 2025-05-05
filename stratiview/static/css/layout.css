@@ -16,7 +16,7 @@ nav {
 
 
 main {
-  height: calc(100vh - 105px);
+  height: calc(100vh + 55px);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

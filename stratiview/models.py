@@ -16,6 +16,7 @@ class Route(models.Model):
     name = models.CharField(unique=True, max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'route'
@@ -25,7 +26,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
     must_change_password = models.BooleanField(default=False)
-    state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False, default=1)
     failed_attempts = models.IntegerField(default=0)
     is_locked = models.BooleanField(default=False)    
 

@@ -4,10 +4,12 @@ import { VirtualTourPlugin } from "@photo-sphere-viewer/virtual-tour-plugin";
 import { PlanPlugin } from "@photo-sphere-viewer/plan-plugin";
 import { TileLayer } from "leaflet";
 import { CompassPlugin } from "@photo-sphere-viewer/compass-plugin";
+const container = document.getElementById("photosphere");
+const route_id = container.dataset.routeId;
 
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
 
-fetch("/stratiview/viewer/get_nodes/", {
+fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
   headers: {
     "X-Requested-With": "XMLHttpRequest",
   },
@@ -20,7 +22,7 @@ fetch("/stratiview/viewer/get_nodes/", {
     }
 
     const viewer = new Viewer({
-      container: document.getElementById("photosphere"),
+      container: container,
       loadingImg: baseUrl + "loader.gif",
       caption: "&copy; Estrategas de México",
       navbar: [
@@ -74,85 +76,6 @@ fetch("/stratiview/viewer/get_nodes/", {
     });
 
     const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
-    const toggleBtn = document.getElementById("toggle-menu-btn");
-    const panelMenu = document.getElementById("panel-nodos");
-
-    toggleBtn.addEventListener("click", () => {
-      panelMenu.classList.toggle("show");
-    });
-
-    // Generar panel jerárquico de navegación
-    const panel = document.getElementById("panel-nodos");
-
-    // Agrupar nodos por estado y ruta
-    const estructura = {};
-
-    nodes.forEach((nodo) => {
-      const estado = nodo.state;
-      const ruta = nodo.route;
-
-      if (!estructura[estado]) estructura[estado] = {};
-      if (!estructura[estado][ruta]) estructura[estado][ruta] = [];
-
-      estructura[estado][ruta].push(nodo);
-    });
-
-    let isFirstEstado = true;
-    const estadoElements = [];
-
-    for (const estado in estructura) {
-      const estadoContainer = document.createElement("div");
-      estadoContainer.className = "estado-container";
-
-      const estadoHeader = document.createElement("button");
-      estadoHeader.className = "estado-header";
-      estadoHeader.innerText = `⏷ ${estado}`; // por defecto desplegado
-
-      const rutasDiv = document.createElement("div");
-      rutasDiv.className = "rutas-list";
-
-      if (!isFirstEstado) {
-        rutasDiv.classList.add("hidden");
-        estadoHeader.innerText = `⏵ ${estado}`;
-      } else {
-        estadoHeader.classList.add("active"); // color por defecto
-      }
-
-      estadoHeader.addEventListener("click", () => {
-        estadoElements.forEach(({ header, rutas }) => {
-          rutas.classList.add("hidden");
-          header.innerText = `⏵ ${header.dataset.estado}`;
-          header.classList.remove("active");
-        });
-
-        rutasDiv.classList.remove("hidden");
-        estadoHeader.innerText = `⏷ ${estado}`;
-        estadoHeader.classList.add("active");
-      });
-
-      for (const ruta in estructura[estado]) {
-        const btn = document.createElement("button");
-        btn.innerText = ruta;
-        btn.className = "nodo-btn";
-        btn.addEventListener("click", () => {
-          const primerNodo = estructura[estado][ruta][0];
-          if (primerNodo) {
-            tourPlugin.setCurrentNode(primerNodo.id);
-          }
-        });
-        rutasDiv.appendChild(btn);
-      }
-
-      estadoHeader.dataset.estado = estado;
-
-      estadoContainer.appendChild(estadoHeader);
-      estadoContainer.appendChild(rutasDiv);
-      panel.appendChild(estadoContainer);
-
-      estadoElements.push({ header: estadoHeader, rutas: rutasDiv });
-
-      isFirstEstado = false;
-    }
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);

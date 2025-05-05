@@ -9,44 +9,51 @@ from django.db.models.functions import Lower
 from django.http import JsonResponse
 from itertools import combinations
 from stratiview.features.utils_amazon import generate_url_presigned
+from django.contrib import messages
 
 
 @login_required
-def viewer(request):
-    return render(request, 'viewer/viewer.html')
+def viewer(request, route_id):
+    # Verificar si el usuario tiene acceso a la ruta
+    user_areas = set(
+        UserArea.objects.filter(user=request.user)
+        .annotate(lower_area=Lower("area__name"))
+        .values_list("lower_area", flat=True)
+    )
+    user_roles = set(
+        UserRol.objects.filter(user=request.user)
+        .annotate(lower_rol=Lower("rol__name"))
+        .values_list("lower_rol", flat=True)
+    )
 
+    is_admin = "administrador" in user_roles or "administracion" in user_areas
 
-@login_required
-def get_nodes(request):
-    if request.method == "GET":
-        # if request.headers.get("x-requested-with") != "XMLHttpRequest":
-        #     return soft_redirect(reverse("viewer"))
-        
-        user = request.user
+    if is_admin:
+        # Admin puede ver cualquier ruta
+        route = Route.objects.filter(id=route_id).first()
+    else:
+        # Usuarios normales: solo rutas asociadas
+        route = Route.objects.filter(
+            id__in= UserRoute.objects.filter(user=request.user).values_list("route_id", flat=True),
+        ).first()
 
-        # Obtener las áreas y roles del usuario en minúscula
-        user_areas = set(
-            UserArea.objects.filter(user=user)
-            .annotate(lower_area=Lower('area__name'))
-            .values_list('lower_area', flat=True)
-        )
-        user_roles = set(
-            UserRol.objects.filter(user=user)
-            .annotate(lower_rol=Lower('rol__name'))
-            .values_list('lower_rol', flat=True)
-        )
-
-        # Determinar si es administrador o no
-        is_admin = "administracion" in user_areas or "administrador" in user_roles
-
-        # Obtener las rutas correspondientes
+    if not route:
         if is_admin:
-            routes_ids = Route.objects.values_list('id', flat=True)
+            messages.warning(request, "No se ha encontrado el recorrido solicitado")
+            return soft_redirect(reverse("routes"))
         else:
-            routes_ids = UserRoute.objects.filter(user=user).values_list('route_id', flat=True)
+            messages.warning(request, "No tienes acceso a este recorrido o no existe")
+            return soft_redirect(reverse("routes"))
 
+    return render(request, 'viewer/viewer.html', {"route": route})
+
+
+# @login_required
+def get_nodes(request, route_id):
+    # Obtener el ID de la ruta
+    if request.method == "GET":
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id__in=routes_ids, is_deleted=False)
+        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id=route_id, is_deleted=False)
 
         # Preparar nodos
         for node in panoramas:
@@ -57,7 +64,6 @@ def get_nodes(request):
                 "id": node.id,
                 "panorama": generate_url_presigned(node.name),
                 "gps": [node.gps_lng, node.gps_lat],
-                "caption": node.id,
                 "altitude": node.gps_alt,
                 "direction": node.gps_direction,
                 "state": node.route.state.name,

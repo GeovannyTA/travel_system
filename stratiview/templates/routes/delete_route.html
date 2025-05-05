@@ -1,0 +1,78 @@
+{% load static %} {% block extraCSS %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core/index.min.css"
+/>
+{% endblock %}
+
+<div
+  class="modal fade"
+  id="modalDeleteRoute"
+  tabindex="-1"
+  aria-labelledby="modalDeleteRouteLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        class="d-flex flex-column"
+        action="{% url 'delete_route' %}"
+      >
+        {% csrf_token %}
+        <div class="modal-header m-0">
+          <h5 class="modal-title" id="modalDeleteRouteLabel">
+            Eliminar recorrido
+          </h5>
+          <button
+            type="button"
+            class="btn-close shadow-none"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div id="loading-delete-route" class="w-100 text-center text-muted py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Cargando...</p>
+          </div>
+          <div id="content-delete-route" class="flex-column gap-2 gap-lg-3 w-100">
+            <div class="d-flex flex-column gap-0 mb-2 p-0">
+              <p class="m-0 p-0">¿Estas seguro de eliminar el recorrido?</p>
+              <small>La información correspondiente al recorrido es la siguiente:</s>
+            </div>
+            <div class="form-group">
+              <label for="delete-route-id">Clave</label>
+              <input type="text" class="form-control bg-light text-muted" id="delete-route-id" name="delete-route-id" readonly/>
+            </div>
+            <div class="form-group">
+              <label for="delete-route-name">Nombre</label>
+              <input type="text" class="form-control bg-light text-muted" id="delete-route-name" readonly/>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="submit" 
+            class="btn btn-danger" 
+            id="btn-delete-route"
+          >
+            <i class="fa-solid fa-trash"></i>
+            Eliminar definitivamente
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extraJS %}
+<script src="{% static 'js/routes/delete_route.js' %}" ></script>
+{% endblock %}

@@ -3,6 +3,6 @@ from stratiview.features.viewer import views
 
 
 urlpatterns = [
-    path('', views.viewer, name='viewer'),
-    path('get_nodes/', views.get_nodes, name='get_nodes'),
+    path('<int:route_id>/', views.viewer, name='viewer'),
+    path('get_nodes/<int:route_id>/', views.get_nodes, name='get_nodes'),
 ]

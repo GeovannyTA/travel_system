@@ -21,51 +21,93 @@
   {% endif %}
 </div>
 
-<div class="container-fluid bg-white rounded-2 shadow-sm h-100 overflow-hidden d-flex flex-column py-2 px-2  py-lg-1">
+<div class="container-fluid bg-white rounded-2 shadow-sm h-100 d-flex flex-column py-2 px-2  py-lg-1">
   <header
-    class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2"
+    class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 w-100"
   >
-    <!-- Botones de acción -->
-    <div class="d-flex align-items-center gap-2 p-0">
-      <button
-        class="btn btn-secondary rounded-3"
-        style="display: inline-flex; align-items: center"
-        type="button"
-      >
-        <i class="fa-solid fa-filter me-1"></i>
-        Filtrar
-      </button>
-
-      <button
-        class="btn btn-outline-secondary rounded-3"
-        style="display: inline-flex; align-items: center"
-        type="button"
-      >
-        <i class="fa-solid fa-rotate me-1"></i> Actualizar
-      </button>
-    </div>
-    <nav aria-label="Page navigation" class="d-flex align-items-center">
-      <ul class="pagination m-0 p-0">
-        <li class="page-item disabled">
-          <a class="page-link m-0" href="#" aria-disabled="true">
-            <i class="fas fa-chevron-left"></i>
-          </a>
-        </li>
-        <li class="page-item active"><a class="page-link m-0" href="#">1</a></li>
-        <li class="page-item"><a class="page-link m-0" href="#">2</a></li>
-        <li class="page-item"><a class="page-link m-0" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link m-0" href="#">
-            <i class="fas fa-chevron-right"></i>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <form method="get" class="pt-2 px-2 rounded-3 w-100">
+      <div class="row g-2">
+        <!-- Ruta -->
+        <div class="col-md-4">
+          <label for="route_id" class="form-label">Ruta</label>
+          <select id="route_id" name="route_id" class="form-select">
+            <option value="">Todas las rutas</option>
+            {% for route in routes %}
+              <option value="{{ route.id }}" {% if request.GET.route_id == route.id|stringformat:"s" %}selected{% endif %}>{{ route.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+    
+        <!-- Fecha inicio -->
+        <div class="col-md-4">
+          <label for="start_date" class="form-label">Fecha desde</label>
+          <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+        </div>
+    
+        <!-- Fecha fin -->
+        <div class="col-md-4">
+          <label for="end_date" class="form-label">Fecha hasta</label>
+          <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+        </div>
+    
+        <!-- Usuario -->
+        <div class="col-md-4">
+          <label for="upload_by" class="form-label">Responsable</label>
+          <select id="upload_by" name="upload_by" class="form-select">
+            <option value="">Todos los usuarios</option>
+            {% for user in users %}
+              <option value="{{ user.id }}" {% if request.GET.upload_by == user.id|stringformat:"s" %}selected{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+    
+        <!-- Botones -->
+        <div class="d-flex justify-content-between gap-2">
+          <div>
+            <button type="submit m-0" class="btn btn-primary">
+              <i class="fa fa-filter me-1"></i> Filtrar
+            </button>
+            <a href="{% url 'panoramas' %}" class="btn btn-outline-secondary">
+              <i class="fa-solid fa-delete-left"></i>
+              Limpiar
+            </a>
+          </div>
+          <nav aria-label="Paginación">
+            <ul class="pagination">
+              {% if panoramas.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ panoramas.previous_page_number }}{% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}{% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}{% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
+                </li>
+              {% endif %}
+          
+              {% for num in panoramas.paginator.page_range %}
+                <li class="page-item {% if panoramas.number == num %}active{% endif %}">
+                  <a class="page-link" href="?page={{ num }}{% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}{% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}{% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}">
+                    {{ num }}
+                  </a>
+                </li>
+              {% endfor %}
+          
+              {% if panoramas.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ panoramas.next_page_number }}{% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}{% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}{% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}{% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </form>
   </header>
   <div class="d-flex justify-content-between align-items-center">
-    <div class="text-muted">Mostrando 1-4 de 20 panoramas</div>
+    <div class="text-muted">Mostrando {{ panoramas.start_index }}–{{ panoramas.end_index }} de {{ panoramas.paginator.count }} panoramas
+    </div>
   </div>
-  <div style="overflow-x: auto;">
+  <div class="table-container">
     <table
       class="table table-striped table-hover table-panorama"
       id="panoramas-table"
@@ -76,7 +118,6 @@
           <th scope="col">Nombre</th>
           <th scope="col">Latitud</th>
           <th scope="col">Longitud</th>
-          <th scope="col">Altitud</th>
           <th scope="col">Recorrido</th>
           <th scope="col">Fecha de toma</th>
           <th scope="col">Fecha de subida</th>
@@ -95,12 +136,11 @@
         </tr>
         {% endif %}
         {% for panorama in panoramas %}
-        <tr>
+        <tr class="{% if panorama.is_deleted == True %}panorama-deleted{% endif %}">
           <td>{{ panorama.id }}</td>
           <td>{{ panorama.name }}</td>
           <td>{{ panorama.gps_lat }}</td>
           <td>{{ panorama.gps_lng }}</td>
-          <td>{{ panorama.gps_alt }}</td>
           <td>{{ panorama.route.name }}</td>
           <td>{{ panorama.date_taken|date:'d-m-Y H:i' }}</td>
           <td>{{ panorama.date_uploaded|date:'d-m-Y H:i' }}</td>
@@ -116,6 +156,7 @@
               >
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
+            {% if panorama.is_deleted == False %}
             <button
               class="btn btn-danger rounded-3"
               style="display: inline-flex; align-items: center"
@@ -125,6 +166,7 @@
             >
               <i class="fa-solid fa-trash-can"></i>
             </button>
+            {% endif %}
           </td>
           {% endif %}
         </tr>

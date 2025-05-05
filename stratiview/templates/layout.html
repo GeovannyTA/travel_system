@@ -51,7 +51,7 @@
         <div class="container-fluid">
           <a 
             class="navbar-brand" 
-            href="{% url 'viewer' %}">
+            href="#">
             <img
               rel="preload"
               as="iamge"
@@ -75,28 +75,30 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button type="button" class="btn-close ms-auto mb-4 d-lg-none" aria-label="Cerrar" id="closeMenuBtn"></button>
           <ul class="navbar-nav mb-lg-0">
+            {% if request.resolver_match.url_name == 'viewer' %}
             <li class="nav-item">
               <a 
-                class="nav-link {% if request.path == '/stratiview/viewer/' %}active-route{% endif %}" 
+                class="nav-link {% if request.resolver_match.url_name == 'viewer' %}active-route{% endif %}" 
                 style="display: inline-flex; align-items: center; width: fit-content;"
                 aria-current="page" 
-                href="{% url 'viewer' %}"
+                href="#"
               >
                 <i class="fa-solid fa-street-view me-2"></i>
                 Visor
               </a>
             </li>
-            {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
+            {% endif %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/routes/' %}active-route{% endif %}"
                 style="display: inline-flex; align-items: center; width: fit-content;"
-                href="{% url 'panoramas' %}"
-              >
+                href="{% url 'routes' %}"
+                >
                 <i class="fa-solid fa-road me-2"></i>
                 Recorridos
               </a>
             </li>
+            {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/panoramas/' %}active-route{% endif %}"
@@ -150,7 +152,7 @@
       </div>
     </nav>
 
-    <main class="{% if request.path == '/stratiview/viewer/' %}h-viewer{% endif %}">
+    <main class="{% if request.resolver_match.url_name == 'viewer' %}h-viewer{% endif %}">
       {% block viewer %}
       <div class="p-2 container-content">
         {% block content %} {% endblock %}
@@ -159,7 +161,7 @@
     </main>
 
     <footer 
-      class="text-center bg-dark {% if request.path == '/stratiview/viewer/' %}d-none{% endif %}" 
+      class="text-center bg-dark {% if request.resolver_match.url_name == 'viewer' %}d-none{% endif %}" 
       data-bs-theme="dark"
     >
       <p>&copy; 2025 Estrategas de México</p>

@@ -7,9 +7,10 @@ from stratiview.features.utils import utils
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('stratiview/', lambda request: redirect('/stratiview/viewer/')),
-    path('stratiview/admin/', admin.site.urls),
+    path('stratiview/', lambda request: redirect('/stratiview/routes/')),
+    path('stratiview/routes/', include('stratiview.features.routes.urls')),
     path('stratiview/viewer/', include('stratiview.features.viewer.urls')),
+    path('stratiview/admin/', admin.site.urls),
     path('stratiview/check_sesion/', utils.check_sesion, name='check_sesion'),
     path('stratiview/panoramas/', include('stratiview.features.panoramas.urls')),
     path('stratiview/auth/', include('stratiview.features.auth.urls')),

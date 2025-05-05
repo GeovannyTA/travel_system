@@ -53,7 +53,6 @@ function openEditModal(userId) {
       id("edit-user-last_name").value = data.last_name;
       id("edit-user-username").value = data.username;
       id("edit-user-phone").value = data.phone;
-      id("edit-user-state").value = data.state_id;
 
       // Mostrar contenido real y ocultar spinner
       loading.style.display = "none";

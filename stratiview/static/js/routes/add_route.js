@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("#modalAddUser form");
+  const form = document.querySelector("#modalAddRoute form");
   const btnSave = document.getElementById("btn-save");
   const btnClear = document.getElementById("btn-clear");
   const btnCancel = document.getElementById("btn-cancel");

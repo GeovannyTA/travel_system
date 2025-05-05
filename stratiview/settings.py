@@ -166,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'stratiview.User' 
 LOGIN_URL = '/stratiview/auth/sign_in'
 LOGOUT_REDIRECT_URL = '/stratiview/auth/sign_in'
-LOGIN_REDIRECT_URL = '/stratiview/viewer'
+LOGIN_REDIRECT_URL = '/stratiview/routes'
 
 DATA_UPLOAD_MAX_NUMBER_FILES = 1000  # Numero maximo de imagenes permitidos
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024 * 1024  # Numero maximo de gigas 50GB

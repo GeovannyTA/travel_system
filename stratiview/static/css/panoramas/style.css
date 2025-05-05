@@ -1,6 +1,11 @@
+.table-container {
+  overflow: auto;
+}
+
 .table-container::-webkit-scrollbar {
-  width: 6px;
-  border-radius: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: #f1f1f1;
 }
 
 .table-container::-webkit-scrollbar-thumb {
@@ -31,7 +36,7 @@
 
 .table-panorama tbody tr > td {
   width: 10px;
-  max-width: 150px;
+  max-width: 300px;
   text-wrap: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -108,4 +113,9 @@
 
 .hidden {
   display: none !important;
+}
+
+.panorama-deleted {
+  color: red;
+  background-color: rgb(92, 65, 65) !important;
 }

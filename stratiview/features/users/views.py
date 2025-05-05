@@ -1,9 +1,8 @@
-from http.client import HTTPResponse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
-from stratiview.models import User, State, Area, Rol, UserArea, UserRol  # Asegúrate de que los imports estén correctos
+from stratiview.models import User, Area, Rol, UserArea, UserRol  # Asegúrate de que los imports estén correctos
 from django.db import transaction
 from stratiview.features.users.utils import send_credentials_email, generate_password, send_password_reset_email
 from django.contrib.auth.decorators import login_required
@@ -19,11 +18,6 @@ from stratiview.features.utils.utils import soft_redirect
 ])
 def users(request):
     if request.method == "GET":
-        # Obtner todos las entidades federativas        
-        states  = State.objects.all().only(
-            "id",
-            "name",
-        )
         # Obtner todas areas
         areas = Area.objects.all().only(
             "id",
@@ -36,7 +30,7 @@ def users(request):
             "area",
         )
         # Obtener todos los usuarios que no son superusuarios y están activos
-        users = User.objects.select_related('state').only(
+        users = User.objects.only(
             "id", 
             "email", 
             "username", 
@@ -45,12 +39,10 @@ def users(request):
             "phone", 
             "date_joined", 
             "is_active",
-            "state",
         ).filter(is_superuser=False).order_by("-date_joined")
 
         return render(request, "users/users.html", {
             "users": users,
-            "states": states,
             "areas": areas,
             "roles": roles,
         })
@@ -67,7 +59,7 @@ def get_user(request, user_id):
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return soft_redirect(reverse("users"))
 
-        user = User.objects.select_related('state').only(
+        user = User.objects.only(
             "id",
             "email",
             "first_name",
@@ -76,7 +68,6 @@ def get_user(request, user_id):
             "phone",
             "is_locked",
             "is_active",
-            "state",
         ).filter(id=user_id).first()
         if not user:
             return JsonResponse({})
@@ -94,7 +85,6 @@ def get_user(request, user_id):
             "phone": user.phone,
             "is_locked": user.is_locked,
             "is_active": user.is_active,
-            "state_id": user.state.id,
             "area_id": user_area.area.id,
             "rol_id": user_rol.rol.id,
         })
@@ -114,11 +104,10 @@ def add_user(request):
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
         phone = request.POST.get("phone")
-        state_id = request.POST.get("state")
         area = request.POST.get("add-user-area")
         rol = request.POST.get("add-user-rol")
 
-        if not email or not username or not first_name or not last_name or not phone or not state_id or not area or not rol:
+        if not email or not username or not first_name or not last_name or not phone or not area or not rol:
             messages.warning(request, "Todos los campos son obligatorios.")
             return soft_redirect(reverse("users"))
 
@@ -126,15 +115,6 @@ def add_user(request):
         if User.objects.filter(email=email).exists():
             messages.warning(request, "Ya existe un usuario con ese correo.")
             return soft_redirect(reverse("users"))
-
-        # Obtener el estado si fue proporcionado
-        state_obj = None
-        if state_id:
-            try:
-                state_obj = State.objects.get(id=state_id)
-            except State.DoesNotExist:
-                messages.warning(request, "Entidad federativa inválida.")
-                return soft_redirect(reverse("users"))
 
         # Generar una contraseña temporal
         temp_password = generate_password()
@@ -148,7 +128,6 @@ def add_user(request):
                     first_name = first_name,
                     last_name = last_name,
                     phone = phone,
-                    state = state_obj,
                     must_change_password = True,
                     is_active = True,
                 )
@@ -188,6 +167,9 @@ def edit_user(request):
     if request.method == "POST":
         user_id = request.POST.get("edit-user-id")
         user = User.objects.get(id=user_id)
+        if not user:
+            messages.warning(request, "Usuario no encontrado")
+            return soft_redirect(reverse("users"))
 
         action = request.POST.get("action")
 
@@ -239,7 +221,6 @@ def edit_user(request):
                 "first_name": request.POST.get("edit-user-first_name"),
                 "last_name": request.POST.get("edit-user-last_name"),
                 "phone": request.POST.get("edit-user-phone"),
-                "state_id": request.POST.get("edit-user-state"),
                 "area_id": request.POST.get("edit-user-area"),
                 "rol_id": request.POST.get("edit-user-rol"),
             }
@@ -259,15 +240,6 @@ def edit_user(request):
                 value = fields[attr]
                 if value:
                     setattr(user, attr, value)
-
-            # Actualizar estado (entidad federativa)
-            if fields["state_id"]:
-                try:
-                    state_obj = State.objects.get(id=fields["state_id"])
-                    user.state = state_obj
-                except State.DoesNotExist:
-                    messages.warning(request, "Entidad federativa inválida")
-                    return soft_redirect(reverse("users"))
 
             # Actualizar área del usuario
             if fields["area_id"]:
