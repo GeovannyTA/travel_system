@@ -49,6 +49,7 @@
                   id="asign-user-full_name"
                   class="form-control"
                   placeholder="Juan Ramirez"
+                  readonly
                   required
                 />
               </div>
@@ -60,13 +61,14 @@
                   id="asign-user-email"
                   class="form-control"
                   placeholder="correo@ejemplo.com"
+                  readonly
                   required
                 />
               </div>
             </div>
             <div class="mb-3">
-              <label for="routeSearch" class="form-label">Rutas disponibles</label>
-              <input type="text" id="routeSearch" class="form-control search-input mb-2" placeholder="Buscar ruta...">
+              <label for="routeSearch" class="form-label">Recorridos disponibles</label>
+              <input type="text" id="routeSearch" class="form-control search-input mb-2" placeholder="Buscar recorrido...">
               <div class="overflow-hidden rounded-3" style="border: dashed 2px #007bff;">
                 <div class="checkbox-list overflow-y-auto p-2 rounded-3" id="routesContainer" style="max-height: 200px;">
                   {% for route in routes %}
@@ -84,7 +86,7 @@
           <button 
             type="submit" 
             class="btn btn-primary" 
-            id="edit-btn-save"
+            id="asign-btn-save"
           >
             <i class="fa-solid fa-save"></i> 
             Guardar cambios

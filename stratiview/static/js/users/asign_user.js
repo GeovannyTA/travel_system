@@ -19,7 +19,7 @@ function openAsignModal(userId) {
   const content = id("content-asign-user");
   const modalEl = id("modalAsignRoutes");
   const modal = new bootstrap.Modal(modalEl);
-  const btnSave = id("edit-btn-save");
+  const btnSave = id("asign-btn-save");
 
 
   // Mostrar el modal
@@ -51,6 +51,7 @@ function openAsignModal(userId) {
       // Mostrar contenido real y ocultar spinner
       loading.style.display = "none";
       content.style.display = "flex";
+
       btnSave.hidden = false;
     })
     .catch((error) => {

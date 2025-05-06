@@ -12,7 +12,6 @@ from django.db.models.functions import Lower
 from stratiview.features.utils.utils import soft_redirect
 from stratiview.features.utils_amazon import generate_url_presigned
 from django.core.paginator import Paginator
-from django.db.models.functions import Lower
 
 @login_required
 @area_matrix(rules=[

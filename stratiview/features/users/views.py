@@ -8,6 +8,7 @@ from stratiview.features.users.utils import send_credentials_email, generate_pas
 from django.contrib.auth.decorators import login_required
 from stratiview.features.utils.permisions import area_matrix, role_matrix
 from stratiview.features.utils.utils import soft_redirect
+from django.core.paginator import Paginator
 
 @login_required
 @area_matrix(rules=[
@@ -43,11 +44,40 @@ def users(request):
             "is_active",
         ).filter(is_superuser=False).order_by("-date_joined")
 
+        # Filtors
+        f_email = request.GET.get("filter_email")
+        f_username = request.GET.get("filter_username")
+        f_first_name = request.GET.get("filter_first_name")
+        f_is_active = request.GET.get("filter_is_active")
+        f_is_locked = request.GET.get("filter_is_locked")
+
+
+        if f_email:
+            users = users.filter(email__icontains=f_email)
+
+        if f_username:
+            users = users.filter(username__icontains=f_username)
+
+        if f_first_name:
+            users = users.filter(first_name__icontains=f_first_name)
+        
+        if f_is_active in ["True", "False"]:
+            users = users.filter(is_active=(f_is_active == "True"))
+
+        if f_is_locked in ["True", "False"]:
+            users = users.filter(is_locked=(f_is_locked == "True"))
+
+         # Paginación
+        paginator = Paginator(users, 10)
+        page_number = request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
         return render(request, "users/users.html", {
-            "users": users,
+            "users": page_obj,
             "areas": areas,
             "roles": roles,
-            "routes": routes
+            "routes": routes,
+            "paginator": paginator,
         })
 
 
