@@ -36,7 +36,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
         [
           PlanPlugin,
           {
-            visibleOnLoad: false,
+            visibleOnLoad: true,
             defaultZoom: 18,
             position: "bottom left",
             layers: [
