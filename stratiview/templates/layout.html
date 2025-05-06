@@ -51,7 +51,7 @@
         <div class="container-fluid">
           <a 
             class="navbar-brand" 
-            href="#">
+            href="{% url 'routes' %}">
             <img
               rel="preload"
               as="iamge"
@@ -99,6 +99,16 @@
               </a>
             </li>
             {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.path == '/stratiview/states/' %}active-route{% endif %}"
+                style="display: inline-flex; align-items: center; width: fit-content;"
+                href="{% url 'states' %}"
+                >
+                <i class="fa-solid fa-city me-2"></i>
+                Estados
+              </a>
+            </li>
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/panoramas/' %}active-route{% endif %}"

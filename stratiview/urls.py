@@ -15,6 +15,7 @@ urlpatterns = [
     path('stratiview/panoramas/', include('stratiview.features.panoramas.urls')),
     path('stratiview/auth/', include('stratiview.features.auth.urls')),
     path('stratiview/users/', include('stratiview.features.users.urls')),
+    path('stratiview/states/', include('stratiview.features.states.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

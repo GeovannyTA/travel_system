@@ -1,13 +1,13 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from stratiview.models import Route, State, UserArea, UserRol, UserRoute
 from stratiview.features.utils.utils import soft_redirect
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib import messages
-from stratiview.features.utils.permisions import area_matrix, role_matrix
 from django.core.paginator import Paginator
 from django.db.models.functions import Lower
+from django.contrib.auth.decorators import login_required
+from stratiview.features.utils.permisions import area_matrix, role_matrix
 
 
 @login_required
@@ -105,7 +105,7 @@ def add_route(request):
         description = request.POST.get("add-route-description")
         state = request.POST.get("add-route-state")
 
-        if not name or not state:
+        if not name or not state or not description:
             messages.warning(request, "Todos los campos son obligatorios")
             return soft_redirect(reverse("routes"))
 
@@ -123,7 +123,7 @@ def add_route(request):
                 state=state,
             )
         except Exception as e:
-            messages.error(request, f"Error al crear el recorrido: {e}")
+            messages.warning(request, f"Error al crear el recorrido: {e}")
             return soft_redirect(reverse("routes"))
         
         messages.info(request, "Recorrido creado exitosamente")
@@ -144,7 +144,7 @@ def edit_route(request):
 
         route = Route.objects.filter(id=route_id).first()
         if not route:
-            messages.error(request, "Recorrido no encontrado")
+            messages.warning(request, "Recorrido no encontrado")
             return soft_redirect(reverse("routes"))
         
         if action == "enable":
@@ -186,7 +186,7 @@ def delete_route(request):
         route = Route.objects.filter(id=route_id).first()
 
         if not route:
-            messages.error(request, "Recorrido no encontrado")
+            messages.warning(request, "Recorrido no encontrado")
             return soft_redirect(reverse("routes"))
         
         route.is_deleted = True
