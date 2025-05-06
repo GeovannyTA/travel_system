@@ -17,6 +17,7 @@
     class="btn btn-primary"
     data-bs-toggle="modal"
     data-bs-target="#modalAddUser"
+    onclick="openAddModal()"
   >
     <i class="fa-solid fa-plus"></i> 
     Agregar recorrido
@@ -184,6 +185,7 @@
   </div>  
   {% endif %}
 </div>
+{% include 'routes/add_route.html' %}
 {% include 'routes/edit_route.html' %}
 {% include 'routes/delete_route.html' %}
 {% endblock %}

@@ -93,6 +93,44 @@ def get_route(request, route_id):
 @role_matrix(rules=[
     {"roles": ["administrador"], "methods": ["POST"]},
 ])
+def add_route(request):
+    if request.method == "POST":
+        name = request.POST.get("add-route-name")
+        description = request.POST.get("add-route-description")
+        state = request.POST.get("add-route-state")
+
+        if not name or not state:
+            messages.warning(request, "Todos los campos son obligatorios")
+            return soft_redirect(reverse("routes"))
+
+        state = State.objects.filter(id=state).first()
+        
+        route_exist = Route.objects.filter(name=name, state=state).exists()
+        if route_exist:
+            messages.warning(request, "Ya existe un recorrido con ese nombre y estado")
+            return soft_redirect(reverse("routes"))
+
+        try:
+            Route.objects.create(
+                name=name,
+                description=description,
+                state=state,
+            )
+        except Exception as e:
+            messages.error(request, f"Error al crear el recorrido: {e}")
+            return soft_redirect(reverse("routes"))
+        
+        messages.info(request, "Recorrido creado exitosamente")
+        return soft_redirect(reverse("routes"))
+
+
+@login_required
+@area_matrix(rules=[
+    {"areas": ["administracion"], "methods": ["POST"]},
+])
+@role_matrix(rules=[
+    {"roles": ["administrador"], "methods": ["POST"]},
+])
 def edit_route(request):
     if request.method == "POST":
         route_id = request.POST.get("edit-route-id")

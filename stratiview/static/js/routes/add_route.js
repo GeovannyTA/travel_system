@@ -1,41 +1,25 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("#modalAddRoute form");
-  const btnSave = document.getElementById("btn-save");
-  const btnClear = document.getElementById("btn-clear");
-  const btnCancel = document.getElementById("btn-cancel");
-  const btnClose = document.getElementById("btn-close");
-  const areaSelect = document.getElementById("add-user-area");
-  const rolSelect = document.getElementById("add-user-rol");
+function openAddModal() {
+  fetch("/stratiview/check_sesion/", {
+    method: "GET",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  })
+    .then((response) => {
+      if (response.status === 403) {
+        window.location.href = "/stratiview/auth/sign_in/";
+      }
+    })
+    .catch((error) => {
+      console.error("Error en keep-alive:", error);
+    });
 
-  // Función modular para actualizar los roles según el área seleccionada
-  function updateRolOptions(areaSelect, rolSelect, areaRolesMap) {
-    const selectedAreaId = areaSelect.value;
-    rolSelect.innerHTML = "";
+  const id = (sel) => document.getElementById(sel);
+  const modalEl = id("modalAddRoute");
+  const modal = new bootstrap.Modal(modalEl);
 
-    if (areaRolesMap[selectedAreaId]) {
-      areaRolesMap[selectedAreaId].forEach(function (rol) {
-        const option = document.createElement("option");
-        option.value = rol.id;
-        option.textContent = rol.name;
-        rolSelect.appendChild(option);
-      });
-    }
-  }
+  // Mostrar el modal
+  modal.show();
+}
 
-  // Escuchar cuando cambie el área
-  areaSelect.addEventListener("change", function () {
-    updateRolOptions(areaSelect, rolSelect, areaRolesMap);
-  });
-
-  // Escuchar el submit del formulario
-  form.addEventListener("submit", () => {
-    // Desactivar botones
-    btnSave.disabled = true;
-    btnClear.disabled = true;
-    btnCancel.disabled = true;
-    btnClose.disabled = true;
-
-    // Cambiar apariencia del botón guardar
-    btnSave.innerHTML = `<i class="fas fa-spinner fa-spin spinner-custom"></i> Subiendo...`;
-  });
-});
+window.openAddModal = openAddModal;

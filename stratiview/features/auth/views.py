@@ -89,7 +89,6 @@ def sign_out(request):
     if request.user.is_authenticated:
         logout(request)
         request.session.flush()
-
     try:
         return redirect(reverse("sign_in"))
     except NoReverseMatch:

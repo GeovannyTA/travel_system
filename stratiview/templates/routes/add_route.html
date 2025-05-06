@@ -1,0 +1,88 @@
+{% load static %}
+<div
+  class="modal fade"
+  id="modalAddRoute"
+  tabindex="-1"
+  aria-labelledby="modalAddRouteLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          class="d-flex flex-column"
+          action="{% url 'add_route' %}"
+        >
+          {% csrf_token %}
+          <input
+            type="hidden"
+            name="add-route-id"
+            id="add-route-id"
+            required
+          />
+          <div class="modal-header m-0">
+            <h5 class="modal-title" id="modalAddRouteLabel">
+              Agregar recorrido
+            </h5>
+            <button
+              type="button"
+              class="btn-close shadow-none"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="content-add-route" class="flex-column gap-2 gap-lg-3 w-100">
+              <div class="form-group">
+                <label for="add-route-name" class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  name="add-route-name"
+                  id="add-route-name"
+                  class="form-control"
+                  placeholder="Recorrido 1"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="add-route-description" class="form-label">Descripción</label>
+                <br>
+                <textarea class="w-100 rounded-2" style="min-height: 100px; border: solid 1px #e5e5e5;"  name="add-route-description" id="add-route-description" required></textarea>
+              </div>
+              <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+                <div class="form-group w-100">
+                  <label for="add-route-state" class="form-label">Entidad federativa</label>
+                  <select name="add-route-state" id="add-route-state" class="form-select" required>
+                    {% for state in states %}
+                    <option value="{{ state.id }}">{{ state.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              id="edit-btn-save"
+              name="action"
+              value="save"
+            >
+              <i class="fa-solid fa-save"></i> 
+              Guardar cambios
+            </button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+              <i class="fa-solid fa-ban"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+
+<script src="{% static 'js/routes/add_route.js' %}"></script>
