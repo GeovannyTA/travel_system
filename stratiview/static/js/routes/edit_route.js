@@ -20,11 +20,13 @@ function openEditModal(routeId) {
   const modalEl = id("modalEditRoute");
   const modal = new bootstrap.Modal(modalEl);
   const btnSave = id("edit-btn-save");
+  const btnEnable = id("edit-btn-enable");
 
   // Mostrar el modal
   loading.style.display = "block";
   content.style.display = "none";
   btnSave.hidden = true;
+  btnEnable.hidden = true;
   modal.show();
 
   // Obtener los datos de la panorama
@@ -47,6 +49,10 @@ function openEditModal(routeId) {
       loading.style.display = "none";
       content.style.display = "flex";
       btnSave.hidden = false;
+
+      if (data.is_deleted === true) {
+        btnEnable.hidden = false;
+      }
     })
     .catch((error) => {
       window.alert("Error al abrir el modal de edición.");

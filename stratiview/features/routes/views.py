@@ -42,6 +42,10 @@ def get_routes(request):
         
         # Filtros
         route_name = request.GET.get("route_name")
+        filter_is_deleted = request.GET.get("filter_is_deleted")
+        
+        if filter_is_deleted in ["True", "False"]:
+            routes = routes.filter(is_deleted=(filter_is_deleted == "True"))
 
         if route_name:
             routes = routes.filter(name__icontains=route_name)
@@ -74,6 +78,7 @@ def get_route(request, route_id):
             'name', 
             'description', 
             'state',
+            'is_deleted',
         ).filter(id=route_id).first()
         if not route:
             return JsonResponse({})
@@ -83,6 +88,7 @@ def get_route(request, route_id):
             "name": route.name,
             "description": route.description,
             "state": route.state.id,
+            "is_deleted": route.is_deleted,
         })
     
 
@@ -134,25 +140,37 @@ def add_route(request):
 def edit_route(request):
     if request.method == "POST":
         route_id = request.POST.get("edit-route-id")
-        name = request.POST.get("edit-route-name")
-        description = request.POST.get("edit-route-description")
-        state = request.POST.get("edit-route-state")
+        action = request.POST.get("action")
 
         route = Route.objects.filter(id=route_id).first()
-
-        if name:
-            route.name = name
-
-        if description:
-            route.description = description
+        if not route:
+            messages.error(request, "Recorrido no encontrado")
+            return soft_redirect(reverse("routes"))
         
-        if state:
-            state = State.objects.filter(id=state).first()
-            route.state = state
+        if action == "enable":
+            route.is_deleted = False
+            route.save()
+            messages.info(request, "Recorrido habilitado exitosamente")
+            return soft_redirect(reverse("routes"))
 
-        route.save()
-        messages.info(request, "Recorrido editado exitosamente")
-        return soft_redirect(reverse("routes"))
+        if action == "save":
+            name = request.POST.get("edit-route-name")
+            description = request.POST.get("edit-route-description")
+            state = request.POST.get("edit-route-state")
+
+            if name:
+                route.name = name
+
+            if description:
+                route.description = description
+            
+            if state:
+                state = State.objects.filter(id=state).first()
+                route.state = state
+
+            route.save()
+            messages.info(request, "Recorrido editado exitosamente")
+            return soft_redirect(reverse("routes"))
 
 
 @login_required

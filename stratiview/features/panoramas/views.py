@@ -47,6 +47,8 @@ def get_panoramas(request):
     upload_by_id = request.GET.get("upload_by")
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
+    latitude = request.GET.get("latitude")
+    longitude = request.GET.get("longitude")
 
     if route_id:
         panoramas = panoramas.filter(route_id=route_id)
@@ -59,6 +61,12 @@ def get_panoramas(request):
 
     if end_date:
         panoramas = panoramas.filter(date_taken__date__lte=end_date)
+
+    if latitude:
+        panoramas = panoramas.filter(gps_lat__icontains=latitude)
+    
+    if longitude:
+        panoramas = panoramas.filter(gps_lng__icontains=longitude)
 
     # Obtener usuarios únicos
     users = User.objects.filter(id__in=panoramas.values_list("upload_by", flat=True).distinct())
@@ -101,6 +109,7 @@ def get_panorama(request, panorama_id):
                 "gps_alt",
                 "gps_direction",
                 "orientation",
+                "is_deleted",
             )
             .filter(id=panorama_id)
             .first()
@@ -120,6 +129,7 @@ def get_panorama(request, panorama_id):
                 "direction": panorama.gps_direction,
                 "orientation": panorama.orientation,
                 "url": generate_url_presigned(panorama.name),
+                "is_deleted": panorama.is_deleted,
             }
         )
 
@@ -274,7 +284,7 @@ def add_panoramas(request):
             )
 
         # Redirigir a la página anterior o a una URL predeterminada
-        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+        return soft_redirect(reverse("panoramas"))
 
 
 @login_required
@@ -286,30 +296,38 @@ def add_panoramas(request):
 def edit_panorama(request):
     if request.method == "POST":
         panorama_id = request.POST.get("edit-panorama_id")
-        latitude = request.POST.get("edit-latitude")
-        longitude = request.POST.get("edit-longitude")
-        route = request.POST.get("edit-route")
-        direction = request.POST.get("edit-direction")
-
         panorama = PanoramaMetadata.objects.get(id=panorama_id)
+        action = request.POST.get("action")
 
-        if latitude:
-            panorama.gps_lat = latitude
+        if action == "enable":
+            panorama.is_deleted = False
+            panorama.save()
+            messages.info(request, "Panorama habilitado correctamente")
+            return soft_redirect(reverse("panoramas"))
+        
 
-        if longitude:
-            panorama.gps_lng = longitude
+        if action == "save":
+            latitude = request.POST.get("edit-latitude")
+            longitude = request.POST.get("edit-longitude")
+            route = request.POST.get("edit-route")
+            direction = request.POST.get("edit-direction")
+            if latitude:
+                panorama.gps_lat = latitude
 
-        if route:
-            route_obj = Route.objects.filter(id=route).first()
-            if route_obj:
-                panorama.route = route_obj
+            if longitude:
+                panorama.gps_lng = longitude
 
-        if direction:
-            panorama.gps_direction = direction
+            if route:
+                route_obj = Route.objects.filter(id=route).first()
+                if route_obj:
+                    panorama.route = route_obj
 
-        panorama.save()
-        messages.info(request, "Panorama editado correctamente")
-        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+            if direction:
+                panorama.gps_direction = direction
+
+            panorama.save()
+            messages.info(request, "Panorama editado correctamente")
+            return soft_redirect(reverse("panoramas"))
 
 
 @login_required
@@ -325,9 +343,9 @@ def delete_panorama(request):
 
         if not panorama:
             messages.warning(request, "Panorama no encontrado.")
-            return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+            return soft_redirect(reverse("panoramas"))
 
         panorama.is_deleted = True
         panorama.save()
         messages.info(request, "Panorama eliminado correctamente")
-        return soft_redirect(request.META.get("HTTP_REFERER", "/"))
+        return soft_redirect(reverse("panoramas"))

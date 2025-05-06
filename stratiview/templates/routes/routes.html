@@ -36,11 +36,23 @@
           <label for="route_name" class="form-label">Ruta</label>
           <input type="text" id="route_name" name="route_name" class="form-control" value="{{ request.GET.route_name }}" placeholder="Buscar por nombre de ruta">
         </div>
+        {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
+        <!-- is_deleted? -->
+        <div class="col-md-4">
+          <label for="filter_is_deleted" class="form-label">¿Recorrido eliminado?</label>
+          <select id="filter_is_deleted" name="filter_is_deleted" class="form-select">
+            <option value="">Todos</option>
+            <option value="False" {% if request.GET.filter_is_deleted == "False" %}selected{% endif %}>Activos</option>
+            <option value="True" {% if request.GET.filter_is_deleted == "True" %}selected{% endif %}>Eliminados</option>
+          </select>
+        </div>
+        {% endif %}
         <!-- Botones -->
         <div class="d-flex justify-content-between gap-2">
           <div>
             <button type="submit m-0" class="btn btn-primary">
-              <i class="fa fa-filter me-1"></i> Filtrar
+              <i class="fa-solid fa-magnifying-glass me-1"></i>
+              Buscar
             </button>
             <a href="{% url 'routes' %}" class="btn btn-outline-secondary">
               <i class="fa-solid fa-delete-left"></i>
@@ -51,7 +63,7 @@
             <ul class="pagination">
               {% if routes.has_previous %}
                 <li class="page-item">
-                  <a class="page-link" href="?page={{ routes.previous_page_number }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}">
+                  <a class="page-link" href="?page={{ routes.previous_page_number }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}{% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}">
                     <i class="fas fa-chevron-left"></i>
                   </a>
                 </li>
@@ -59,7 +71,7 @@
           
               {% for num in routes.paginator.page_range %}
                 <li class="page-item {% if routes.number == num %}active{% endif %}">
-                  <a class="page-link" href="?page={{ num }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}">
+                  <a class="page-link" href="?page={{ num }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}{% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}">
                     {{ num }}
                   </a>
                 </li>
@@ -67,7 +79,7 @@
           
               {% if routes.has_next %}
                 <li class="page-item">
-                  <a class="page-link" href="?page={{ routes.next_page_number }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}">
+                  <a class="page-link" href="?page={{ routes.next_page_number }}{% if request.GET.route_name %}&route_name={{ request.GET.route_name }}{% endif %}{% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}">
                     <i class="fas fa-chevron-right"></i>
                   </a>
                 </li>

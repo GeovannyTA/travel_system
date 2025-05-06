@@ -23,11 +23,13 @@ function openEditModal(panoramaId) {
   const modalEl = id("modalEditPanorama");
   const modal = new bootstrap.Modal(modalEl);
   const btnSaveEditPanorama = id("btn-save-edit-panorama");
+  const btnEnablePanorama = id("edit-btn-enable");
 
   // Mostrar el modal
   loading.style.display = "block";
   content.style.display = "none";
   btnSaveEditPanorama.hidden = true;
+  btnEnablePanorama.hidden = true;
   modal.show();
 
   // Obtener los datos de la panorama
@@ -41,8 +43,6 @@ function openEditModal(panoramaId) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
-      
       id("edit-panorama-id").value = data.id;
       id("edit-panorama-route-id").value = data.route_id;
       id("edit-panorama-name").value = data.panorama_name;
@@ -85,6 +85,10 @@ function openEditModal(panoramaId) {
       content.style.display = "flex";
       btnSaveEditPanorama.hidden = false;
 
+      if (data.is_deleted === true) {
+        btnEnablePanorama.hidden = false;
+      }
+      
       // Destruir visor al cerrar
       modalEl.addEventListener("hidden.bs.modal", () => {
         if (viewer) viewer.destroy();
@@ -101,7 +105,6 @@ function openEditModal(panoramaId) {
     })
     .catch((error) => {
       window.alert("Error al abrir el modal de edición.");
-      console.error(error);
     });
 }
 

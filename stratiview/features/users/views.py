@@ -51,7 +51,6 @@ def users(request):
         f_is_active = request.GET.get("filter_is_active")
         f_is_locked = request.GET.get("filter_is_locked")
 
-
         if f_email:
             users = users.filter(email__icontains=f_email)
 
