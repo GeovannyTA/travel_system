@@ -1,12 +1,5 @@
 from django.contrib import admin
-from stratiview.models import User, PanoramaMetadata, State, UserArea, UserRol, Area, Rol, Route, UserRoute
-
-
-@admin.register(State)
-class StateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    search_fields = ('name',)
-    ordering = ('name',)
+from stratiview.models import User, PanoramaMetadata, UserArea, UserRol, Area, Rol, Route, UserRoute
 
 
 @admin.register(User)
@@ -48,8 +41,8 @@ class PanoramaMetadataAdmin(admin.ModelAdmin):
 
 @admin.register(Route)
 class RouteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'state')
-    search_fields = ('name', 'description', 'state__name')
+    list_display = ('id', 'name', 'description')
+    search_fields = ('name', 'description')
     ordering = ('name',)
 
 

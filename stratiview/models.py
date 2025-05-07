@@ -1,21 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
-
-
-class State(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(unique=True, max_length=100, blank=False, null=False)
-
-    class Meta:
-        db_table = 'state'
 
 
 class Route(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(unique=True, max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
-    state = models.ForeignKey(State, on_delete=models.CASCADE, blank=False, null=False)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:

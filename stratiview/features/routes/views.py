@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from stratiview.models import Route, State, UserArea, UserRol, UserRoute
+from stratiview.models import Route, UserArea, UserRol, UserRoute
 from stratiview.features.utils.utils import soft_redirect
 from django.http import JsonResponse
 from django.urls import reverse
@@ -33,12 +33,10 @@ def get_routes(request):
 
         if any(area in ["administracion"] for area in user_areas) or any(role in ["administrador"] for role in user_roles):
             routes = Route.objects.all()
-            states = State.objects.all()
         else:
             routes = Route.objects.filter(
                 id__in= UserRoute.objects.filter(user=request.user).values_list("route_id", flat=True),
             ).filter(is_deleted=False)
-            states = []
         
         # Filtros
         route_name = request.GET.get("route_name")
@@ -56,7 +54,6 @@ def get_routes(request):
         page_obj = paginator.get_page(page_number)
         context = {
             'routes': page_obj,
-            'states': states,
             'route_name': route_name,
             'paginator': paginator,
         }
@@ -73,11 +70,10 @@ def get_route(request, route_id):
         if request.headers.get("x-requested-with") != "XMLHttpRequest":
             return soft_redirect(reverse("users"))
 
-        route = Route.objects.select_related('state').only(
+        route = Route.objects.only(
             'id', 
             'name', 
             'description', 
-            'state',
             'is_deleted',
         ).filter(id=route_id).first()
         if not route:
@@ -87,7 +83,6 @@ def get_route(request, route_id):
             "id": route.id,
             "name": route.name,
             "description": route.description,
-            "state": route.state.id,
             "is_deleted": route.is_deleted,
         })
     
@@ -103,15 +98,13 @@ def add_route(request):
     if request.method == "POST":
         name = request.POST.get("add-route-name")
         description = request.POST.get("add-route-description")
-        state = request.POST.get("add-route-state")
 
-        if not name or not state or not description:
+        if not name or not description:
             messages.warning(request, "Todos los campos son obligatorios")
             return soft_redirect(reverse("routes"))
 
-        state = State.objects.filter(id=state).first()
         
-        route_exist = Route.objects.filter(name=name, state=state).exists()
+        route_exist = Route.objects.filter(name=name).exists()
         if route_exist:
             messages.warning(request, "Ya existe un recorrido con ese nombre y estado")
             return soft_redirect(reverse("routes"))
@@ -120,7 +113,6 @@ def add_route(request):
             Route.objects.create(
                 name=name,
                 description=description,
-                state=state,
             )
         except Exception as e:
             messages.warning(request, f"Error al crear el recorrido: {e}")
@@ -156,7 +148,6 @@ def edit_route(request):
         if action == "save":
             name = request.POST.get("edit-route-name")
             description = request.POST.get("edit-route-description")
-            state = request.POST.get("edit-route-state")
 
             if name:
                 route.name = name
@@ -164,10 +155,6 @@ def edit_route(request):
             if description:
                 route.description = description
             
-            if state:
-                state = State.objects.filter(id=state).first()
-                route.state = state
-
             route.save()
             messages.info(request, "Recorrido editado exitosamente")
             return soft_redirect(reverse("routes"))

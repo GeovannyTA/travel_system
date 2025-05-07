@@ -52,16 +52,6 @@
                 <br>
                 <textarea class="w-100 rounded-2" style="min-height: 100px; border: solid 1px #e5e5e5;"  name="add-route-description" id="add-route-description" required></textarea>
               </div>
-              <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
-                <div class="form-group w-100">
-                  <label for="add-route-state" class="form-label">Entidad federativa</label>
-                  <select name="add-route-state" id="add-route-state" class="form-select" required>
-                    {% for state in states %}
-                    <option value="{{ state.id }}">{{ state.name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
             </div>
           </div>
           <div class="modal-footer">

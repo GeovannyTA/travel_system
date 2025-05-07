@@ -11,7 +11,7 @@ class AutoLogoutMiddleware:
     def __call__(self, request):
         if request.user.is_authenticated:
             now = int(time.time())
-            timeout = 900 # 15 minutos de inactividad
+            timeout = 1500 # 25 minutos de inactividad
 
             last_activity = request.session.get('last_activity', now)
             if now - last_activity > timeout:

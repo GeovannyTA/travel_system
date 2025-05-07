@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from stratiview.models import User, PanoramaMetadata, State, UserRol, UserArea, Route, UserRoute
+from stratiview.models import User, PanoramaMetadata, UserRol, UserArea, Route, UserRoute
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
 from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters, send_upload_and_not_upload_panoramas
@@ -34,10 +34,10 @@ def get_panoramas(request):
     )
 
     if any(area in ["administracion"] for area in user_areas) or any(role in ["administrador"] for role in user_roles):
-        routes = Route.objects.filter(state__in=State.objects.all())
+        routes = Route.objects.all()
         panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').order_by("-date_uploaded")
     else:
-        routes = Route.objects.filter(state=UserRoute.objects.filter(id=request.user.id))
+        routes = Route.objects.filter(id=UserRoute.objects.filter(id=request.user.id))
         panoramas = PanoramaMetadata.objects.select_related('route', 'upload_by').filter(
             upload_by=request.user
         ).order_by("-date_uploaded")
@@ -76,11 +76,27 @@ def get_panoramas(request):
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
+    querydict = request.GET.copy()
+    querydict.pop("page", None)
+    query_string = querydict.urlencode()
+
+    # Rango de páginas para el paginador inteligente
+    current = page_obj.number
+    total = paginator.num_pages
+
+    start = max(current - 2, 1)
+    end = min(current + 2, total) + 1  # +1 porque range no incluye el último
+
+    page_range = range(start, end)
+
     context = {
         "panoramas": page_obj,
         "routes": routes,
         "users": users,
         "paginator": paginator,
+        "query_string": query_string,
+        "page_range": page_range,
+        "total_pages": total,
     }
     return render(request, "panoramas/panoramas.html", context)
 

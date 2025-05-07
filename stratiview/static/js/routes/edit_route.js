@@ -43,7 +43,6 @@ function openEditModal(routeId) {
       id("edit-route-id").value = data.id;
       id("edit-route-name").value = data.name;
       id("edit-route-description").value = data.description;
-      id("edit-route-state").value = data.state;
 
       // Mostrar contenido real y ocultar spinner
       loading.style.display = "none";

@@ -53,7 +53,7 @@ def get_nodes(request, route_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = PanoramaMetadata.objects.select_related('route__state').filter(route_id=route_id, is_deleted=False)
+        panoramas = PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)
 
         # Preparar nodos
         for node in panoramas:
@@ -66,7 +66,6 @@ def get_nodes(request, route_id):
                 "gps": [node.gps_lng, node.gps_lat],
                 "altitude": node.gps_alt,
                 "direction": node.gps_direction,
-                "state": node.route.state.name,
                 "route": node.route.name,
                 "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
                 "links": []

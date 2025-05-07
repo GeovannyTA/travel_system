@@ -74,57 +74,55 @@
               Limpiar
             </a>
           </div>
+          {% with total_pages=panoramas.paginator.num_pages current=panoramas.number %}
+            {% with start=current|add:"-2" end=current|add:"2" %}
+              {% if start < 1 %}{% with end=end|add:"1-start" start=1 %}{% endwith %}{% endif %}
+              {% if end > total_pages %}{% with start=start|add:"total_pages-end" end=total_pages %}{% endwith %}{% endif %}
+
           <nav aria-label="Paginación" class="mt-3">
-            <ul class="pagination">
+            <ul class="pagination justify-content-center flex-wrap">
               {% if panoramas.has_previous %}
                 <li class="page-item">
-                  <a class="page-link" href="?page={{ panoramas.previous_page_number }}
-                    {% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}
-                    {% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}
-                    {% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}
-                    {% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}
-                    {% if request.GET.latitude %}&latitude={{ request.GET.latitude }}{% endif %}
-                    {% if request.GET.longitud %}&longitud={{ request.GET.longitud }}{% endif %}
-                    {% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}
-                  ">
-                    <i class="fas fa-chevron-left"></i>
+                  <a class="page-link" href="?page={{ panoramas.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}" aria-label="Anterior">
+                    <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
               {% endif %}
-        
-              {% for num in panoramas.paginator.page_range %}
-                <li class="page-item {% if panoramas.number == num %}active{% endif %}">
-                  <a class="page-link" href="?page={{ num }}
-                    {% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}
-                    {% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}
-                    {% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}
-                    {% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}
-                    {% if request.GET.latitude %}&latitude={{ request.GET.latitude }}{% endif %}
-                    {% if request.GET.longitud %}&longitud={{ request.GET.longitud }}{% endif %}
-                    {% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}
-                  ">
-                    {{ num }}
-                  </a>
-                </li>
+
+              {% if start > 1 %}
+                <li class="page-item"><a class="page-link" href="?page=1{% if query_string %}&{{ query_string }}{% endif %}">1</a></li>
+                {% if start > 2 %}
+                  <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+              {% endif %}
+
+              {% for num in page_range %}
+                {% if num >= 1 and num <= total_pages %}
+                  <li class="page-item {% if num == current %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}{% if query_string %}&{{ query_string }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% endif %}
               {% endfor %}
-        
+
+              {% if end < total_pages %}
+                {% if end < total_pages|add:'-1' %}
+                  <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" href="?page={{ total_pages }}{% if query_string %}&{{ query_string }}{% endif %}">{{ total_pages }}</a></li>
+              {% endif %}
+
               {% if panoramas.has_next %}
                 <li class="page-item">
-                  <a class="page-link" href="?page={{ panoramas.next_page_number }}
-                    {% if request.GET.route_id %}&route_id={{ request.GET.route_id }}{% endif %}
-                    {% if request.GET.upload_by %}&upload_by={{ request.GET.upload_by }}{% endif %}
-                    {% if request.GET.start_date %}&start_date={{ request.GET.start_date }}{% endif %}
-                    {% if request.GET.end_date %}&end_date={{ request.GET.end_date }}{% endif %}
-                    {% if request.GET.latitude %}&latitude={{ request.GET.latitude }}{% endif %}
-                    {% if request.GET.longitud %}&longitud={{ request.GET.longitud }}{% endif %}
-                    {% if request.GET.filter_is_deleted %}&filter_is_deleted={{ request.GET.filter_is_deleted }}{% endif %}
-                  ">
-                    <i class="fas fa-chevron-right"></i>
+                  <a class="page-link" href="?page={{ panoramas.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}" aria-label="Siguiente">
+                    <span aria-hidden="true">&raquo;</span>
                   </a>
                 </li>
               {% endif %}
             </ul>
           </nav>
+
+            {% endwith %}
+          {% endwith %}
         </div>
       </div>
     </form>
