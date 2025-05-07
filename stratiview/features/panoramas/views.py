@@ -163,7 +163,6 @@ def get_panorama(request, panorama_id):
 )
 def add_panoramas(request):
     if request.method == "POST":
-        # Obtener los archivos de imagen del formulario
         panoramas = request.FILES.getlist("images")
         route_id = request.POST.get("route")
 
@@ -171,101 +170,68 @@ def add_panoramas(request):
             messages.warning(request, "No se seleccionó la ruta")
             return soft_redirect(reverse("panoramas"))
 
-        # Obtener la entidad federativa seleccionada
         route_obj = Route.objects.get(id=route_id)
-
-        # Arreglo para las imagenes que no se subieron
         not_uploaded = []
         uploaded = []
 
+        # ✅ Coordenadas y nombres existentes (una sola consulta)
+        existing_data = list(
+            PanoramaMetadata.objects.filter(route=route_obj)
+            .values_list("name", "gps_lat", "gps_lng", "gps_alt")
+        )
+        existing_coords = [(lat, lon, alt) for _, lat, lon, alt in existing_data]
+        existing_names = {name for name, _, _, _ in existing_data}
+
+        new_metadata_objects = []
+
         for panorama_file in panoramas:
-            # Extraer metadatos de la imagen
             metadata = extract_metadata(panorama_file)
 
-            # Si no se pudieron extraer los metadatos, agregar a la lista de no subidos
             if not metadata:
-                not_uploaded.append(
-                    {
-                        "name": panorama_file.name,
-                        "error": "No se pudieron extraer los metadatos de la imagen",
-                    }
-                )
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "No se pudieron extraer los metadatos de la imagen",
+                })
                 continue
 
-            # Generar el nombre del panorama
-            gps_lat = metadata["lat"]
-            gps_lng = metadata["lon"]
-            gps_alt = metadata["alt"]
-            file_name = (
-                f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name.replace(' ', '_')}"
+            gps_lat = float(metadata["lat"])
+            gps_lng = float(metadata["lon"])
+            gps_alt = float(metadata["alt"])
+            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name.replace(' ', '_')}"
+
+            # ✅ Verificar duplicado exacto
+            if (
+                file_name in existing_names or
+                (gps_lat, gps_lng, gps_alt) in existing_coords
+            ):
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "La imagen ya existe en la base de datos",
+                })
+                continue
+
+            # ✅ Verificar si está demasiado cerca de alguna ya registrada
+            is_near = any(
+                calculate_distance_meters(gps_lat, gps_lng, gps_alt, lat2, lon2, alt2) < 10
+                for lat2, lon2, alt2 in existing_coords
             )
-
-            # Obtener todos los panoramas del estado una sola vez
-            existing_panoramas = list(PanoramaMetadata.objects.filter(route=route_obj))
-
-            # Verificar si ya existe uno con los mismos metadatos o está muy cerca
-            duplicate = False
-            nearby = False
-
-            for existing in existing_panoramas:
-                # Verificar si la imagen ya existe
-                if (
-                    existing.name == file_name
-                    and existing.gps_lat == gps_lat
-                    and existing.gps_lng == gps_lng
-                    and existing.gps_alt == gps_alt
-                ):
-                    duplicate = True
-                    break
-
-                # Calcular la distancia de las panoramas
-                distance = calculate_distance_meters(
-                    gps_lat,
-                    gps_lng,
-                    gps_alt,
-                    existing.gps_lat,
-                    existing.gps_lng,
-                    existing.gps_alt,
-                )
-
-                # Verificar si una panorama se encuentra muy cerca de otra
-                if distance < 10:
-                    nearby = True
-                    break
-
-            # Si es duplicado exacto
-            if duplicate:
-                not_uploaded.append(
-                    {
-                        "name": panorama_file.name,
-                        "error": "La imagen ya existe en la base de datos",
-                    }
-                )
+            if is_near:
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": "La panoramas está demasiado cerca de otra imagen",
+                })
                 continue
 
-            # Si está demasiado cerca de otra imagen
-            if nearby:
-                not_uploaded.append(
-                    {
-                        "name": panorama_file.name,
-                        "error": "La panoramas está demasiado cerca de otra imagen",
-                    }
-                )
-                continue
-
-            # Almacenar la panorama y sus metadastos en la db
             try:
-                # Si falla algo no almacenar la iamgen en la db
-                with transaction.atomic():
-                    # Almacennar en la variable uploaded para enviar el correo
+                panorama_file.seek(0)
+                upload_image_to_s3(panorama_file, file_name)
 
-                    panorama_file.seek(0)  # Ensure the file pointer is at the beginning
-                    upload_image_to_s3(panorama_file, file_name)
-                    PanoramaMetadata.objects.create(
+                new_metadata_objects.append(
+                    PanoramaMetadata(
                         name=file_name,
-                        gps_lat=float(metadata["lat"]),
-                        gps_lng=float(metadata["lon"]),
-                        gps_alt=float(metadata["alt"]),
+                        gps_lat=gps_lat,
+                        gps_lng=gps_lng,
+                        gps_alt=gps_alt,
                         gps_direction=float(metadata["direction"]),
                         orientation=float(metadata["orientation"]),
                         camera_make=metadata["marca"],
@@ -276,20 +242,26 @@ def add_panoramas(request):
                         upload_by=request.user,
                         is_deleted=False,
                     )
+                )
 
-                    uploaded.append(
-                        {
-                            "name": panorama_file.name,
-                        }
-                    )
-            except PanoramaMetadata.DoesNotExist:
-                messages.warning(request, "No se pudo guardar la panorama.")
-                return soft_redirect(reverse("panoramas"))
+                uploaded.append({ "name": panorama_file.name })
+                # Agregar a sets/listas locales para próximas verificaciones
+                existing_coords.append((gps_lat, gps_lng, gps_alt))
+                existing_names.add(file_name)
+
             except Exception as e:
-                messages.warning(request, f"Error al guardar la panorama: {e}")
-                return soft_redirect(reverse("panoramas"))
+                not_uploaded.append({
+                    "name": panorama_file.name,
+                    "error": f"Error al guardar la panorama: {str(e)}"
+                })
 
-        # Enviar correo con las panoramas subidas y no subidas
+        if new_metadata_objects:
+            try:
+                with transaction.atomic():
+                    PanoramaMetadata.objects.bulk_create(new_metadata_objects)
+            except Exception as e:
+                messages.warning(request, f"Error al guardar panoramas: {str(e)}")
+
         if uploaded or not_uploaded:
             send_upload_and_not_upload_panoramas(
                 not_upload_panoramas=not_uploaded,
@@ -299,9 +271,15 @@ def add_panoramas(request):
                 email=request.user.email,
             )
 
-        # Redirigir a la página anterior o a una URL predeterminada
         return soft_redirect(reverse("panoramas"))
 
+
+def is_nearby(gps_lat, gps_lng, gps_alt, existing_coords):
+    for lat2, lon2, alt2 in existing_coords:
+        distance = calculate_distance_meters(gps_lat, gps_lng, gps_alt, lat2, lon2, alt2)
+        if distance < 10:  # distancia mínima en metros
+            return True
+    return False
 
 @login_required
 @area_matrix(
