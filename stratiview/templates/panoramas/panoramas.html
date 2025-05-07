@@ -28,9 +28,9 @@
     <form method="get" class="pt-2 px-2 rounded-3 w-100">
       <div class="row g-2">
         <div class="col-md-4">
-          <label for="route_id" class="form-label">Ruta</label>
+          <label for="route_id" class="form-label">Recorrido</label>
           <select id="route_id" name="route_id" class="form-select">
-            <option value="">Todas las rutas</option>
+            <option value="">Todos los recorridos</option>
             {% for route in routes %}
               <option value="{{ route.id }}" {% if request.GET.route_id == route.id|stringformat:"s" %}selected{% endif %}>{{ route.name }}</option>
             {% endfor %}

@@ -168,8 +168,8 @@ LOGIN_URL = '/stratiview/auth/sign_in'
 LOGOUT_REDIRECT_URL = '/stratiview/auth/sign_in'
 LOGIN_REDIRECT_URL = '/stratiview/routes'
 
-DATA_UPLOAD_MAX_NUMBER_FILES = 1001  # Numero maximo de imagenes permitidos
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024 * 1024  # Numero maximo de gigas 5GB
+DATA_UPLOAD_MAX_NUMBER_FILES = 500  # Numero maximo de imagenes permitidos
+DATA_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024 * 1024  # Numero maximo de gigas 5GB
 
 # Usar S3 como backend para archivos estáticos y medios
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
