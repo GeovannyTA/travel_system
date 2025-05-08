@@ -12,6 +12,7 @@ from django.db.models.functions import Lower
 from stratiview.features.utils.utils import soft_redirect
 from stratiview.features.utils_amazon import generate_url_presigned
 from django.core.paginator import Paginator
+from pathlib import Path
 
 @login_required
 @area_matrix(rules=[
@@ -106,8 +107,6 @@ No se implementan los decoradores de permisos para la siguiente funcion ya que
 se utiliza en el frontend para obtener los metadatos de la panorama y no se 
 requiere permisos especiales para acceder a ella.
 """
-
-
 @login_required
 def get_panorama(request, panorama_id):
     if request.method == "GET":
@@ -165,6 +164,7 @@ def add_panoramas(request):
     if request.method == "POST":
         panoramas = request.FILES.getlist("images")
         route_id = request.POST.get("route")
+        force_upload = bool(request.POST.get("force_upload", False))
 
         if not route_id:
             messages.warning(request, "No se seleccionó la ruta")
@@ -174,7 +174,7 @@ def add_panoramas(request):
         not_uploaded = []
         uploaded = []
 
-        # ✅ Coordenadas y nombres existentes (una sola consulta)
+        # Coordenadas y nombres existentes (una sola consulta)
         existing_data = list(
             PanoramaMetadata.objects.filter(route=route_obj)
             .values_list("name", "gps_lat", "gps_lng", "gps_alt")
@@ -197,30 +197,31 @@ def add_panoramas(request):
             gps_lat = float(metadata["lat"])
             gps_lng = float(metadata["lon"])
             gps_alt = float(metadata["alt"])
-            file_name = f"{gps_lat}_{gps_lng}_{gps_alt}_{route_obj.name.replace(' ', '_')}"
+            file_name = f"{Path(panorama_file.name).stem}-{route_obj.name.replace(' ', '_')}"
 
-            # ✅ Verificar duplicado exacto
+            # Verificar duplicado exacto
             if (
                 file_name in existing_names or
                 (gps_lat, gps_lng, gps_alt) in existing_coords
             ):
                 not_uploaded.append({
-                    "name": panorama_file.name,
+                    "name": file_name,
                     "error": "La imagen ya existe en la base de datos",
                 })
                 continue
-
-            # ✅ Verificar si está demasiado cerca de alguna ya registrada
-            is_near = any(
-                calculate_distance_meters(gps_lat, gps_lng, gps_alt, lat2, lon2, alt2) < 10
-                for lat2, lon2, alt2 in existing_coords
-            )
-            if is_near:
-                not_uploaded.append({
-                    "name": panorama_file.name,
-                    "error": "La panoramas está demasiado cerca de otra imagen",
-                })
-                continue
+            
+            if force_upload == False:
+                # Verificar si está demasiado cerca de alguna ya registrada
+                is_near = any(
+                    calculate_distance_meters(gps_lat, gps_lng, gps_alt, lat2, lon2, alt2) < 10
+                    for lat2, lon2, alt2 in existing_coords
+                )
+                if is_near:
+                    not_uploaded.append({
+                        "name": file_name,
+                        "error": "La panorama está demasiado cerca de otra imagen",
+                    })
+                    continue
 
             try:
                 panorama_file.seek(0)
