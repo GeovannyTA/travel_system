@@ -83,12 +83,12 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
       markersPlugin.setMarkers([{
         id: 'marker-1',
         type: 'image',
-        image: 'https://beautiful-einstein.51-79-98-210.plesk.page/static/images/lgstratimex.webp',
+        image: 'https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png',
         anchor: 'center center',
         position: { yaw: 0, pitch: 10},
-        size: { width: 250, height: 250 },
+        size: { width: 320, height: 320 },
         style: {
-          opacity: '0.5',
+          opacity: '0.84',
         },
       }]);
     });
