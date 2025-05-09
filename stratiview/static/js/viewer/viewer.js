@@ -72,10 +72,26 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             nodes: nodes,
           },
         ],
+        [MarkersPlugin],
       ],
     });
 
+    const markersPlugin = viewer.getPlugin(MarkersPlugin);
     const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
+
+    tourPlugin.addEventListener('node-changed', (e) => {
+      markersPlugin.setMarkers([{
+        id: 'marker-1',
+        type: 'image',
+        image: 'https://beautiful-einstein.51-79-98-210.plesk.page/static/images/lgstratimex.webp',
+        anchor: 'center center',
+        position: { yaw: 0, pitch: 10},
+        size: { width: 250, height: 250 },
+        style: {
+          opacity: '0.5',
+        },
+      }]);
+    });
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);
