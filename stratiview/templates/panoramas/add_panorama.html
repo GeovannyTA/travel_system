@@ -60,24 +60,26 @@
                   Selecciona o arrastra tus panoramas aquí
               </span>
             </div>
-            <small class="mt-2 d-block" style="color: rgb(209, 181, 39);">
-              <i class="fa-solid fa-circle-info"></i>
-              Forzar carga evita que se consideren las distancias entre panoramas, su uso es recomendado en caso de <strong>faltar</strong> panoramas en el recorrido.
-            </small>
-            <div class="form-group">
-              <label for="form-label">Forzar carga</label>
-              <input
-                type="checkbox"
-                class="form-check-input"
-                id="force-upload"
-                name="force_upload"
-                value="true"
-              >
-            </div>
             <small class="text-muted mt-2 d-block">
               <i class="fa-solid fa-circle-info"></i>
               <strong>Nota:</strong> El numero máximo de panoramas es <strong>500</strong> y el tamaño máximo total es de <strong>4GB</strong>.
             </small>
+            <div class="rounded p-2 mt-2" style="border: dashed 2px rgb(209, 181, 39); background-color: rgb(255, 254, 247);">
+              <div class="form-group">
+                <label for="form-label">Forzar carga</label>
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="force-upload"
+                  name="force_upload"
+                  value="true"
+                >
+              </div>
+              <small class="mt-2 d-block" style="color: rgb(209, 181, 39);">
+                <i class="fa-solid fa-circle-info"></i>
+                Forzar carga evita que se consideren las distancias entre panoramas, su uso es recomendado en caso de <strong>faltar</strong> panoramas en el recorrido y no se pueda conectar con otro panorama.
+              </small>
+            </div>
           </div>
         </div>
         <div class="modal-footer">

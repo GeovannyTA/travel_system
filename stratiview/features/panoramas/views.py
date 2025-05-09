@@ -64,10 +64,10 @@ def get_panoramas(request):
         panoramas = panoramas.filter(date_taken__date__lte=end_date)
 
     if latitude:
-        panoramas = panoramas.filter(gps_lat__icontains=latitude)
+        panoramas = panoramas.filter(gps_lat=latitude)
     
     if longitude:
-        panoramas = panoramas.filter(gps_lng__icontains=longitude)
+        panoramas = panoramas.filter(gps_lng=longitude)
 
     # Obtener usuarios únicos
     users = User.objects.filter(id__in=panoramas.values_list("upload_by", flat=True).distinct())

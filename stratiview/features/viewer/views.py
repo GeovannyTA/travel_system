@@ -58,20 +58,48 @@ def get_nodes(request, route_id):
         # Preparar nodos
         for node in panoramas:
             node.url = generate_url_presigned(node.name)
-            
-        nodes = [
-            {
-                "id": node.id,
-                "panorama": generate_url_presigned(node.name),
-                "gps": [node.gps_lng, node.gps_lat],
-                "altitude": node.gps_alt,
-                "direction": node.gps_direction,
-                "route": node.route.name,
-                "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
-                "links": []
-            }
-            for node in panoramas
-        ]
+        
+        user_areas = set(
+            UserArea.objects.filter(user=request.user)
+            .annotate(lower_area=Lower("area__name"))
+            .values_list("lower_area", flat=True)
+        )
+        user_roles = set(
+            UserRol.objects.filter(user=request.user)
+            .annotate(lower_rol=Lower("rol__name"))
+            .values_list("lower_rol", flat=True)
+        )
+
+        is_admin = "administrador" in user_roles or "administracion" in user_areas
+        if is_admin:
+            nodes = [
+                {
+                    "id": node.id,
+                    "panorama": generate_url_presigned(node.name),
+                    "gps": [node.gps_lng, node.gps_lat],
+                    "caption": node.name,
+                    "altitude": node.gps_alt,
+                    "direction": node.gps_direction,
+                    "route": node.route.name,
+                    "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
+                    "links": []
+                }
+                for node in panoramas
+            ]
+        else:
+            nodes = [
+                {
+                    "id": node.id,
+                    "panorama": generate_url_presigned(node.name),
+                    "gps": [node.gps_lng, node.gps_lat],
+                    "altitude": node.gps_alt,
+                    "direction": node.gps_direction,
+                    "route": node.route.name,
+                    "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
+                    "links": []
+                }
+                for node in panoramas
+            ]
 
         # Calcular conexiones entre nodos (optimizando combinaciones únicas)
         for node_a, node_b in combinations(nodes, 2):
