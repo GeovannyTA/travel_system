@@ -112,7 +112,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           id: "marker-1",
           type: "image",
           image:
-            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png",
+            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.webp",
           anchor: "center center",
           position: { yaw: 0, pitch: 10 },
           size: { width: 320, height: 320 },

@@ -138,4 +138,23 @@ body,
   transform: translate(-50%, -50%);
   z-index: 9999;
   width: 30%;
+  text-align: center;
+}
+
+.loader-image {
+  animation: spin 2s linear infinite;
+  display: block;
+  margin: auto; /* opcional, para centrar */
+}
+
+@keyframes spin {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
