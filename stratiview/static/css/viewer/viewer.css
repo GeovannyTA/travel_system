@@ -158,3 +158,15 @@ body,
     transform: scale(1);
   }
 }
+
+.psv-tooltip {
+  background-color: #1e78e6 !important;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  max-width: 230px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.138);
+}

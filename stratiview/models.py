@@ -121,3 +121,13 @@ class UserRol(models.Model):
                 fields=['user', 'rol'], 
                 name='unique_user_rol_fields')
         ]
+
+
+class PropertyMarkers():
+    id = models.AutoField(primary_key=True)
+    key = models.CharField(max_length=100, blank=False, null=False)
+    account = models.CharField(max_length=100, blank=False, null=False)
+
+    class Meta:
+        db_table = 'property_markers'
+        

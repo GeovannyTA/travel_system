@@ -112,18 +112,18 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           id: "marker-1",
           type: "image",
           image:
-            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.webp",
+            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png",
           anchor: "center center",
           position: { yaw: 0, pitch: 10 },
           size: { width: 320, height: 320 },
           style: {
-            opacity: "0.84",
+            opacity: "0.86",
           },
         },
       ]);
     });
 
-    viewer.addEventListener("click", ({ data }) => {
+    viewer.addEventListener("dblclick", ({ data }) => {
       if (!data.rightclick) {
         markersPlugin.addMarker({
           id: "#" + Math.random(),
@@ -131,25 +131,61 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           image: baseUrl + "pictos/pin-red.png",
           size: { width: 32, height: 32 },
           anchor: "bottom center",
-          tooltip: "Generated pin",
+          tooltip: "Marcador de predio",
           data: {
             generated: true,
           },
-          content: document.getElementById("lorem-content").innerHTML,
+          content: document.getElementById("form-predio").innerHTML,
         });
       }
     });
 
-    markersPlugin.addEventListener(
-      "select-marker",
-      ({ marker, doubleClick }) => {
-        if (marker.data?.generated) {
-          if (doubleClick) {
-            markersPlugin.removeMarker(marker);
+    let ctrlPressed = false;
+
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey) ctrlPressed = true;
+    });
+    window.addEventListener("keyup", () => {
+      ctrlPressed = false;
+    });
+
+    markersPlugin.addEventListener("select-marker", ({ marker, rightClick }) => {
+      console.log("Yas", marker.config.position['yaw'])
+      console.log("Pitch", marker.config.position['pitch'])
+
+      if (marker.data?.generated) {
+        console.log("Marcador generado:", marker);
+        // Pasar los datos de Yaw y Pitch a los inputs del formulario
+        const yawInput = document.getElementById("marker-yaw");
+        const pitchInput = document.getElementById("marker-pitch");
+        
+        yawInput.value = marker.config.position['yaw'];
+        pitchInput.value = marker.config.position['pitch'];
+        console.log("Datos pasados al formulario:", {
+          yaw: marker.config.position['yaw'],
+          pitch: marker.config.position['pitch'],
+        });
+        if (rightClick && ctrlPressed) {
+          markersPlugin.removeMarker(marker);
+        } else if (rightClick) {
+          if (marker.definition === baseUrl + "pictos/pin-blue.png") {
+            markersPlugin.updateMarker({
+                id: marker.id,
+                tooltip: "Marcador de predio",
+                image: baseUrl + 'pictos/pin-red.png',
+                content: document.getElementById("form-predio").innerHTML,
+            });
+          } else {
+            markersPlugin.updateMarker({
+                id: marker.id,
+                tooltip: "Marcador de objeto",
+                image: baseUrl + 'pictos/pin-blue.png',
+                content: document.getElementById("form-object").innerHTML,
+            });
           }
         }
       }
-    );
+    });
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);
