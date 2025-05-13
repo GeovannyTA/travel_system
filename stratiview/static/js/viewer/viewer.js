@@ -1,4 +1,4 @@
-import { Viewer } from "@photo-sphere-viewer/core";
+import { Viewer, utils } from "@photo-sphere-viewer/core";
 import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
 import { VirtualTourPlugin } from "@photo-sphere-viewer/virtual-tour-plugin";
 import { PlanPlugin } from "@photo-sphere-viewer/plan-plugin";
@@ -6,7 +6,6 @@ import { TileLayer } from "leaflet";
 import { CompassPlugin } from "@photo-sphere-viewer/compass-plugin";
 const container = document.getElementById("photosphere");
 const route_id = container.dataset.routeId;
-
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
 
 fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
@@ -23,14 +22,8 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
 
     const viewer = new Viewer({
       container: container,
-      loadingImg: baseUrl + "loader.gif",
       caption: "&copy; Estrategas de México",
-      navbar: [
-        'zoom',
-        'caption',
-        'move',
-        'fullscreen',
-      ],
+      navbar: ["zoom", "caption", "move", "fullscreen"],
       minFov: 70,
       plugins: [
         [
@@ -64,11 +57,12 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             dataMode: "client",
             preload: true,
             transitionOptions: {
-              showLoader: false,
               speed: "15rpm",
               effect: "fade",
               rotation: true,
+              showLoader: false,
             },
+            showLoader: false,
             nodes: nodes,
           },
         ],
@@ -76,22 +70,86 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
       ],
     });
 
+    viewer.addEventListener("ready", () => {
+      const loader = document.getElementById("custom-loader");
+      if (loader) loader.style.display = "none";
+    });
+
     const markersPlugin = viewer.getPlugin(MarkersPlugin);
     const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
 
-    tourPlugin.addEventListener('node-changed', (e) => {
-      markersPlugin.setMarkers([{
-        id: 'marker-1',
-        type: 'image',
-        image: 'https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png',
-        anchor: 'center center',
-        position: { yaw: 0, pitch: 10},
-        size: { width: 320, height: 320 },
-        style: {
-          opacity: '0.84',
-        },
-      }]);
+    viewer.setOptions({
+      mousemove: false,
+      mousewheel: false,
     });
+
+    new utils.Animation({
+      properties: {
+        pitch: { start: -Math.PI / 2, end: 0 },
+        yaw: { start: Math.PI / 2, end: 0 },
+        zoom: { start: 0, end: 50 },
+        maxFov: { start: 180, end: 90 },
+        fisheye: { start: 2, end: 0 },
+      },
+      duration: 3800,
+      easing: "inOutQuad",
+      onTick: (properties) => {
+        viewer.setOptions({
+          fisheye: properties.fisheye,
+          maxFov: properties.maxFov,
+        });
+        viewer.rotate({ yaw: properties.yaw, pitch: properties.pitch });
+        viewer.zoom(properties.zoom);
+      },
+    }).then(() => {
+      viewer.setOptions({
+        mousemove: true,
+        mousewheel: true,
+      });
+
+      markersPlugin.setMarkers([
+        {
+          id: "marker-1",
+          type: "image",
+          image:
+            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png",
+          anchor: "center center",
+          position: { yaw: 0, pitch: 10 },
+          size: { width: 320, height: 320 },
+          style: {
+            opacity: "0.84",
+          },
+        },
+      ]);
+    });
+
+    viewer.addEventListener("click", ({ data }) => {
+      if (!data.rightclick) {
+        markersPlugin.addMarker({
+          id: "#" + Math.random(),
+          position: { yaw: data.yaw, pitch: data.pitch },
+          image: baseUrl + "pictos/pin-red.png",
+          size: { width: 32, height: 32 },
+          anchor: "bottom center",
+          tooltip: "Generated pin",
+          data: {
+            generated: true,
+          },
+          content: document.getElementById("lorem-content").innerHTML,
+        });
+      }
+    });
+
+    markersPlugin.addEventListener(
+      "select-marker",
+      ({ marker, doubleClick }) => {
+        if (marker.data?.generated) {
+          if (doubleClick) {
+            markersPlugin.removeMarker(marker);
+          }
+        }
+      }
+    );
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);

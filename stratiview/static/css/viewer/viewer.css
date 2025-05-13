@@ -117,3 +117,25 @@ body,
   color: #196ccb !important;
 }
 
+.psv-container * {
+  box-sizing: border-box !important;
+}
+
+.psv-panel-close-button {
+  right: 25px !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.psv-loader-container {
+  display: none !important;
+}
+
+#custom-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  width: 30%;
+}
