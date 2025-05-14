@@ -78,6 +78,7 @@ def get_nodes(request, route_id):
                     "panorama": generate_url_presigned(node.name),
                     "gps": [node.gps_lng, node.gps_lat],
                     "caption": node.name,
+                    "title": node.name,
                     "altitude": node.gps_alt,
                     "direction": node.gps_direction,
                     "route": node.route.name,

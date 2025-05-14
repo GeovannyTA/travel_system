@@ -31,7 +31,7 @@
 </script>
 <script type="module" src="{% static 'js/viewer/viewer.js' %}"></script>
 <script type="text/template" id="form-predio">
-  <form action="{% url 'add_marker' %}" class="form d-flex flex-column gap-2" id="form-predio-submit">
+  <form class="form d-flex flex-column gap-2" id="form-predio-submit" onsubmit="addMarker(event)">
     {% csrf_token %}
     <h4>Marcador predio</h4>
     <div class="form-group">
@@ -42,6 +42,7 @@
         name="marker-key"
         id="marker-key"
         placeholder="Ingresa la clave del marcador"
+        required
       />
     </div>
     <div class="form-group">
@@ -52,23 +53,24 @@
         id="marker-account"
         name="marker-account"
         placeholder="Ingresa la cuenta del marcador"
+        required
       />
     </div>
     <div class="form-group">
       <label for="marker-type-current_use">Uso actual</label>
-      <select name="marker-type-current_use" id="marker-type-current_use" class="form-select">
+      <select name="marker-type-current_use" id="marker-type-current_use" class="form-select" required>
         <option value="predio">Industrial</option>
       </select>
     </div>
     <div class="form-group">
       <label for="marker-type-update_use">Uso actualizado</label>
-      <select name="marker-type-update_use" id="marker-type-update_use" class="form-select">
+      <select name="marker-type-update_use" id="marker-type-update_use" class="form-select" required>
         <option value="industrial">Industrial</option>
       </select>
     </div>
     <div class="form-group">
       <label for="marker-type">Tipo de predio</label>
-      <select name="market-type" id="marker-type" class="form-select">
+      <select name="market-type" id="marker-type" class="form-select" required>
         <option value="predio">Predio</option>
         <option value="pozo">Pozo</option>
         <option value="pozo-agua">Pozo de agua</option>
@@ -79,7 +81,7 @@
     <!-- Tamaño del predio -->
     <div class="form-group">
       <label for="marker-size">Tamaño del predio</label>
-      <select name="marker-size" id="marker-size" class="form-select">
+      <select name="marker-size" id="marker-size" class="form-select" required>
         <option value="pequeño">Pequeño</option>
         <option value="mediano">Mediano</option>
         <option value="grande">Grande</option>
@@ -94,26 +96,29 @@
         class="form-control"
         rows="3"
         placeholder="Ingresa una observación"
+        required
       ></textarea>
     </div>
     <div class="form-group">
-      <label for="marker-yaw">Yaw</label>
       <input
         type="text"
         name="marker-yaw"
         id="marker-yaw"
         class="form-control"
         value=""
+        required
+        hidden
       >
     </div>
     <div class="form-group">
-      <label for="marker-pitch">Pitch</label>
       <input
         type="text"
         name="marker-pitch"
         id="marker-pitch"
         class="form-control"
         value=""
+        required
+        hidden
       >
     <div class="d-flex justify-content-end">
       <button 
@@ -200,5 +205,5 @@
   </form>
 </script>
 
-<script src="{% static 'js/markers/markers.js' %}"></script>
+<script src="{% static 'js/marker/marker.js' %}"></script>
 {% endblock %}

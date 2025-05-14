@@ -78,6 +78,10 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
     const markersPlugin = viewer.getPlugin(MarkersPlugin);
     const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
 
+    window.viewer = viewer;
+    window.markersPlugin = markersPlugin;
+    window.baseUrl = baseUrl;
+    
     viewer.setOptions({
       mousemove: false,
       mousewheel: false,
@@ -149,43 +153,28 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
       ctrlPressed = false;
     });
 
-    markersPlugin.addEventListener("select-marker", ({ marker, rightClick }) => {
-      console.log("Yas", marker.config.position['yaw'])
-      console.log("Pitch", marker.config.position['pitch'])
+    markersPlugin.addEventListener(
+      "select-marker",
+      ({ marker, rightClick }) => {
+        if (marker.data?.generated) {
+          console.log("Marcador generado", marker);
+          window.currentMarkerId = marker.id;
+          // Pasar la información del marcador a los inputs
+          setTimeout(() => {
+            const yawInput = document.getElementById("marker-yaw");
+            const pitchInput = document.getElementById("marker-pitch");
 
-      if (marker.data?.generated) {
-        console.log("Marcador generado:", marker);
-        // Pasar los datos de Yaw y Pitch a los inputs del formulario
-        const yawInput = document.getElementById("marker-yaw");
-        const pitchInput = document.getElementById("marker-pitch");
-        
-        yawInput.value = marker.config.position['yaw'];
-        pitchInput.value = marker.config.position['pitch'];
-        console.log("Datos pasados al formulario:", {
-          yaw: marker.config.position['yaw'],
-          pitch: marker.config.position['pitch'],
-        });
-        if (rightClick && ctrlPressed) {
-          markersPlugin.removeMarker(marker);
-        } else if (rightClick) {
-          if (marker.definition === baseUrl + "pictos/pin-blue.png") {
-            markersPlugin.updateMarker({
-                id: marker.id,
-                tooltip: "Marcador de predio",
-                image: baseUrl + 'pictos/pin-red.png',
-                content: document.getElementById("form-predio").innerHTML,
-            });
-          } else {
-            markersPlugin.updateMarker({
-                id: marker.id,
-                tooltip: "Marcador de objeto",
-                image: baseUrl + 'pictos/pin-blue.png',
-                content: document.getElementById("form-object").innerHTML,
-            });
+            yawInput.value = marker.config.position["yaw"];
+            pitchInput.value = marker.config.position["pitch"];
+          }, 1000);
+          if (rightClick && ctrlPressed) {
+            if (marker.definition === baseUrl + "pictos/pin-red.png") {
+              markersPlugin.removeMarker(marker);
+            }
           }
         }
       }
-    });
+    );
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);
