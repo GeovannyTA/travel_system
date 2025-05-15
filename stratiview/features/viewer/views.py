@@ -12,7 +12,8 @@ from stratiview.features.utils_amazon import generate_url_presigned
 from django.contrib import messages
 
 
-@login_required
+# @login_required
+# Modificar para que no sea necesario el login
 def viewer(request, route_id):
     # Verificar si el usuario tiene acceso a la ruta
     user_areas = set(
@@ -48,6 +49,19 @@ def viewer(request, route_id):
     return render(request, 'viewer/viewer.html', {"route": route})
 
 
+# Visor publico
+def viewer_public(request, route_id):
+    # Verificar si el usuario tiene acceso a la ruta
+    request.user = "guest"
+    route = Route.objects.filter(id=route_id).first()
+
+    if not route:
+        messages.warning(request, "No se ha encontrado el recorrido solicitado")
+        return soft_redirect(reverse("routes"))
+
+    return render(request, 'viewer/viewer.html', {"route": route})
+
+
 # @login_required
 def get_nodes(request, route_id):
     # Obtener el ID de la ruta
@@ -59,19 +73,8 @@ def get_nodes(request, route_id):
         for node in panoramas:
             node.url = generate_url_presigned(node.name)
         
-        user_areas = set(
-            UserArea.objects.filter(user=request.user)
-            .annotate(lower_area=Lower("area__name"))
-            .values_list("lower_area", flat=True)
-        )
-        user_roles = set(
-            UserRol.objects.filter(user=request.user)
-            .annotate(lower_rol=Lower("rol__name"))
-            .values_list("lower_rol", flat=True)
-        )
-
-        is_admin = "administrador" in user_roles or "administracion" in user_areas
-        if is_admin:
+        if not request.user == "AnonymousUser":
+            # Si el usuario no está autenticado, no se pueden obtener áreas o roles
             nodes = [
                 {
                     "id": node.id,
@@ -88,26 +91,55 @@ def get_nodes(request, route_id):
                 for node in panoramas
             ]
         else:
-            nodes = [
-                {
-                    "id": node.id,
-                    "panorama": generate_url_presigned(node.name),
-                    "gps": [node.gps_lng, node.gps_lat],
-                    "altitude": node.gps_alt,
-                    "direction": node.gps_direction,
-                    "route": node.route.name,
-                    "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
-                    "links": []
-                }
-                for node in panoramas
-            ]
+            user_areas = set(
+                UserArea.objects.filter(user=request.user)
+                .annotate(lower_area=Lower("area__name"))
+                .values_list("lower_area", flat=True)
+            )
+            user_roles = set(
+                UserRol.objects.filter(user=request.user)
+                .annotate(lower_rol=Lower("rol__name"))
+                .values_list("lower_rol", flat=True)
+            )
 
-        # Calcular conexiones entre nodos (optimizando combinaciones únicas)
-        for node_a, node_b in combinations(nodes, 2):
-            dist = distance(node_a['gps'], node_b['gps'])
-            if dist <= 16:
-                node_a['links'].append({"nodeId": node_b['id']})
-                node_b['links'].append({"nodeId": node_a['id']})
+            is_admin = "administrador" in user_roles or "administracion" in user_areas
+            if is_admin:
+                nodes = [
+                    {
+                        "id": node.id,
+                        "panorama": generate_url_presigned(node.name),
+                        "gps": [node.gps_lng, node.gps_lat],
+                        "caption": node.name,
+                        "title": node.name,
+                        "altitude": node.gps_alt,
+                        "direction": node.gps_direction,
+                        "route": node.route.name,
+                        "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
+                        "links": []
+                    }
+                    for node in panoramas
+                ]
+            else:
+                nodes = [
+                    {
+                        "id": node.id,
+                        "panorama": generate_url_presigned(node.name),
+                        "gps": [node.gps_lng, node.gps_lat],
+                        "altitude": node.gps_alt,
+                        "direction": node.gps_direction,
+                        "route": node.route.name,
+                        "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
+                        "links": []
+                    }
+                    for node in panoramas
+                ]
+
+            # Calcular conexiones entre nodos (optimizando combinaciones únicas)
+            for node_a, node_b in combinations(nodes, 2):
+                dist = distance(node_a['gps'], node_b['gps'])
+                if dist <= 16:
+                    node_a['links'].append({"nodeId": node_b['id']})
+                    node_b['links'].append({"nodeId": node_a['id']})
 
         return JsonResponse(nodes, safe=False)
         

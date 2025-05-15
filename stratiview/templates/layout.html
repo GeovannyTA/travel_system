@@ -55,7 +55,7 @@
             <img
               rel="preload"
               as="iamge"
-              src="{% static 'images/lgstratimex.webp' %}"
+              src="{% static 'images/lgstratiview.webp' %}"
               alt="Logo"
               class="logo"
             />
@@ -88,6 +88,7 @@
               </a>
             </li>
             {% endif %}
+            {% if request.resolver_match.url_name != 'viewer_public' %}
             <li class="nav-item">
               <a
                 class="nav-link {% if request.path == '/stratiview/routes/' %}active-route{% endif %}"
@@ -98,6 +99,7 @@
                 Recorridos
               </a>
             </li>
+            {% endif %}
             {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
@@ -121,6 +123,7 @@
               >
             </li>
             {% endif %}
+            {% if request.resolver_match.url_name != 'viewer_public' %}
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -147,12 +150,13 @@
                 <!-- <li><hr class="dropdown-divider" /></li> -->
               </ul>
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>
     </nav>
 
-    <main class="{% if request.resolver_match.url_name == 'viewer' %}h-viewer{% endif %}">
+    <main class="{% if request.resolver_match.url_name == 'viewer' or request.resolver_match.url_name == 'viewer_public' %}h-viewer{% endif %}">
       {% block viewer %}
       <div class="p-2 container-content">
         {% block content %} {% endblock %}
@@ -161,7 +165,7 @@
     </main>
 
     <footer 
-      class="text-center bg-dark {% if request.resolver_match.url_name == 'viewer' %}d-none{% endif %}" 
+      class="text-center bg-dark {% if request.resolver_match.url_name == 'viewer' or request.resolver_match.url_name == 'viewer_public' %}d-none{% endif %}" 
       data-bs-theme="dark"
     >
       <p>&copy; 2025 Estrategas de México</p>

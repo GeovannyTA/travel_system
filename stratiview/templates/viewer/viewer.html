@@ -7,7 +7,12 @@
 />
 {% endblock %} {% block viewer %}
 <div id="custom-loader">
-  <img src="{% static 'images/lgstratimex.webp' %}" class="loader-image" alt="Loader" width="55%">
+  <img
+    src="{% static 'images/lgstratiview.webp' %}"
+    class="loader-image"
+    alt="Loader"
+    width="55%"
+  />
 </div>
 <div id="photosphere" data-route-id="{{ route.id }}"></div>
 <script type="text/template" id="icon">
@@ -107,7 +112,6 @@
         class="form-control"
         value=""
         required
-        hidden
       >
     </div>
     <div class="form-group">
@@ -118,12 +122,22 @@
         class="form-control"
         value=""
         required
-        hidden
       >
+    </div>
+    <div class="form-group">
+      <input 
+        type="text" 
+        name="marker-node" 
+        id="marker-node" 
+        class="form-control" 
+        value="" 
+        required 
+      >
+    </div>
     <div class="d-flex justify-content-end">
-      <button 
+      <button
         type="submit"
-        class="btn btn-primary" 
+        class="btn btn-primary"
         id="btn-save"
       >
         <i class="fa-solid fa-floppy-disk"></i>

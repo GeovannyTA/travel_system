@@ -22,7 +22,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
 
     const viewer = new Viewer({
       container: container,
-      caption: "&copy; Estrategas de México",
+      caption: "&copy; StratiView",
       navbar: ["zoom", "caption", "move", "fullscreen"],
       minFov: 70,
       plugins: [
@@ -36,13 +36,13 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
               {
                 name: "Mapa de calles",
                 urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                attribution: "&copy; Estrategas de México",
+                attribution: "&copy; StratiView",
               },
               {
                 name: "Mapa satelital",
                 urlTemplate:
                   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-                attribution: "&copy; Estrategas de México",
+                attribution: "&copy; StratiView",
               },
             ],
           },
@@ -77,6 +77,44 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
 
     const markersPlugin = viewer.getPlugin(MarkersPlugin);
     const tourPlugin = viewer.getPlugin(VirtualTourPlugin);
+
+    tourPlugin.addEventListener("node-changed", (event) => {
+      const nodeId = event.node.id;
+
+      // Limpia todos los marcadores anteriores
+      markersPlugin.clearMarkers();
+
+      // Llama a tu vista Django para obtener los marcadores del nodo actual
+      fetch(`/stratiview/markers/get_markers/?marker-node=${nodeId}`, {
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            data.forEach((marker) => {
+              markersPlugin.addMarker({
+                id: marker.id.toString(),
+                image: baseUrl + "pictos/pin-blue.png",
+                position: {
+                  yaw: parseFloat(marker.yaw),
+                  pitch: parseFloat(marker.pitch),
+                },
+                size: { width: 32, height: 32 },
+                anchor: "bottom center",
+                tooltip: marker.key,
+                data: { ...marker },
+              });
+            });
+          } else {
+            console.warn("No se obtuvieron marcadores:", data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error al obtener marcadores:", error);
+        });
+    });
 
     window.viewer = viewer;
     window.markersPlugin = markersPlugin;
@@ -157,16 +195,21 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
       "select-marker",
       ({ marker, rightClick }) => {
         if (marker.data?.generated) {
-          console.log("Marcador generado", marker);
-          window.currentMarkerId = marker.id;
-          // Pasar la información del marcador a los inputs
-          setTimeout(() => {
-            const yawInput = document.getElementById("marker-yaw");
-            const pitchInput = document.getElementById("marker-pitch");
+          
+          const currentNode = tourPlugin.getCurrentNode();
 
-            yawInput.value = marker.config.position["yaw"];
-            pitchInput.value = marker.config.position["pitch"];
-          }, 1000);
+          if (currentNode) {
+            setTimeout(() => {
+              const nodeInput = document.getElementById("marker-node");
+              const yawInput = document.getElementById("marker-yaw");
+              const pitchInput = document.getElementById("marker-pitch");
+              
+              nodeInput.value = currentNode.id;
+              yawInput.value = marker.config.position["yaw"];
+              pitchInput.value = marker.config.position["pitch"];
+            }, 1000);
+          }
+          // Pasar la información del marcador a los inputs
           if (rightClick && ctrlPressed) {
             if (marker.definition === baseUrl + "pictos/pin-red.png") {
               markersPlugin.removeMarker(marker);

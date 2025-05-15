@@ -69,7 +69,7 @@ class PanoramaMetadata(models.Model):
                 fields=['name', 'gps_lat', 'gps_lng', 'gps_alt', 'route'], 
                 name='unique_panorama_fields')
         ]
-
+        
 
 class Area(models.Model):
     id = models.AutoField(primary_key=True)
@@ -120,14 +120,16 @@ class UserRol(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'rol'], 
                 name='unique_user_rol_fields')
-        ]
+        ]     
 
 
-class PropertyMarkers():
+class PanoramaMakers(models.Model):
     id = models.AutoField(primary_key=True)
+    yaw = models.FloatField(blank=False, null=False)
+    pitch = models.FloatField(blank=False, null=False)
+    panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
     key = models.CharField(max_length=100, blank=False, null=False)
     account = models.CharField(max_length=100, blank=False, null=False)
 
     class Meta:
-        db_table = 'property_markers'
-        
+        db_table = 'panorama_markers'  
