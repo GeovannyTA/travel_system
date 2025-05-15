@@ -19,7 +19,9 @@ DEBUG = os.getenv('DJANGO_DEBUG')
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
-    'beautiful-einstein.51-79-98-210.plesk.page']
+    'beautiful-einstein.51-79-98-210.plesk.page',
+    'nice-satoshi'
+]
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -192,3 +194,6 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = "czrz rfbw ohwb zazo"
+
+
+X_FRAME_OPTIONS = 'ALLOW-FROM https://nice-satoshi.15-235-118-158.plesk.page'
