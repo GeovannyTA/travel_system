@@ -61,6 +61,7 @@
             />
           </a>
         </div>
+        {% if request.resolver_match.url_name != 'viewer_public' %}
         <button
           class="navbar-toggler shadow-none"
           type="button"
@@ -72,6 +73,7 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+        {% endif %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button type="button" class="btn-close ms-auto mb-4 d-lg-none" aria-label="Cerrar" id="closeMenuBtn"></button>
           <ul class="navbar-nav mb-lg-0">
