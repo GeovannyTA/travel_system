@@ -131,12 +131,12 @@ def get_nodes(request, route_id):
                     for node in panoramas
                 ]
 
-            # Calcular conexiones entre nodos (optimizando combinaciones únicas)
-            for node_a, node_b in combinations(nodes, 2):
-                dist = distance(node_a['gps'], node_b['gps'])
-                if dist <= 17:
-                    node_a['links'].append({"nodeId": node_b['id']})
-                    node_b['links'].append({"nodeId": node_a['id']})
+        # Calcular conexiones entre nodos (optimizando combinaciones únicas)
+        for node_a, node_b in combinations(nodes, 2):
+            dist = distance(node_a['gps'], node_b['gps'])
+            if dist <= 17:
+                node_a['links'].append({"nodeId": node_b['id']})
+                node_b['links'].append({"nodeId": node_a['id']})
 
         return JsonResponse(nodes, safe=False)
         
