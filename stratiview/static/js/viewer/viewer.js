@@ -22,7 +22,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
 
     const viewer = new Viewer({
       container: container,
-      caption: "&copy; StratiView",
+      caption: "&copy; Estrategas de México",
       navbar: ["zoom", "caption", "move", "fullscreen"],
       minFov: 70,
       plugins: [
