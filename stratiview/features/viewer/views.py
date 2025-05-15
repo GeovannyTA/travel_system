@@ -52,7 +52,6 @@ def viewer(request, route_id):
 # Visor publico
 def viewer_public(request, route_id):
     # Verificar si el usuario tiene acceso a la ruta
-    request.user = "guest"
     route = Route.objects.filter(id=route_id).first()
 
     if not route:
@@ -73,7 +72,7 @@ def get_nodes(request, route_id):
         for node in panoramas:
             node.url = generate_url_presigned(node.name)
         
-        if not request.user == "AnonymousUser":
+        if not request.user.is_authenticated:
             # Si el usuario no está autenticado, no se pueden obtener áreas o roles
             nodes = [
                 {
@@ -135,7 +134,7 @@ def get_nodes(request, route_id):
             # Calcular conexiones entre nodos (optimizando combinaciones únicas)
             for node_a, node_b in combinations(nodes, 2):
                 dist = distance(node_a['gps'], node_b['gps'])
-                if dist <= 16:
+                if dist <= 17:
                     node_a['links'].append({"nodeId": node_b['id']})
                     node_b['links'].append({"nodeId": node_a['id']})
 
