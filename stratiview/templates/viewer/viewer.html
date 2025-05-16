@@ -115,13 +115,6 @@
       >
     </div>
     <div class="form-group">
-      <label for="marker-type">Tipo de marcador</label>
-      <select name="marker-type" id="marker-type">
-        <option value="">- Selecciona el tipo de recorrido -</option>
-        <option value="predio">Predio</option>
-      </select>
-    </div>
-    <div class="form-group">
       <input
         type="text"
         name="marker-pitch"
@@ -153,72 +146,63 @@
     </div>
   </form>
 </script>
-<script type="text/template" id="form-object">
-  <form action="" class="form d-flex flex-column gap-2">
-    <h4>Marcador objeto</h4>
-    <div class="form-group">
-      <label for="marker-key">Clave</label>
-      <input
-        type="text"
-        class="form-control"
-        id="marker-key"
-        placeholder="Ingresa la clave del marcador"
-      />
-    </div>
-    <div class="form-group">
-      <label for="marker-account">Cuenta</label>
-      <input
-        type="text"
-        class="form-control"
-        id="marker-account"
-        placeholder="Ingresa la cuenta del marcador"
-      />
-    </div>
-    <div class="form-group">
-      <label for="marker-type-current_use">Uso actual</label>
-      <select name="marker-type-current_use" id="marker-type-current_use" class="form-select">
-        <option value="predio">Industrial</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="marker-type-update_use">Uso actualizado</label>
-      <select name="marker-type-update_use" id="marker-type-update_use" class="form-select">
-        <option value="industrial">Industrial</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="marker-type">Tipo de predio</label>
-      <select name="market-type" id="marker-type" class="form-select">
-        <option value="predio">Predio</option>
-        <option value="pozo">Pozo</option>
-        <option value="pozo-agua">Pozo de agua</option>
-        <option value="pozo-gas">Pozo de gas</option>
-        <option value="pozo-petroleo">Pozo de petroleo</option>
-      </select>
-    </div>
-    <!-- Tamaño del predio -->
-    <div class="form-group">
-      <label for="marker-size">Tamaño del predio</label>
-      <select name="marker-size" id="marker-size" class="form-select">
-        <option value="pequeño">Pequeño</option>
-        <option value="mediano">Mediano</option>
-        <option value="grande">Grande</option>
-      </select>
-    </div>
-    <!-- Observacion -->
-    <div class="form-group">
-      <label for="marker-observation">Observación</label>
-      <textarea
-        name="marker-observation"
-        id="marker-observation"
-        class="form-control"
-        rows="3"
-        placeholder="Ingresa una observación"
-      ></textarea>
 
+<script type="text/template" id="form-tour">
+  <form class="form d-flex flex-column gap-2" id="form-tour-submit" onsubmit="addRouteMarker(event)">
+    <h4>Marcador  recorrido</h4>
+    <div class="form-group">
+      <label for="marker-type-route">Tipo de recorrido</label>
+      <select name="marker-type-route" id="marker-type-route" class="form-select" required>
+        <option value="">- Selecciona el tipo de recorrido -</option>
+        <option value="vehicle">Vehículo</option>
+        <option value="air">Aéreo</option>
+        <option value="inside">Interior</option>
+        <option value="walk">A pie</option>    
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="marker-route">Ruta asociada</label>
+      <select name="marker-route" id="marker-route" class="form-select" required>
+        <option value="">Cargando rutas...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        name="marker-yaw"
+        id="marker-yaw"
+        class="form-control"
+        value=""
+        required
+      >
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        name="marker-pitch"
+        id="marker-pitch"
+        class="form-control"
+        value=""
+        required
+      >
+    </div>
+    <div class="form-group">
+      <input 
+        type="text" 
+        name="marker-node" 
+        id="marker-node" 
+        class="form-control" 
+        value="" 
+        required 
+      >
+    </div>
     </div>
     <div class="d-flex justify-content-end">
-      <button class="btn btn-primary" id="btn-save">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        id="btn-save"
+      >
         <i class="fa-solid fa-floppy-disk"></i>
         Guardar
       </button>

@@ -7,7 +7,8 @@ import { CompassPlugin } from "@photo-sphere-viewer/compass-plugin";
 const container = document.getElementById("photosphere");
 const route_id = container.dataset.routeId;
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
-
+const baseUrlStratiview = "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/"
+// route-type/lgstratiview.webp
 fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
   headers: {
     "X-Requested-With": "XMLHttpRequest",
@@ -53,7 +54,8 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           {
             positionMode: "gps",
             renderMode: "3d",
-            startNodeId: nodes[50].id,
+            startNodeId: nodes[0].id,
+            // startNodeId: nodes[50].id,
             dataMode: "client",
             preload: true,
             transitionOptions: {
@@ -95,16 +97,74 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           if (Array.isArray(data)) {
             data.forEach((marker) => {
               markersPlugin.addMarker({
+              id: marker.id.toString(),
+              image: baseUrlStratiview + "strativieww_marker.png",
+              position: {
+                yaw: parseFloat(marker.yaw),
+                pitch: parseFloat(marker.pitch),
+              },
+              size: { width: 32, height: 32 },
+              anchor: "bottom center",
+              tooltip: marker.key,
+              content: `
+                <div class="form d-flex flex-column gap-2" style="width: 260px;">
+                  <h4>Detalle del predio</h4>
+                  <p><strong>Clave:</strong> ${marker.key || "N/D"}</p>
+                  <p><strong>Cuenta:</strong> ${marker.account || "N/D"}</p>
+                  <p><strong>Uso actual:</strong> ${marker.type_current_use || "N/D"}</p>
+                  <p><strong>Uso actualizado:</strong> ${marker.type_update_use || "N/D"}</p>
+                  <p><strong>Tipo de predio:</strong> ${marker.type || "N/D"}</p>
+                  <p><strong>Tamaño:</strong> ${marker.size || "N/D"}</p>
+                  <p><strong>Observación:</strong> ${marker.observation || "Sin observaciones"}</p>
+                </div>
+              `,
+              data: { ...marker },
+            });
+            });
+          } else {
+            console.warn("No se obtuvieron marcadores:", data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error al obtener marcadores:", error);
+        });
+      
+      const recorridoIcons = {
+        vehicle: baseUrlStratiview + "route-type/rt-vehicle.png",
+        air: baseUrlStratiview + "route-type/rt-air.png",
+        inside: baseUrlStratiview + "route-type/rt-inside.png",
+        walk: baseUrlStratiview + "route-type/rt-walk.png",
+      };
+      fetch(`/stratiview/markers/get_route_markers/?marker-node=${nodeId}`, {
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            data.forEach((marker) => {
+              const icon = recorridoIcons[marker.type] || recorridoIcons.default;
+              markersPlugin.addMarker({
                 id: marker.id.toString(),
-                image: baseUrl + "pictos/pin-blue.png",
+                image: icon,
                 position: {
                   yaw: parseFloat(marker.yaw),
                   pitch: parseFloat(marker.pitch),
                 },
                 size: { width: 32, height: 32 },
                 anchor: "bottom center",
-                tooltip: marker.key,
+                tooltip: marker.route_name,
                 data: { ...marker },
+                content: `
+                  <div class="form d-flex flex-column gap-2">
+                    <h4>Ir al recorrido</h4>
+                    <p><strong>Ruta:</strong> ${marker.route_name || "Sin nombre"}</p>
+                    <button class="btn btn-primary" onclick="irAlRecorrido(${marker.route_id})">
+                      <i class="fa-solid fa-route"></i> Ir al recorrido
+                    </button>
+                  </div>
+                `,
               });
             });
           } else {
@@ -119,6 +179,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
     window.viewer = viewer;
     window.markersPlugin = markersPlugin;
     window.baseUrl = baseUrl;
+    window.baseUrlStratiview = baseUrlStratiview;
     
     viewer.setOptions({
       mousemove: false,
@@ -149,20 +210,18 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
         mousewheel: true,
       });
 
-      markersPlugin.setMarkers([
-        {
-          id: "marker-1",
-          type: "image",
-          image:
-            "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/logo-viewer.png",
-          anchor: "center center",
-          position: { yaw: 0, pitch: 10 },
-          size: { width: 320, height: 320 },
-          style: {
-            opacity: "0.86",
-          },
+      markersPlugin.addMarker({
+        id: "marker-logo",
+        type: "image",
+        image: baseUrlStratiview + "logo-viewer.png",
+        anchor: "center center",
+        position: { yaw: 0, pitch: 10 },
+        size: { width: 320, height: 320 },
+        style: {
+          opacity: "0.86",
         },
-      ]);
+      });
+
     });
 
     viewer.addEventListener("dblclick", ({ data }) => {
@@ -170,54 +229,80 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
         markersPlugin.addMarker({
           id: "#" + Math.random(),
           position: { yaw: data.yaw, pitch: data.pitch },
-          image: baseUrl + "pictos/pin-red.png",
+          image: baseUrlStratiview + "stratiView_marker.png",
           size: { width: 32, height: 32 },
           anchor: "bottom center",
           tooltip: "Marcador de predio",
           data: {
             generated: true,
+            marker_type: "predio",
           },
           content: document.getElementById("form-predio").innerHTML,
+        });
+      } else {
+        markersPlugin.addMarker({
+          id: "#" + Math.random(),
+          position: { yaw: data.yaw, pitch: data.pitch },
+          image: baseUrlStratiview + "stratiView_marker.png",
+          size: { width: 32, height: 32 },
+          anchor: "bottom center",
+          tooltip: "Marcador de recorrido",
+          data: {
+            generated: true,
+            marker_type: "recorrido", 
+          },
+          content: document.getElementById("form-tour").innerHTML,
         });
       }
     });
 
+
     let ctrlPressed = false;
-    let shiftPressed = false;
 
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey) ctrlPressed = true;
-      if (e.shiftKey) shiftPressed = true;
     });
 
     window.addEventListener("keyup", (e) => {
       if (!e.ctrlKey) ctrlPressed = false;
-      if (!e.shiftKey) shiftPressed = false;
-    });
-
-    // Ctrl + clic izquierdo: agrega marcador verde
-    viewer.addEventListener("click", (event) => {
-      const { originalEvent, data } = event;
-
-      if (originalEvent.button === 0 && ctrlPressed) {
-        markersPlugin.addMarker({
-          id: "custom-" + Math.random().toString(36).substr(2, 9),
-          position: { yaw: data.yaw, pitch: data.pitch },
-          image: baseUrl + "pictos/pin-green.png", // asegúrate que exista
-          size: { width: 32, height: 32 },
-          anchor: "bottom center",
-          tooltip: "Marcador especial",
-          data: {
-            custom: true,
-          },
-        });
-      }
     });
 
     markersPlugin.addEventListener("select-marker", ({ marker, rightClick }) => {
       if (marker.data?.generated) {
+        // current marker
+        window.currentMarker = marker;
         const currentNode = tourPlugin.getCurrentNode();
+        const type = marker?.data?.marker_type;
 
+        if (type === "recorrido") {
+          fetch("/stratiview/viewer/get_routes/", {
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then((res) => res.json())
+            .then((rutas) => {
+              const rutaSelect = document.getElementById("marker-route");
+              if (!rutaSelect) return;
+
+              rutaSelect.innerHTML = ""; // Limpia
+
+              rutas.forEach((ruta) => {
+                const option = document.createElement("option");
+                option.value = ruta.id;
+                option.textContent = ruta.name;
+                rutaSelect.appendChild(option);
+              });
+            })
+            .catch((err) => {
+              console.error("Error al cargar rutas:", err);
+              const rutaSelect = document.getElementById("marker-route");
+              if (rutaSelect) {
+                rutaSelect.innerHTML = `<option value="">No se pudieron cargar las rutas</option>`;
+              }
+            });
+        }
+        
         if (currentNode) {
           setTimeout(() => {
             const nodeInput = document.getElementById("marker-node");
@@ -233,10 +318,8 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
         }
 
         // Solo eliminar si es clic derecho + Ctrl + Shift
-        if (rightClick && ctrlPressed && shiftPressed) {
-          if (marker.definition === baseUrl + "pictos/pin-red.png") {
-            markersPlugin.removeMarker(marker);
-          }
+        if (rightClick && ctrlPressed) {
+          markersPlugin.removeMarker(marker);
         }
       }
     });
@@ -244,3 +327,12 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
   .catch((error) => {
     console.error("Error cargando nodos:", error);
   });
+
+
+window.irAlRecorrido = function (routeId) {
+  if (!routeId) {
+    alert("Ruta no válida");
+    return;
+  }
+  window.location.href = `/stratiview/viewer/${routeId}/`;
+};

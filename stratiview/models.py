@@ -123,19 +123,35 @@ class UserRol(models.Model):
         ]     
 
 
-class PanoramaMakers(models.Model):
-    TYPE_MARKER = (
-        ('land', 'Terrestre'),
-        ('air', 'Aéreo'),
-        ('inside', 'Interior')
-    )
+class PanoramaPropertyMakers(models.Model):
     id = models.AutoField(primary_key=True)
     yaw = models.FloatField(blank=False, null=False)
     pitch = models.FloatField(blank=False, null=False)
     panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
     key = models.CharField(max_length=100, blank=False, null=False)
     account = models.CharField(max_length=100, blank=False, null=False)
-    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_MARKER, default='land')
 
     class Meta:
-        db_table = 'panorama_markers'  
+        db_table = 'panorama_property_markers'  
+
+
+class PanoramaTourMarkers(models.Model):
+    TYPE_MARKER = (
+        ('vehicle', 'En vehículo'),
+        ('air', 'Aéreo'),
+        ('inside', 'Interior'),
+        ('walk', 'A pie')
+    )
+    id = models.AutoField(primary_key=True)
+    yaw = models.FloatField(blank=False, null=False)
+    pitch = models.FloatField(blank=False, null=False)
+    panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
+    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_MARKER, default='vehicle')
+
+    class Meta:
+        db_table = 'panorama_tour_markers'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['yaw', 'pitch', 'panorama'], 
+                name='unique_panorama_tour_markers_fields')
+        ]

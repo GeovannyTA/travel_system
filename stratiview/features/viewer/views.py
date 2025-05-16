@@ -66,7 +66,7 @@ def get_nodes(request, route_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)
+        panoramas = PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)[:3]
 
         # Preparar nodos
         for node in panoramas:
@@ -153,3 +153,10 @@ def distance(gps1, gps2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
 
     return R * c  # distancia en metros
+
+
+def get_routes(request):
+    # Obtener todas las rutas
+    routes = Route.objects.all()
+    route_list = [{"id": route.id, "name": route.name} for route in routes]
+    return JsonResponse(route_list, safe=False)
