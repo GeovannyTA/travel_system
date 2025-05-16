@@ -53,7 +53,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           {
             positionMode: "gps",
             renderMode: "3d",
-            startNodeId: nodes[0].id,
+            startNodeId: nodes[50].id,
             dataMode: "client",
             preload: true,
             transitionOptions: {
@@ -183,41 +183,63 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
     });
 
     let ctrlPressed = false;
+    let shiftPressed = false;
 
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey) ctrlPressed = true;
-    });
-    window.addEventListener("keyup", () => {
-      ctrlPressed = false;
+      if (e.shiftKey) shiftPressed = true;
     });
 
-    markersPlugin.addEventListener(
-      "select-marker",
-      ({ marker, rightClick }) => {
-        if (marker.data?.generated) {
-          
-          const currentNode = tourPlugin.getCurrentNode();
+    window.addEventListener("keyup", (e) => {
+      if (!e.ctrlKey) ctrlPressed = false;
+      if (!e.shiftKey) shiftPressed = false;
+    });
 
-          if (currentNode) {
-            setTimeout(() => {
-              const nodeInput = document.getElementById("marker-node");
-              const yawInput = document.getElementById("marker-yaw");
-              const pitchInput = document.getElementById("marker-pitch");
-              
+    // Ctrl + clic izquierdo: agrega marcador verde
+    viewer.addEventListener("click", (event) => {
+      const { originalEvent, data } = event;
+
+      if (originalEvent.button === 0 && ctrlPressed) {
+        markersPlugin.addMarker({
+          id: "custom-" + Math.random().toString(36).substr(2, 9),
+          position: { yaw: data.yaw, pitch: data.pitch },
+          image: baseUrl + "pictos/pin-green.png", // asegúrate que exista
+          size: { width: 32, height: 32 },
+          anchor: "bottom center",
+          tooltip: "Marcador especial",
+          data: {
+            custom: true,
+          },
+        });
+      }
+    });
+
+    markersPlugin.addEventListener("select-marker", ({ marker, rightClick }) => {
+      if (marker.data?.generated) {
+        const currentNode = tourPlugin.getCurrentNode();
+
+        if (currentNode) {
+          setTimeout(() => {
+            const nodeInput = document.getElementById("marker-node");
+            const yawInput = document.getElementById("marker-yaw");
+            const pitchInput = document.getElementById("marker-pitch");
+
+            if (nodeInput && yawInput && pitchInput) {
               nodeInput.value = currentNode.id;
               yawInput.value = marker.config.position["yaw"];
               pitchInput.value = marker.config.position["pitch"];
-            }, 1000);
-          }
-          // Pasar la información del marcador a los inputs
-          if (rightClick && ctrlPressed) {
-            if (marker.definition === baseUrl + "pictos/pin-red.png") {
-              markersPlugin.removeMarker(marker);
             }
+          }, 1000);
+        }
+
+        // Solo eliminar si es clic derecho + Ctrl + Shift
+        if (rightClick && ctrlPressed && shiftPressed) {
+          if (marker.definition === baseUrl + "pictos/pin-red.png") {
+            markersPlugin.removeMarker(marker);
           }
         }
       }
-    );
+    });
   })
   .catch((error) => {
     console.error("Error cargando nodos:", error);

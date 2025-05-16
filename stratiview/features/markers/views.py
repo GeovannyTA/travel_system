@@ -8,8 +8,9 @@ def add_marker(request):
     account = request.GET.get('marker-account')
     yaw = request.GET.get('marker-yaw')
     pitch = request.GET.get('marker-pitch')
+    type = request.GET.get('marker-type')
 
-    if not node_id or not key or not account or not yaw or not pitch:
+    if not node_id or not key or not account or not yaw or not pitch or not type:
         return JsonResponse({'error': 'Missing required parameters'}, status=400)
 
     panorama_obj = PanoramaMetadata.objects.filter(id=node_id).first()
@@ -23,7 +24,8 @@ def add_marker(request):
             pitch=pitch,
             panorama=panorama_obj,
             key=key,
-            account=account
+            account=account,
+            type=type
         )
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
