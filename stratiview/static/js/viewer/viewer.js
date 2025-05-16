@@ -98,12 +98,12 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             data.forEach((marker) => {
               markersPlugin.addMarker({
               id: marker.id.toString(),
-              image: baseUrlStratiview + "stratiview_marker.png",
+              image: baseUrlStratiview + "icons/m-house.png",
               position: {
                 yaw: parseFloat(marker.yaw),
                 pitch: parseFloat(marker.pitch),
               },
-              size: { width: 40, height: 40 },
+              size: { width: 50, height: 50 },
               anchor: "bottom center",
               tooltip: marker.key,
               content: `
@@ -144,7 +144,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
         .then((data) => {
           if (Array.isArray(data)) {
             data.forEach((marker) => {
-              const icon = recorridoIcons[marker.type] || recorridoIcons.default;
+              const icon = recorridoIcons[marker.type];
               markersPlugin.addMarker({
                 id: marker.id.toString(),
                 image: icon,
@@ -152,7 +152,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
                   yaw: parseFloat(marker.yaw),
                   pitch: parseFloat(marker.pitch),
                 },
-                size: { width: 40, height: 40 },
+                size: { width: 50, height: 50 },
                 anchor: "bottom center",
                 tooltip: marker.route_name,
                 data: { ...marker },
