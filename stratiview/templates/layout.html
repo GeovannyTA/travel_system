@@ -101,7 +101,6 @@
                 Recorridos
               </a>
             </li>
-            {% endif %}
             {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
             <li class="nav-item">
               <a
@@ -125,7 +124,6 @@
               >
             </li>
             {% endif %}
-            {% if request.resolver_match.url_name != 'viewer_public' %}
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
