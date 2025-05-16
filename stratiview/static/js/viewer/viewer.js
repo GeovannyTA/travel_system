@@ -98,12 +98,12 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             data.forEach((marker) => {
               markersPlugin.addMarker({
               id: marker.id.toString(),
-              image: baseUrlStratiview + "strativieww_marker.png",
+              image: baseUrlStratiview + "stratiview_marker.png",
               position: {
                 yaw: parseFloat(marker.yaw),
                 pitch: parseFloat(marker.pitch),
               },
-              size: { width: 32, height: 32 },
+              size: { width: 40, height: 40 },
               anchor: "bottom center",
               tooltip: marker.key,
               content: `
@@ -152,7 +152,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
                   yaw: parseFloat(marker.yaw),
                   pitch: parseFloat(marker.pitch),
                 },
-                size: { width: 32, height: 32 },
+                size: { width: 40, height: 40 },
                 anchor: "bottom center",
                 tooltip: marker.route_name,
                 data: { ...marker },
@@ -230,7 +230,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           id: "#" + Math.random(),
           position: { yaw: data.yaw, pitch: data.pitch },
           image: baseUrlStratiview + "stratiView_marker.png",
-          size: { width: 32, height: 32 },
+          size: { width: 40, height: 40 },
           anchor: "bottom center",
           tooltip: "Marcador de predio",
           data: {
@@ -244,7 +244,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           id: "#" + Math.random(),
           position: { yaw: data.yaw, pitch: data.pitch },
           image: baseUrlStratiview + "stratiView_marker.png",
-          size: { width: 32, height: 32 },
+          size: { width: 40, height: 40 },
           anchor: "bottom center",
           tooltip: "Marcador de recorrido",
           data: {
