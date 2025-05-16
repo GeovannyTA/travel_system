@@ -151,7 +151,7 @@ def get_nodes(request, route_id):
         def is_direction_unique(existing_angles, new_angle, tolerance=30):
             return all(abs((a - new_angle + 180) % 360 - 180) > tolerance for a in existing_angles)
         
-        # Segundo pase: nodos aislados, permitir enlaces en direcciones distintas (≤19m)
+        # Segundo pase: nodos aislados, permitir enlaces en direcciones distintas (≤20m)
         for node_a in nodes:
             if len(node_a['links']) <= 1:
                 used_angles = []
