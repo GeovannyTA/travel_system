@@ -105,7 +105,6 @@
           <th scope="col">Id</th>
           <th scope="col">Nombre</th>
           <th scope="col">Descripción</th>
-          <th scope="col">Estado</th>
           {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
           <th scope="col">Acciones</th>
           {% endif %}
@@ -117,7 +116,6 @@
           <td>{{ route.id }}</td>
           <td>{{ route.name }}</td>
           <td>{{ route.description }}</td>
-          <td>{{ route.state.name }}</td>
           {% if request.user.area_names|has_allowed_area:"administracion" or request.user.rol_names|has_allowed_rol:"administrador" %}
           <td class="text-center p-1">
             <button
@@ -169,9 +167,6 @@
               </h5>
               <p class="card-text mb-2">
                 {{ route.description|default:"Sin descripción" }}
-              </p>
-              <p class="mb-1">
-                <strong>Estado:</strong> {{ route.state.name }}
               </p>
             </div>
             <div class="mt-3 d-flex gap-2">
