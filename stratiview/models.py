@@ -155,6 +155,7 @@ class PanoramaTourMarkers(models.Model):
     pitch = models.FloatField(blank=False, null=False)
     panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
     type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_MARKER, default='vehicle')
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
         db_table = 'panorama_tour_markers'

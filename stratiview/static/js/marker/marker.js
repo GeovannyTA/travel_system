@@ -71,12 +71,20 @@ function addRouteMarker(event) {
   const nodeId = document.getElementById("marker-node").value;
   const yaw = document.getElementById("marker-yaw").value;
   const pitch = document.getElementById("marker-pitch").value;
-  const type = document.getElementById("marker-type-route").value;
+  const type = document.getElementById("marker-type").value;
   const routeId = document.getElementById("marker-route")?.value;
 
   const url = `/stratiview/markers/add_route_marker/?marker-node=${encodeURIComponent(
     nodeId
-  )}&marker-yaw=${yaw}&marker-pitch=${pitch}&marker-type=${type}`;
+  )}&marker-yaw=${encodeURIComponent(
+    yaw
+  )}&marker-pitch=${encodeURIComponent(
+    pitch
+  )}&marker-type=${encodeURIComponent(
+    type
+  )}&marker-route=${encodeURIComponent(
+    routeId
+  )}`;
 
   fetch(url)
     .then((response) => response.json())

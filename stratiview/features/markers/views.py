@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from stratiview.models import PanoramaPropertyMakers, PanoramaMetadata, PanoramaTourMarkers
+from stratiview.models import PanoramaPropertyMakers, PanoramaMetadata, PanoramaTourMarkers, Route
 
 
 def add_marker(request):
@@ -47,14 +47,16 @@ def add_route_marker(request):
     yaw = request.GET.get('marker-yaw')
     pitch = request.GET.get('marker-pitch')
     type = request.GET.get('marker-type')
+    route_id = request.GET.get('marker-route')
 
-    if not node_id or not yaw or not pitch or not type:
+    if not node_id or not yaw or not pitch or not type or not route_id:
         return JsonResponse({'error': 'Missing required parameters'}, status=400)
 
     panorama_obj = PanoramaMetadata.objects.filter(id=node_id).first()
+    route_obj = Route.objects.filter(id=route_id).first()
 
-    if not panorama_obj:
-        return JsonResponse({'error': 'Panorama not found'}, status=404)
+    if not panorama_obj or not route_obj:
+        return JsonResponse({'error': 'Panorama or Route not found'}, status=404)
     
     try:
         PanoramaTourMarkers.objects.create(
@@ -62,6 +64,7 @@ def add_route_marker(request):
             pitch=pitch,
             panorama=panorama_obj,
             type=type,
+            route=route_obj,
         )
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -86,8 +89,8 @@ def get_route_markers(request):
             "pitch": marker.pitch,
             "type": marker.type,
             "panorama_id": marker.panorama.id,
-            "route_name": panorama_obj.route.name if panorama_obj.route else None,
-            "route_id": panorama_obj.route.id if panorama_obj.route else None
+            "route_name": marker.route.name if marker.route else None,
+            "route_id": marker.route.id if marker.route else None
         }
         for marker in markers
     ]

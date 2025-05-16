@@ -334,5 +334,10 @@ window.irAlRecorrido = function (routeId) {
     alert("Ruta no válida");
     return;
   }
-  window.location.href = `/stratiview/viewer/${routeId}/`;
+
+  const isPublic = window.location.pathname.includes("/public/");
+  const basePath = isPublic ? "/stratiview/viewer/public/" : "/stratiview/viewer/";
+  const fullUrl = `${basePath}${routeId}/`;
+
+  window.open(fullUrl, "_blank", "width=1200,height=800,scrollbars=yes,resizable=yes");
 };
