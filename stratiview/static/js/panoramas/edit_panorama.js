@@ -55,7 +55,7 @@ function openEditModal(panoramaId) {
       viewer = new Viewer({
         container: id("panorama-preview-image"),
         panorama: data.url,
-        loadingImg: "https://beautiful-einstein.51-79-98-210.plesk.page/recorrido3602/public/assets/img/lgstratimex.webp",
+        loadingImg: "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/lgstratiview.webp",
         mousewheel: false,
         keyboard: false,
         navbar: false,
