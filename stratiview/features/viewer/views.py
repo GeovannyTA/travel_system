@@ -137,6 +137,37 @@ def get_nodes(request, route_id):
                 node_a['links'].append({"nodeId": node_b['id']})
                 node_b['links'].append({"nodeId": node_a['id']})
 
+        import math
+
+        def bearing(from_coords, to_coords):
+            lon1, lat1 = map(math.radians, from_coords)
+            lon2, lat2 = map(math.radians, to_coords)
+            dlon = lon2 - lon1
+            x = math.sin(dlon) * math.cos(lat2)
+            y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+            angle = math.degrees(math.atan2(x, y))
+            return (angle + 360) % 360
+
+        def is_direction_unique(existing_angles, new_angle, tolerance=30):
+            return all(abs((a - new_angle + 180) % 360 - 180) > tolerance for a in existing_angles)
+        
+        # Segundo pase: nodos aislados, permitir enlaces en direcciones distintas (≤19m)
+        for node_a in nodes:
+            if len(node_a['links']) <= 1:
+                used_angles = []
+                for node_b in nodes:
+                    if node_a['id'] == node_b['id']:
+                        continue
+                    dist = distance(node_a['gps'], node_b['gps'])
+                    if dist <= 20:
+                        angle = bearing(node_a['gps'], node_b['gps'])
+                        if is_direction_unique(used_angles, angle):
+                            if not any(link["nodeId"] == node_b["id"] for link in node_a["links"]):
+                                node_a['links'].append({"nodeId": node_b['id']})
+                            if not any(link["nodeId"] == node_a["id"] for link in node_b["links"]):
+                                node_b['links'].append({"nodeId": node_a['id']})
+                            used_angles.append(angle)
+
         return JsonResponse({
             "default_node_id": default_node_id,
             "nodes": nodes
