@@ -15,7 +15,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
   },
 })
   .then((response) => response.json())
-  .then((nodes) => {
+  .then(({nodes, default_node_id}) => {
     if (!nodes || nodes.length === 0) {
       alert("No se encontraron nodos para el recorrido.");
       return;
@@ -54,7 +54,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           {
             positionMode: "gps",
             renderMode: "3d",
-            startNodeId: nodes[0].id,
+            startNodeId: default_node_id || nodes[0].id,
             // startNodeId: nodes[50].id,
             dataMode: "client",
             preload: true,

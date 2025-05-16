@@ -66,12 +66,13 @@ def get_nodes(request, route_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)[:3]
+        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False))
+
+
+        default_panorama = next((p for p in panoramas if p.is_default), None)
+        default_node_id = default_panorama.id if default_panorama else None
 
         # Preparar nodos
-        for node in panoramas:
-            node.url = generate_url_presigned(node.name)
-        
         if not request.user.is_authenticated:
             # Si el usuario no está autenticado, no se pueden obtener áreas o roles
             nodes = [
@@ -138,7 +139,10 @@ def get_nodes(request, route_id):
                 node_a['links'].append({"nodeId": node_b['id']})
                 node_b['links'].append({"nodeId": node_a['id']})
 
-        return JsonResponse(nodes, safe=False)
+        return JsonResponse({
+            "default_node_id": default_node_id,
+            "nodes": nodes
+        }, safe=False)
         
 
 # Calcular distancia entre dos puntos GPS

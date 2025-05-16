@@ -61,13 +61,21 @@ class PanoramaMetadata(models.Model):
     route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=False, null=False)
     upload_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, null=False)
     is_deleted = models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
+
 
     class Meta:
         db_table = 'panorama_metadata'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'gps_lat', 'gps_lng', 'gps_alt', 'route'], 
-                name='unique_panorama_fields')
+                name='unique_panorama_fields'
+            ),
+            models.UniqueConstraint(
+                fields=['route'],
+                condition=models.Q(is_default=True),
+                name='unique_default_panorama_per_route'
+            )
         ]
         
 

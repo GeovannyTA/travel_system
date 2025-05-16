@@ -125,6 +125,7 @@ def get_panorama(request, panorama_id):
                 "gps_direction",
                 "orientation",
                 "is_deleted",
+                "is_default",
             )
             .filter(id=panorama_id)
             .first()
@@ -145,6 +146,7 @@ def get_panorama(request, panorama_id):
                 "orientation": panorama.orientation,
                 "url": generate_url_presigned(panorama.name),
                 "is_deleted": panorama.is_deleted,
+                "is_default": panorama.is_default,
             }
         )
 
@@ -242,6 +244,7 @@ def add_panoramas(request):
                         route=route_obj,
                         upload_by=request.user,
                         is_deleted=False,
+                        is_default=False
                     )
                 )
 
@@ -306,6 +309,8 @@ def edit_panorama(request):
             longitude = request.POST.get("edit-longitude")
             route = request.POST.get("edit-route")
             direction = request.POST.get("edit-direction")
+            is_default = request.POST.get("is_default")
+
             if latitude:
                 panorama.gps_lat = latitude
 
@@ -319,6 +324,10 @@ def edit_panorama(request):
 
             if direction:
                 panorama.gps_direction = direction
+
+            if is_default:
+                PanoramaMetadata.objects.filter(route=panorama.route).update(is_default=False)
+                panorama.is_default = True
 
             panorama.save()
             messages.info(request, "Panorama editado correctamente")

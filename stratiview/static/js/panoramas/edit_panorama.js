@@ -49,6 +49,7 @@ function openEditModal(panoramaId) {
       id("edit-panorama-latitude").value = data.latitude;
       id("edit-panorama-longitude").value = data.longitude;
       id("edit-panorama-direction").value = data.direction;
+      id("is-default").checked = data.is_default;
 
       // Crear visor
       viewer = new Viewer({
