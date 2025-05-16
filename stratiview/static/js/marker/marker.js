@@ -36,7 +36,7 @@ function addMarker(event) {
 
           window.markersPlugin.updateMarker({
             id: window.currentMarker.id,
-            image: window.baseUrlStratiview + "icons/m-house.png",
+            image: window.baseUrlStratiview + "icons/m-pin.png",
             size: { width: 50, height: 50 },
             tooltip: key,
             content: contentHTML,

@@ -98,7 +98,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             data.forEach((marker) => {
               markersPlugin.addMarker({
               id: marker.id.toString(),
-              image: baseUrlStratiview + "icons/m-house.png",
+              image: baseUrlStratiview + "icons/m-pin.png",
               position: {
                 yaw: parseFloat(marker.yaw),
                 pitch: parseFloat(marker.pitch),
@@ -146,7 +146,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
             data.forEach((marker) => {
               const icon = recorridoIcons[marker.type];
               markersPlugin.addMarker({
-                id: marker.id.toString(),
+                id: `route-${marker.id.toString()}`,
                 image: icon,
                 position: {
                   yaw: parseFloat(marker.yaw),
@@ -232,7 +232,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           image: baseUrlStratiview + "stratiView_marker.png",
           size: { width: 40, height: 40 },
           anchor: "bottom center",
-          tooltip: "Marcador de predio",
+          tooltip: "Marcador",
           data: {
             generated: true,
             marker_type: "predio",
