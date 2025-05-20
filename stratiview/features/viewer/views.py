@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from stratiview.models import UserArea, UserRol, PanoramaMetadata, Route, UserRoute
 import math
 from django.shortcuts import render
@@ -10,6 +9,7 @@ from django.http import JsonResponse
 from itertools import combinations
 from stratiview.features.utils_amazon import generate_url_presigned
 from django.contrib import messages
+from django.db.models.expressions import RawSQL
 
 
 # @login_required
@@ -35,7 +35,9 @@ def viewer(request, route_id):
     else:
         # Usuarios normales: solo rutas asociadas
         route = Route.objects.filter(
-            id__in= UserRoute.objects.filter(user=request.user).values_list("route_id", flat=True),
+            id__in=UserRoute.objects.filter(user=request.user).values_list(
+                "route_id", flat=True
+            ),
         ).first()
 
     if not route:
@@ -46,7 +48,11 @@ def viewer(request, route_id):
             messages.warning(request, "No tienes acceso a este recorrido o no existe")
             return soft_redirect(reverse("routes"))
 
-    return render(request, 'viewer/viewer.html', {"route": route, "is_admin": True if is_admin else False})
+    return render(
+        request,
+        "viewer/viewer.html",
+        {"route": route, "is_admin": True if is_admin else False, "node": 0},
+    )
 
 
 # Visor publico
@@ -58,11 +64,70 @@ def viewer_public(request, route_id):
         messages.warning(request, "No se ha encontrado el recorrido solicitado")
         return soft_redirect(reverse("routes"))
 
-    return render(request, 'viewer/viewer.html', {"route": route, "is_admin": False})
+    return render(request, "viewer/viewer.html", {"route": route, "is_admin": False, "node": 0 })
+
+
+def viewer_coordenates(request, gps_lat, gps_lng):
+    gps_lat = float(gps_lat)
+    gps_lng = float(gps_lng)
+
+    # Fórmula Haversine adaptada para SQL Server con protección de rango en acos()
+    haversine_sql = """
+        6371 * acos(
+            CASE 
+                WHEN (
+                    cos(radians(%s)) * cos(radians(gps_lat)) *
+                    cos(radians(gps_lng) - radians(%s)) +
+                    sin(radians(%s)) * sin(radians(gps_lat))
+                ) > 1 THEN 1
+                WHEN (
+                    cos(radians(%s)) * cos(radians(gps_lat)) *
+                    cos(radians(gps_lng) - radians(%s)) +
+                    sin(radians(%s)) * sin(radians(gps_lat))
+                ) < -1 THEN -1
+                ELSE (
+                    cos(radians(%s)) * cos(radians(gps_lat)) *
+                    cos(radians(gps_lng) - radians(%s)) +
+                    sin(radians(%s)) * sin(radians(gps_lat))
+                )
+            END
+        )
+    """
+
+    params = (
+        gps_lat,
+        gps_lng,
+        gps_lat,  # Primer bloque
+        gps_lat,
+        gps_lng,
+        gps_lat,  # Segundo bloque
+        gps_lat,
+        gps_lng,
+        gps_lat,  # Else
+    )
+
+    nearby_node = (
+        PanoramaMetadata.objects.annotate(distance=RawSQL(haversine_sql, params))
+        .order_by("distance")
+        .first()
+    )
+
+    if not nearby_node:
+        return render(
+            request,
+            "viewer/viewer.html",
+            {"error": "No se encontró una panorámica cercana."},
+        )
+    
+
+    return render(
+        request,
+        "viewer/viewer.html", {"route":  nearby_node.route, "is_admin": False, "node": nearby_node.id}
+    )
 
 
 # @login_required
-def get_nodes(request, route_id):
+def get_nodes(request, route_id, node_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         route = Route.objects.filter(id=route_id).first()
@@ -91,8 +156,14 @@ def get_nodes(request, route_id):
                     "altitude": node.gps_alt,
                     "direction": node.gps_direction,
                     "route": node.route.name,
-                    "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
-                    "links": []
+                    "sphereCorrection": {
+                        "pan": (
+                            f"{node.gps_direction}deg"
+                            if node.gps_direction is not None
+                            else "0deg"
+                        )
+                    },
+                    "links": [],
                 }
                 for node in panoramas
             ]
@@ -118,8 +189,14 @@ def get_nodes(request, route_id):
                         "altitude": node.gps_alt,
                         "direction": node.gps_direction,
                         "route": node.route.name,
-                        "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
-                        "links": []
+                        "sphereCorrection": {
+                            "pan": (
+                                f"{node.gps_direction}deg"
+                                if node.gps_direction is not None
+                                else "0deg"
+                            )
+                        },
+                        "links": [],
                     }
                     for node in panoramas
                 ]
@@ -132,18 +209,24 @@ def get_nodes(request, route_id):
                         "altitude": node.gps_alt,
                         "direction": node.gps_direction,
                         "route": node.route.name,
-                        "sphereCorrection": {"pan": f"{node.gps_direction}deg" if node.gps_direction is not None else "0deg"},
-                        "links": []
+                        "sphereCorrection": {
+                            "pan": (
+                                f"{node.gps_direction}deg"
+                                if node.gps_direction is not None
+                                else "0deg"
+                            )
+                        },
+                        "links": [],
                     }
                     for node in panoramas
                 ]
 
         # Calcular conexiones entre nodos (optimizando combinaciones únicas)
         for node_a, node_b in combinations(nodes, 2):
-            dist = distance(node_a['gps'], node_b['gps'])
+            dist = distance(node_a["gps"], node_b["gps"])
             if dist <= dist_1:
-                node_a['links'].append({"nodeId": node_b['id']})
-                node_b['links'].append({"nodeId": node_a['id']})
+                node_a["links"].append({"nodeId": node_b["id"]})
+                node_b["links"].append({"nodeId": node_a["id"]})
 
         import math
 
@@ -152,35 +235,45 @@ def get_nodes(request, route_id):
             lon2, lat2 = map(math.radians, to_coords)
             dlon = lon2 - lon1
             x = math.sin(dlon) * math.cos(lat2)
-            y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+            y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(
+                lat2
+            ) * math.cos(dlon)
             angle = math.degrees(math.atan2(x, y))
             return (angle + 360) % 360
 
-        def is_direction_unique(existing_angles, new_angle, tolerance=30):
-            return all(abs((a - new_angle + 180) % 360 - 180) > tolerance for a in existing_angles)
-        
+        def is_direction_unique(existing_angles, new_angle, tolerance=100):
+            return all(
+                abs((a - new_angle + 180) % 360 - 180) > tolerance
+                for a in existing_angles
+            )
+
         # Segundo pase: nodos aislados, permitir enlaces en direcciones distintas (≤20m)
         for node_a in nodes:
-            if len(node_a['links']) <= 1:
+            if len(node_a["links"]) <= 1:
                 used_angles = []
                 for node_b in nodes:
-                    if node_a['id'] == node_b['id']:
+                    if node_a["id"] == node_b["id"]:
                         continue
-                    dist = distance(node_a['gps'], node_b['gps'])
+                    dist = distance(node_a["gps"], node_b["gps"])
                     if dist <= dist_2:
-                        angle = bearing(node_a['gps'], node_b['gps'])
+                        angle = bearing(node_a["gps"], node_b["gps"])
                         if is_direction_unique(used_angles, angle):
-                            if not any(link["nodeId"] == node_b["id"] for link in node_a["links"]):
-                                node_a['links'].append({"nodeId": node_b['id']})
-                            if not any(link["nodeId"] == node_a["id"] for link in node_b["links"]):
-                                node_b['links'].append({"nodeId": node_a['id']})
+                            if not any(
+                                link["nodeId"] == node_b["id"]
+                                for link in node_a["links"]
+                            ):
+                                node_a["links"].append({"nodeId": node_b["id"]})
+                            if not any(
+                                link["nodeId"] == node_a["id"]
+                                for link in node_b["links"]
+                            ):
+                                node_b["links"].append({"nodeId": node_a["id"]})
                             used_angles.append(angle)
 
-        return JsonResponse({
-            "default_node_id": default_node_id,
-            "nodes": nodes
-        }, safe=False)
-        
+        return JsonResponse(
+            {"default_node_id": default_node_id, "nodes": nodes}, safe=False
+        )
+
 
 # Calcular distancia entre dos puntos GPS
 def distance(gps1, gps2):
@@ -190,8 +283,11 @@ def distance(gps1, gps2):
     delta_lat = math.radians(gps2[1] - gps1[1])
     delta_lng = math.radians(gps2[0] - gps1[0])
 
-    a = math.sin(delta_lat/2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lng/2) ** 2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    a = (
+        math.sin(delta_lat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lng / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     return R * c  # distancia en metros
 

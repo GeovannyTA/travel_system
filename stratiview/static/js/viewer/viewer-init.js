@@ -9,15 +9,22 @@ import { configEvents } from "./events.js";
 
 const container = document.getElementById("photosphere");
 const route_id = container.dataset.routeId;
+const node_id = container.dataset.nodeId;
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
 const baseUrlStratiview =
   "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/";
 
-fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
+fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
   headers: { "X-Requested-With": "XMLHttpRequest" },
 })
   .then((response) => response.json())
   .then(({ nodes, default_node_id }) => {
+    const startNodeId = (parseInt(node_id) === 0)
+      ? default_node_id
+      : parseInt(node_id);
+
+    console.log("Nodo inicial", startNodeId)
+
     if (!nodes || nodes.length === 0) {
       alert("No se encontraron nodos para el recorrido.");
       return;
@@ -33,7 +40,9 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           PlanPlugin,
           {
             visibleOnLoad: true,
-            defaultZoom: 18,
+            defaultZoom: 20, // ← aquí aumentas el zoom por defecto
+            maxZoom: 25, 
+            minZoom: 16,  
             position: "bottom left",
             layers: [
               {
@@ -56,7 +65,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
           {
             positionMode: "gps",
             renderMode: "3d",
-            startNodeId: default_node_id || nodes[0].id,
+            startNodeId: startNodeId,
             dataMode: "client",
             preload: true,
             transitionOptions: {
