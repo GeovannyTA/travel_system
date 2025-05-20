@@ -1,10 +1,10 @@
 function addMarker(event) {
   const propertyUseIcons = {
-    comercial: baseUrlLocal + "markers/property/p-trade.png",
-    industrial: baseUrlLocal + "markers/property/p-industry.png",
-    equipamiento: baseUrlLocal + "markers/property/p-equipment.png",
-    mixto: baseUrlLocal + "markers/property/p-mixted.png",
-    residencial: baseUrlLocal + "markers/property/p-house.png",
+    comercial: baseUrlStratiview + "markers/property/p-trade.png",
+    industrial: baseUrlStratiview + "markers/property/p-industry.png",
+    equipamiento: baseUrlStratiview + "markers/property/p-equipment.png",
+    mixto: baseUrlStratiview + "markers/property/p-mixted.png",
+    residencial: baseUrlStratiview + "markers/property/p-house.png",
   };
 
   event.preventDefault();
@@ -103,12 +103,12 @@ function addRouteMarker(event) {
     .then((data) => {
       if (data.success && window.currentMarker) {
         const recorridoIcons = {
-          vehiculo: window.baseUrlLocal + "markers/route-type/rt-vehicle.png",
-          aereo: window.baseUrlLocal + "markers/route-type/rt-air.png",
+          vehiculo: window.baseUrlStratiview + "markers/route-type/rt-vehicle.png",
+          aereo: window.baseUrlStratiview + "markers/route-type/rt-air.png",
           interior:
-            window.baseUrlLocal + "markers/route-type/rt-inside.png",
+            window.baseUrlStratiview + "markers/route-type/rt-inside.png",
           a_pie:
-            window.baseUrlLocal + "markers/route-type/rt-walk.png",
+            window.baseUrlStratiview + "markers/route-type/rt-walk.png",
         };
 
         const recorridoLabels = {
@@ -192,7 +192,7 @@ function addObjectMarker(event) {
         
         window.markersPlugin.updateMarker({
           id: window.currentMarker.id,
-          image: window.baseUrlLocal + "markers/markers_type/m-object.png",
+          image: window.baseUrlStratiview + "markers/markers_type/m-object.png",
           size: { width: 50, height: 50 },
           tooltip: name,
           content: contentHTML,
