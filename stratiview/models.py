@@ -3,9 +3,16 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Route(models.Model):
+    TYPE_ROUTE = (
+        ('vehicle', 'En vehículo'),
+        ('air', 'Aéreo'),
+        ('inside', 'Interior'),
+        ('walk', 'A pie')
+    )
     id = models.AutoField(primary_key=True)
     name = models.CharField(unique=True, max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_ROUTE, default='vehicle')
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
@@ -132,29 +139,56 @@ class UserRol(models.Model):
 
 
 class PanoramaPropertyMakers(models.Model):
+    USE_CHOICES = [
+        ('comercial', 'Comercial'),
+        ('industrial', 'Industrial'),
+        ('equipamiento', 'Equipamiento'),
+        ('mixto', 'Mixto'),
+        ('residencial', 'Residencial'),
+    ]
+
+    SIZE_CHOICES = [
+        ('pequeño', 'pequeño'),
+        ('mediano', 'Mediano'),
+        ('grande', 'Grande'),
+    ]
+
+    POSITION_CHOICES = [
+        ('esquinero', 'esquinero'),
+        ('intermedio', 'Intermerdio'),
+        ('Manzanero', 'Manzanero'),
+        ('frentes no contiguos', 'Frentes no contiguis'),
+        ('paso de servicio', 'Paso de servicioo'),
+    ]
+
     id = models.AutoField(primary_key=True)
-    yaw = models.FloatField(blank=False, null=False)
-    pitch = models.FloatField(blank=False, null=False)
-    panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
-    key = models.CharField(max_length=100, blank=False, null=False)
-    account = models.CharField(max_length=100, blank=False, null=False)
+    yaw = models.FloatField()
+    pitch = models.FloatField()
+    panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE)
+
+    updated_use = models.CharField(max_length=50, choices=USE_CHOICES, default='residencial')
+    property_type = models.CharField(max_length=100)
+    size = models.CharField(max_length=50, choices=SIZE_CHOICES, default='mediano', blank=True, null=True)
+    business_name = models.CharField(max_length=150, blank=True, null=True)
+    land_position = models.CharField(max_length=50, choices=POSITION_CHOICES, default='intermedio', blank=True, null=True)
+    observation = models.TextField(blank=True, null=True)
+
 
     class Meta:
         db_table = 'panorama_property_markers'  
 
-
 class PanoramaTourMarkers(models.Model):
     TYPE_MARKER = (
-        ('vehicle', 'En vehículo'),
-        ('air', 'Aéreo'),
-        ('inside', 'Interior'),
-        ('walk', 'A pie')
+        ('vehiculo', 'Vehiculo'),
+        ('aereo', 'Aereo'),
+        ('interior', 'Interior'),
+        ('a pie', 'A pie')
     )
     id = models.AutoField(primary_key=True)
     yaw = models.FloatField(blank=False, null=False)
     pitch = models.FloatField(blank=False, null=False)
     panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
-    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_MARKER, default='vehicle')
+    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_MARKER, default='vehiculo')
     route = models.ForeignKey(Route, on_delete=models.CASCADE, blank=False, null=False)
 
     class Meta:
@@ -163,4 +197,21 @@ class PanoramaTourMarkers(models.Model):
             models.UniqueConstraint(
                 fields=['yaw', 'pitch', 'panorama'], 
                 name='unique_panorama_tour_markers_fields')
+        ]
+
+
+class PanoramaObjectMarkers(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, blank=False, null=False)
+    yaw = models.FloatField(blank=False, null=False)
+    pitch = models.FloatField(blank=False, null=False)
+    panorama = models.ForeignKey(PanoramaMetadata, on_delete=models.CASCADE, blank=False, null=False)
+    description = models.CharField(max_length=200, blank=False, null=False)
+
+    class Meta:
+        db_table = 'panorama_object_markers'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['yaw', 'pitch', 'panorama'], 
+                name='unique_panorama_object_markers_fields')
         ]

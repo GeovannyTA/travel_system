@@ -66,7 +66,7 @@ def get_nodes(request, route_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False))
+        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)[:3])
 
 
         default_panorama = next((p for p in panoramas if p.is_default), None)

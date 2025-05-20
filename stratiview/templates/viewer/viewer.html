@@ -34,67 +34,60 @@
     }
   }
 </script>
-<script type="module" src="{% static 'js/viewer/viewer.js' %}"></script>
+<script type="module" src="{% static 'js/viewer/viewer-init.js' %}"></script>
 <script type="text/template" id="form-predio">
   <form class="form d-flex flex-column gap-2" id="form-predio-submit" onsubmit="addMarker(event)">
     {% csrf_token %}
-    <h4>Marcador</h4>
+    <h4>Marcador de predio</h4>
     <div class="form-group">
       <label for="marker-node">Panorama</label>
-      <input 
-        type="text" 
-        name="marker-node" 
-        id="marker-node" 
-        class="form-control" 
-        value="" 
-        required 
+      <input
+        type="text"
+        name="marker-node"
+        id="marker-node"
+        class="form-control"
+        value=""
+        required
         readonly
       >
     </div>
+    <!-- Uso actualizado -->
     <div class="form-group">
-      <label for="marker-key">Clave</label>
-      <input
-        type="text"
-        class="form-control"
-        name="marker-key"
-        id="marker-key"
-        placeholder="Ingresa la clave del marcador"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="marker-account">Cuenta</label>
-      <input
-        type="text"
-        class="form-control"
-        id="marker-account"
-        name="marker-account"
-        placeholder="Ingresa la cuenta del marcador"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="marker-type-current_use">Uso actual</label>
+      <label for="marker-type-current_use">Uso actualizado</label>
       <select name="marker-type-current_use" id="marker-type-current_use" class="form-select" required>
-        <option value="predio">Industrial</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="marker-type-update_use">Uso actualizado</label>
-      <select name="marker-type-update_use" id="marker-type-update_use" class="form-select" required>
+        <option value="">-- Seleccion el uso actulizado --</option>
+        <option value="comercial">comercial</option>
         <option value="industrial">Industrial</option>
+        <option value="equipamiento">Equipamiento</option>
+        <option value="mixto">Mixto</option>
+        <option value="habitacional">Habitacional</option>
       </select>
     </div>
+    <!-- Nombre del negocio -->
     <div class="form-group">
-      <label for="marker-type">Tipo de predio</label>
-      <select name="market-type" id="marker-type" class="form-select" required>
-        <option value="predio">Predio</option>
-        <option value="pozo">Pozo</option>
-        <option value="pozo-agua">Pozo de agua</option>
-        <option value="pozo-gas">Pozo de gas</option>
-        <option value="pozo-petroleo">Pozo de petroleo</option>
+      <label for="marker-name">Nombre</label>
+      <input
+        type="text"
+        name="marker-name"
+        id="marker-name"
+        class="form-control"
+        value=""
+        required
+        readonly
+      >
+    </div>
+    <!-- Posicion del predio -->
+    <div class="form-group">
+      <label for="marker-position">Posición del predio</label>
+      <select name="marker-position" id="marker-position" class="form-select" required>
+        <option value="industrial">Esquinero</option>
+        <option value="Intermedio"></option>
+        <option value="manzanero">Manzanero</option>
+        <option value="frentes no contiguos"></option>
+        <option value="paso de servicio">Paso de servicio</option>
       </select>
     </div>
+    <!-- Tipo de predio -->
     <!-- Tamaño del predio -->
     <div class="form-group">
       <label for="marker-size">Tamaño del predio</label>
@@ -156,13 +149,13 @@
     <h4>Marcador  recorrido</h4>
     <div class="form-group">
       <label for="marker-node">Panorama</label>
-      <input 
-        type="text" 
-        name="marker-node" 
-        id="marker-node" 
-        class="form-control" 
-        value="" 
-        required 
+      <input
+        type="text"
+        name="marker-node"
+        id="marker-node"
+        class="form-control"
+        value=""
+        required
         readonly
       >
     </div>
@@ -173,7 +166,7 @@
         <option value="vehicle">Vehículo</option>
         <option value="air">Aéreo</option>
         <option value="inside">Interior</option>
-        <option value="walk">A pie</option>    
+        <option value="walk">A pie</option>
       </select>
     </div>
     <div class="form-group">
@@ -217,5 +210,76 @@
   </form>
 </script>
 
+<script type="text/template" id="form-object">
+  <form class="form d-flex flex-column gap-2" id="form-object-submit" onsubmit="addObjectMarker(event)">
+    <h4>Marcador de objeto</h4>
+    <div class="form-group">
+      <label for="marker-node">Panorama</label>
+      <input
+        type="text"
+        name="marker-node"
+        id="marker-node"
+        class="form-control"
+        value=""
+        required
+        readonly
+      >
+    </div>
+    <div class="form-group">
+      <label for="marker-name">Nombre</label>
+      <input
+        type="text"
+        name="marker-name"
+        id="marker-name"
+        class="form-control"
+        value=""
+        required
+      >
+    </div>
+    <div class="form-group">
+      <label for="marker-description">Descripcción</label>
+      <textarea
+        name="marker-description"
+        id="marker-description"
+        class="form-control"
+        rows="3"
+        placeholder="Ingresa una descripcción"
+        required
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        name="marker-yaw"
+        id="marker-yaw"
+        class="form-control"
+        value=""
+        required
+        hidden
+      >
+    </div>
+    <div class="form-group">
+      <input
+        type="text"
+        name="marker-pitch"
+        id="marker-pitch"
+        class="form-control"
+        value=""
+        required
+        hidden
+      >
+    </div>
+    <div class="d-flex justify-content-end">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        id="btn-save"
+      >
+        <i class="fa-solid fa-floppy-disk"></i>
+        Guardar
+      </button>
+    </div>
+  </form>
+</script>
 <script src="{% static 'js/marker/marker.js' %}"></script>
 {% endblock %}
