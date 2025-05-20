@@ -140,25 +140,25 @@ class UserRol(models.Model):
 
 class PanoramaPropertyMakers(models.Model):
     USE_CHOICES = [
-        ('comercial', 'Comercial'),
-        ('industrial', 'Industrial'),
-        ('equipamiento', 'Equipamiento'),
-        ('mixto', 'Mixto'),
-        ('residencial', 'Residencial'),
+        ('Comercial', 'Comercial'),
+        ('Industrial', 'Industrial'),
+        ('Equipamiento', 'Equipamiento'),
+        ('Mixto', 'Mixto'),
+        ('Residencial', 'Residencial'),
     ]
 
     SIZE_CHOICES = [
-        ('pequeño', 'pequeño'),
-        ('mediano', 'Mediano'),
-        ('grande', 'Grande'),
+        ('Pequeño', 'pequeño'),
+        ('Mediano', 'Mediano'),
+        ('Grande', 'Grande'),
     ]
 
     POSITION_CHOICES = [
-        ('esquinero', 'esquinero'),
-        ('intermedio', 'Intermerdio'),
+        ('Esquinero', 'esquinero'),
+        ('Intermedio', 'Intermerdio'),
         ('Manzanero', 'Manzanero'),
-        ('frentes no contiguos', 'Frentes no contiguis'),
-        ('paso de servicio', 'Paso de servicioo'),
+        ('Frentes no contiguos', 'Frentes no contiguis'),
+        ('Paso de servicio', 'Paso de servicioo'),
     ]
 
     id = models.AutoField(primary_key=True)

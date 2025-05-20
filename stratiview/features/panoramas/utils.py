@@ -8,6 +8,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 
+
 def extract_metadata(file_obj):
     try:
         image = Image.open(file_obj)
@@ -91,10 +92,6 @@ def calculate_distance_meters(lat1, lon1, alt1, lat2, lon2, alt2):
     return distancia_total
 
 
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.conf import settings
-
 def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas, first_name, last_name, email):
     full_name = f"{first_name} {last_name}"
 
@@ -118,3 +115,10 @@ def send_upload_and_not_upload_panoramas(not_upload_panoramas, upload_panoramas,
     )
     email_msg.attach_alternative(html_content, "text/html")
     email_msg.send(fail_silently=False)
+
+
+def calculate_decimal_range(value_str):
+    if "." in value_str:
+        decimals = len(value_str.split(".")[1])
+        return 10 ** (-decimals)
+    return 0.0001  # default fallback

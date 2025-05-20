@@ -49,6 +49,7 @@ def get_routes(request):
             routes = routes.filter(name__icontains=route_name)
 
         # Paginación
+        routes = routes.order_by("id")
         paginator = Paginator(routes, 10)
         page_number = request.GET.get("page", 1)
         page_obj = paginator.get_page(page_number)

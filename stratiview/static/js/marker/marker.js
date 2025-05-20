@@ -1,70 +1,72 @@
 function addMarker(event) {
+  const propertyUseIcons = {
+    comercial: baseUrlLocal + "markers/property/p-trade.png",
+    industrial: baseUrlLocal + "markers/property/p-industry.png",
+    equipamiento: baseUrlLocal + "markers/property/p-equipment.png",
+    mixto: baseUrlLocal + "markers/property/p-mixted.png",
+    residencial: baseUrlLocal + "markers/property/p-house.png",
+  };
+
   event.preventDefault();
 
   const nodeId = document.getElementById("marker-node").value;
-  const key = document.getElementById("marker-key").value;
-  const account = document.getElementById("marker-account").value;
   const yaw = document.getElementById("marker-yaw").value;
   const pitch = document.getElementById("marker-pitch").value;
 
-  const type_current_use =
-    document.getElementById("marker-type-current_use")?.value || "";
-  const type_update_use =
-    document.getElementById("marker-type-update_use")?.value || "";
-  const type = document.getElementById("marker-type")?.value || "";
+  const updated_use = document.getElementById("marker-type-current_use")?.value || "";
+  const property_type = document.getElementById("marker-type")?.value || "";
+  const business_name = document.getElementById("marker-name")?.value || "";
+  const land_position = document.getElementById("marker-position")?.value || "";
   const size = document.getElementById("marker-size")?.value || "";
-  const observation =
-    document.getElementById("marker-observation")?.value || "";
+  const observation = document.getElementById("marker-observation")?.value || "";
 
-  const url = `/stratiview/markers/add_marker/?marker-node=${encodeURIComponent(
-    nodeId
-  )}&marker-key=${encodeURIComponent(key)}&marker-account=${encodeURIComponent(
-    account
-  )}&marker-yaw=${yaw}&marker-pitch=${pitch}`;
+  const url = `/stratiview/markers/add_marker/` +
+    `?marker-node=${encodeURIComponent(nodeId)}` +
+    `&marker-yaw=${encodeURIComponent(yaw)}` +
+    `&marker-pitch=${encodeURIComponent(pitch)}` +
+    `&marker-type-current_use=${encodeURIComponent(updated_use)}` +
+    `&marker-type=${encodeURIComponent(property_type)}` +
+    `&marker-name=${encodeURIComponent(business_name)}` +
+    `&marker-position=${encodeURIComponent(land_position)}` +
+    `&marker-size=${encodeURIComponent(size)}` +
+    `&marker-observation=${encodeURIComponent(observation)}`;
 
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      if (data.success) {
-        if (window.currentMarker) {
-          // contenido tipo tarjeta
-          const contentHTML = `
-            <div class="form d-flex flex-column gap-2" style="width: 260px;">
-              <h4>Detalle del predio</h4>
-              <p><strong>Clave:</strong> ${key || "N/D"}</p>
-              <p><strong>Cuenta:</strong> ${account || "N/D"}</p>
-              <p><strong>Uso actual:</strong> ${type_current_use || "N/D"}</p>
-              <p><strong>Uso actualizado:</strong> ${
-                type_update_use || "N/D"
-              }</p>
-              <p><strong>Tipo de predio:</strong> ${type || "N/D"}</p>
-              <p><strong>Tamaño:</strong> ${size || "N/D"}</p>
-              <p><strong>Observación:</strong> ${
-                observation || "Sin observaciones"
-              }</p>
-            </div>
-          `;
+      if (data.success && window.currentMarker) {
+        const contentHTML = `
+          <div class="form d-flex flex-column gap-2" style="width: 260px;">
+            <h4>Detalle del predio</h4>
+            <p><strong>Nombre:</strong> ${business_name || "N/D"}</p>
+            <p><strong>Uso actualizado:</strong> ${updated_use || "N/D"}</p>
+            <p><strong>Tipo de predio:</strong> ${property_type || "N/D"}</p>
+            <p><strong>Posición:</strong> ${land_position || "N/D"}</p>
+            <p><strong>Tamaño:</strong> ${size || "N/D"}</p>
+            <p><strong>Observación:</strong> ${observation || "Sin observaciones"}</p>
+          </div>
+        `;
 
-          window.markersPlugin.updateMarker({
-            id: window.currentMarker.id,
-            image: window.baseUrlLocal + "markers/markers_type/m-property.png",
-            size: { width: 50, height: 50 },
-            tooltip: key,
-            content: contentHTML,
-            data: {
-              generated: true,
-              marker_type: "predio",
-              key,
-              account,
-              type_current_use,
-              type_update_use,
-              type,
-              size,
-              observation,
-              is_saved: true
-            },
-          });
-        }
+        const icon = propertyUseIcons[updated_use.replace(/\s+/g, "_").toLowerCase()];
+        
+        window.markersPlugin.updateMarker({
+          id: window.currentMarker.id,
+          image: icon,
+          size: { width: 50, height: 50 },
+          tooltip: business_name,
+          content: contentHTML,
+          data: {
+            generated: true,
+            marker_type: "predio",
+            updated_use,
+            property_type,
+            business_name,
+            land_position,
+            size,
+            observation,
+            is_saved: true
+          },
+        });
 
         const formContainer = document.getElementById("form-predio-submit");
         if (formContainer) {
@@ -76,6 +78,7 @@ function addMarker(event) {
       console.error("Error al enviar el marcador:", error);
     });
 }
+
 
 
 function addRouteMarker(event) {
@@ -115,7 +118,7 @@ function addRouteMarker(event) {
           a_pie: "Recorrido a pie",
         };
 
-        const icon = recorridoIcons[type] || recorridoIcons.vehiculo;
+        const icon = recorridoIcons[type].replace(/\s+/g, "_").toLowerCase() || recorridoIcons.vehiculo;
         const label = recorridoLabels[type] || "Recorrido";
 
         const contentHTML = `

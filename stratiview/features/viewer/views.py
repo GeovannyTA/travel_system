@@ -46,7 +46,7 @@ def viewer(request, route_id):
             messages.warning(request, "No tienes acceso a este recorrido o no existe")
             return soft_redirect(reverse("routes"))
 
-    return render(request, 'viewer/viewer.html', {"route": route})
+    return render(request, 'viewer/viewer.html', {"route": route, "is_admin": True if is_admin else False})
 
 
 # Visor publico
@@ -58,16 +58,24 @@ def viewer_public(request, route_id):
         messages.warning(request, "No se ha encontrado el recorrido solicitado")
         return soft_redirect(reverse("routes"))
 
-    return render(request, 'viewer/viewer.html', {"route": route})
+    return render(request, 'viewer/viewer.html', {"route": route, "is_admin": False})
 
 
 # @login_required
 def get_nodes(request, route_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
-        # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)[:3])
+        route = Route.objects.filter(id=route_id).first()
 
+        # Precargar las relaciones necesarias para evitar consultas extra
+        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False))
+
+        if not route.type.lower().replace(" ", "_") in ["interior", "a_pie"]:
+            dist_1 = 17
+            dist_2 = 20
+        else:
+            dist_1 = 2
+            dist_2 = 5
 
         default_panorama = next((p for p in panoramas if p.is_default), None)
         default_node_id = default_panorama.id if default_panorama else None
@@ -133,7 +141,7 @@ def get_nodes(request, route_id):
         # Calcular conexiones entre nodos (optimizando combinaciones únicas)
         for node_a, node_b in combinations(nodes, 2):
             dist = distance(node_a['gps'], node_b['gps'])
-            if dist <= 17:
+            if dist <= dist_1:
                 node_a['links'].append({"nodeId": node_b['id']})
                 node_b['links'].append({"nodeId": node_a['id']})
 
@@ -159,7 +167,7 @@ def get_nodes(request, route_id):
                     if node_a['id'] == node_b['id']:
                         continue
                     dist = distance(node_a['gps'], node_b['gps'])
-                    if dist <= 20:
+                    if dist <= dist_2:
                         angle = bearing(node_a['gps'], node_b['gps'])
                         if is_direction_unique(used_angles, angle):
                             if not any(link["nodeId"] == node_b["id"] for link in node_a["links"]):

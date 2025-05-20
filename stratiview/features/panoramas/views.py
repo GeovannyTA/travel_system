@@ -4,7 +4,7 @@ from django.urls import reverse
 from stratiview.models import User, PanoramaMetadata, UserRol, UserArea, Route, UserRoute
 from stratiview.features.utils_amazon import upload_image_to_s3
 from django.db import transaction
-from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters, send_upload_and_not_upload_panoramas
+from stratiview.features.panoramas.utils import extract_metadata, calculate_distance_meters, send_upload_and_not_upload_panoramas, calculate_decimal_range
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from stratiview.features.utils.permisions import area_matrix, role_matrix
@@ -64,10 +64,20 @@ def get_panoramas(request):
         panoramas = panoramas.filter(date_taken__date__lte=end_date)
 
     if latitude:
-        panoramas = panoramas.filter(gps_lat=latitude)
-    
+        try:
+            lat = float(latitude)
+            lat_range = calculate_decimal_range(latitude)
+            panoramas = panoramas.filter(gps_lat__gte=lat - lat_range, gps_lat__lte=lat + lat_range)
+        except ValueError:
+            pass
+
     if longitude:
-        panoramas = panoramas.filter(gps_lng=longitude)
+        try:
+            lng = float(longitude)
+            lng_range = calculate_decimal_range(longitude)
+            panoramas = panoramas.filter(gps_lng__gte=lng - lng_range, gps_lng__lte=lng + lng_range)
+        except ValueError:
+            pass
 
     # Obtener usuarios únicos
     users = User.objects.filter(id__in=panoramas.values_list("upload_by", flat=True).distinct())

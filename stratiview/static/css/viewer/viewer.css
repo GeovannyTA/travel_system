@@ -170,3 +170,48 @@ body,
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.138);
 }
+
+#instructions-toggle {
+  position: absolute;
+  top: 8.5%;
+  right: 1%;
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 90;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+#instructions-box {
+  display: none;
+  position: absolute;
+  top: 15%;
+  right: 1%;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 15px 20px;
+  border-radius: 8px;
+  max-width: 300px;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 89;
+  cursor: pointer;
+}
+
+#instructions-box h5 {
+  margin-top: 0;
+  font-weight: bold;
+}
+
+#instructions-box ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+#instructions-box li {
+  margin-bottom: 6px;
+}

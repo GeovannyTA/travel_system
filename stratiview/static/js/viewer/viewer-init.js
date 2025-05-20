@@ -10,8 +10,9 @@ import { configEvents } from "./events.js";
 const container = document.getElementById("photosphere");
 const route_id = container.dataset.routeId;
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
-const baseUrlLocal = "http://127.0.0.1:8000/static/images/"
-const baseUrlStratiview = "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/";
+const baseUrlLocal = "http://127.0.0.1:8000/static/images/";
+const baseUrlStratiview =
+  "https://beautiful-einstein.51-79-98-210.plesk.page/static/images/";
 
 fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
   headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -77,8 +78,21 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/`, {
     window.viewer = viewer;
     window.baseUrl = baseUrl;
     window.baseUrlStratiview = baseUrlStratiview;
-    window.baseUrlLocal= baseUrlLocal;
+    window.baseUrlLocal = baseUrlLocal;
 
     configEvents(viewer);
   })
   .catch((error) => console.error("Error cargando nodos:", error));
+
+
+function toggleInstructions() {
+  const box = document.getElementById("instructions-box");
+  if (box.style.display == "block") {
+    box.style.display = "none";
+  } else {
+    box.style.display = "block";
+  }
+}
+
+
+window.toggleInstructions = toggleInstructions

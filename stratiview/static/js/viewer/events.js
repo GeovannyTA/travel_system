@@ -3,7 +3,7 @@
 import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
 import { VirtualTourPlugin } from "@photo-sphere-viewer/virtual-tour-plugin";
 import { utils } from "@photo-sphere-viewer/core";
-import { loadObjectMarkers, loadPredioMarkers, loadRouteMarkers } from "../marker/loadMarkers.js";
+import { loadAllMarkers } from "../marker/loadMarkers.js";
 
 export function configEvents(viewer) {
   const markersPlugin = viewer.getPlugin(MarkersPlugin);
@@ -11,7 +11,10 @@ export function configEvents(viewer) {
 
   viewer.addEventListener("ready", () => {
     const loader = document.getElementById("custom-loader");
+    const instructions = document.getElementById("instructions-toggle");
+
     if (loader) loader.style.display = "none";
+    if (instructions) instructions.style.display = "block";
   });
 
   new utils.Animation({
@@ -37,7 +40,7 @@ export function configEvents(viewer) {
     markersPlugin.addMarker({
       id: "marker-logo",
       type: "image",
-      image: window.baseUrlLocal + "logo-viewer.png",
+      image: window.baseUrlStratiview + "logo-viewer.png",
       anchor: "center center",
       position: { yaw: 0, pitch: 10 },
       size: { width: 320, height: 320 },
@@ -48,9 +51,17 @@ export function configEvents(viewer) {
   tourPlugin.addEventListener("node-changed", (event) => {
     const nodeId = event.node.id;
     markersPlugin.clearMarkers();
-    loadPredioMarkers(nodeId, markersPlugin, window.baseUrlLocal);
-    loadRouteMarkers(nodeId, markersPlugin, window.baseUrlLocal);
-    loadObjectMarkers(nodeId, markersPlugin, window.baseUrlLocal);
+    loadAllMarkers(nodeId, markersPlugin, window.baseUrlStratiview);
+
+    markersPlugin.addMarker({
+      id: "marker-logo",
+      type: "image",
+      image: window.baseUrlStratiview + "logo-viewer.png",
+      anchor: "center center",
+      position: { yaw: 0, pitch: 10 },
+      size: { width: 320, height: 320 },
+      style: { opacity: "0.86" },
+    });
   });
 
   let ctrlPressed = false;
@@ -58,12 +69,14 @@ export function configEvents(viewer) {
   window.addEventListener("keyup", (e) => (ctrlPressed = e.ctrlKey));
 
   viewer.addEventListener("dblclick", ({ data }) => {
+    if (!window.is_admin) return;
+
     const id = "#" + Math.random();
     const position = { yaw: data.yaw, pitch: data.pitch };
     const size = { width: 40, height: 40 };
     const anchor = "bottom center";
-    const imageProperty = window.baseUrlLocal + "markers/markers_type/m-property.png";
-    const imageTour = window.baseUrlLocal + "markers/markers_type/m-tour.png";
+    const imageProperty = window.baseUrlStratiview + "markers/markers_type/m-property.png";
+    const imageTour = window.baseUrlStratiview + "markers/markers_type/m-tour.png";
 
     if (!data.rightclick) {
       markersPlugin.addMarker({
@@ -91,11 +104,13 @@ export function configEvents(viewer) {
   });
 
   viewer.addEventListener("click", ({ data }) => {
+    if (!window.is_admin) return;
+
     if (ctrlPressed && !data.rightclick) {
       markersPlugin.addMarker({
         id: "#" + Math.random(),
         position: { yaw: data.yaw, pitch: data.pitch },
-        image: window.baseUrlLocal + "markers/markers_type/m-object.png",
+        image: window.baseUrlStratiview + "markers/markers_type/m-object.png",
         size: { width: 40, height: 40 },
         anchor: "bottom center",
         tooltip: "Marcador de objeto",
@@ -142,9 +157,6 @@ export function configEvents(viewer) {
           const yawInput = document.getElementById("marker-yaw");
           const pitchInput = document.getElementById("marker-pitch");
 
-          console.log(nodeInput)
-          console.log(yawInput)
-          console.log(pitchInput)
           if (nodeInput && yawInput && pitchInput) {
             nodeInput.value = currentNode.id;
             yawInput.value = marker.config.position["yaw"];
@@ -152,6 +164,63 @@ export function configEvents(viewer) {
           }
         }, 1000);
       }
+
+      setTimeout(() => {
+        const usoSelect = document.getElementById("marker-type-current_use");
+        const tipoSelect = document.getElementById("marker-type");
+
+        if (!usoSelect || !tipoSelect) return;
+
+        const tipoPorUso = {
+          Comercial: [
+            "Alimentos y bebidas",
+            "Abarrotes",
+            "Estéticas",
+            "Comercios diversos",
+            "Venta de ropa",
+            "Autolavado",
+            "Venta de autopartes",
+            "Tiendas de conveniencia",
+            "Clínicas de salud",
+            "Clínicas veterinaria",
+            "Papelería",
+            "Gasolineras",
+            "Gaseras",
+          ],
+          Industrial: [
+            "Nave de producción",
+            "Nave de manufactura",
+            "Bodega",
+            "Plaza comercial",
+          ],
+          Equipamiento: [
+            "Hoteles",
+            "Hospitales",
+            "Teatros",
+            "Iglesias",
+            "Escuelas",
+            "Oficinas",
+          ],
+          Mixto: ["1 cortina", "2 cortinas", "3 o más"],
+          Habitacional: [
+            "Habitacional"
+          ],
+        };
+
+        usoSelect.addEventListener("change", () => {
+          const selectedUso = usoSelect.value;
+          const tipos = tipoPorUso[selectedUso] || [];
+
+          tipos.forEach((tipo) => {
+            const option = document.createElement("option");
+            option.value = tipo;
+            option.textContent = tipo;
+            tipoSelect.appendChild(option);
+          });
+
+          tipoSelect.disabled = tipos.length === 0;
+        });
+      }, 1000);
 
       if (marker.data?.is_saved === false) {
         if (rightClick && ctrlPressed) {
