@@ -52,7 +52,7 @@ function addMarker(event) {
         window.markersPlugin.updateMarker({
           id: window.currentMarker.id,
           image: icon,
-          size: { width: 50, height: 50 },
+          size: { width: 45, height: 45 },
           tooltip: business_name,
           content: contentHTML,
           data: {
@@ -134,7 +134,7 @@ function addRouteMarker(event) {
         window.markersPlugin.updateMarker({
           id: window.currentMarker.id,
           image: icon,
-          size: { width: 50, height: 50 },
+          size: { width: 45, height: 45 },
           tooltip: label,
           content: contentHTML,
           data: {
@@ -193,7 +193,7 @@ function addObjectMarker(event) {
         window.markersPlugin.updateMarker({
           id: window.currentMarker.id,
           image: window.baseUrlStratiview + "markers/markers_type/m-object.png",
-          size: { width: 50, height: 50 },
+          size: { width: 45, height: 45 },
           tooltip: name,
           content: contentHTML,
           data: {
