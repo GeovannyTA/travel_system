@@ -4,7 +4,8 @@ import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
 import { VirtualTourPlugin } from "@photo-sphere-viewer/virtual-tour-plugin";
 import { PlanPlugin } from "@photo-sphere-viewer/plan-plugin";
 import { CompassPlugin } from "@photo-sphere-viewer/compass-plugin";
-
+import { StereoPlugin } from '@photo-sphere-viewer/stereo-plugin';
+import { GyroscopePlugin } from '@photo-sphere-viewer/gyroscope-plugin';
 import { configEvents } from "./events.js";
 
 const container = document.getElementById("photosphere");
@@ -33,7 +34,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
     const viewer = new Viewer({
       container,
       caption: "&copy; Metro IQ",
-      navbar: ["zoom", "caption", "move", "fullscreen"],
+      navbar: ["zoom", "caption", "move", "fullscreen", "stereo"],
       minFov: 70,
       plugins: [
         [
@@ -60,6 +61,8 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
           },
         ],
         [CompassPlugin],
+        [StereoPlugin],
+        [GyroscopePlugin],
         [
           VirtualTourPlugin,
           {

@@ -133,7 +133,7 @@ def get_nodes(request, route_id, node_id):
         route = Route.objects.filter(id=route_id).first()
 
         # Precargar las relaciones necesarias para evitar consultas extra
-        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False))
+        panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False)[:51])
 
         if not route.type.lower().replace(" ", "_") in ["interior", "a_pie"]:
             dist_1 = 17
