@@ -117,10 +117,6 @@ body,
   color: #196ccb !important;
 }
 
-.psv-container * {
-  box-sizing: border-box !important;
-}
-
 .psv-panel-close-button {
   right: 25px !important;
   width: 30px !important;
@@ -181,7 +177,7 @@ body,
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  z-index: 90;
+  z-index: 40;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: none;
 }
@@ -198,7 +194,7 @@ body,
   max-width: 300px;
   font-size: 14px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  z-index: 89;
+  z-index: 39;
   cursor: pointer;
 }
 
@@ -214,4 +210,11 @@ body,
 
 #instructions-box li {
   margin-bottom: 6px;
+}
+
+.psv-plan__spot {
+  background-color: #a2a2a2 !important;
+}
+
+.psv-plan__pin {
 }
