@@ -311,6 +311,14 @@
 
 <script>
   window.is_admin = {{ is_admin|yesno:"true,false" }};
+  if ('xr' in navigator) {
+    alert('WebXR disponible');
+    navigator.xr.d('immersive-vr').then((supported) => {
+      alert('¿Modo VR soportado?:', supported)
+    });
+  } else {
+    alert('WebXR NO está disponible en este navegador')
+  }
 </script>
 <script src="{% static 'js/marker/marker.js' %}"></script>
 {% endblock %}

@@ -34,6 +34,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
     const viewer = new Viewer({
       container,
       caption: "&copy; Metro IQ",
+      // navbar: ["zoom", "caption", "move", "fullscreen", { id: "stereo", title: "VR", className: "custom-vr", content: "🎮" }],
       navbar: ["zoom", "caption", "move", "fullscreen", "stereo"],
       minFov: 70,
       plugins: [
