@@ -243,8 +243,7 @@ function openViewerVR() {
     return;
   }
 
-  const isPublic = window.location.href.includes("/public/");
-  const basePath = isPublic ? "/stratiview/viewer/vr_viewer/public/" : "/stratiview/viewer/vr_viewer/";
+  const basePath = "/stratiview/viewer/vr_viewer/";
 
   const url = `${basePath}${currentNode.id}/`;
   window.open(url, "_blank");
