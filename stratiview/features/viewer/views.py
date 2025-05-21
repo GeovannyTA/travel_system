@@ -299,14 +299,8 @@ def get_routes(request):
     return JsonResponse(route_list, safe=False)
 
 
-def aframe_viewer(request, panorama_id):
-    from stratiview.models import PanoramaMetadata
-    from stratiview.features.utils_amazon import generate_url_presigned
-
+def vr_viewer(request, panorama_id):
     panorama = PanoramaMetadata.objects.get(id=panorama_id)
     panorama_url = generate_url_presigned(panorama.name)
 
-    return render(request, "viewer/aframe.html", {"panorama_url": panorama_url})
-
-def aframe_tour(request, route_id, node_id=0):
-    return render(request, "viewer/aframe_tour.html", {"route_id": route_id, "node_id": node_id})
+    return render(request, "viewer/vr_viewer.html", {"panorama_url": panorama_url})

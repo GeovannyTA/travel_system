@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tour 360 VR - A-Frame</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: black;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene id="scene" vr-mode-ui="enabled: true" background="color: #000">
+      <!-- Cargar la imagen panorámica -->
+      <a-assets>
+        <img id="pano1" src="{{ panorama_url }}" crossorigin="anonymous" />
+      </a-assets>
+
+      <!-- Aplicar imagen al cielo -->
+      <a-sky id="sky" radius="5000" src="#pano1"></a-sky>
+
+      <!-- Cámara y cursor para VR -->
+      <a-entity camera look-controls wasd-controls>
+        <a-cursor
+          color="#fff"
+          fuse="true"
+          fuse-timeout="1000"
+          geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+          position="0 0 -1"
+        ></a-cursor>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>

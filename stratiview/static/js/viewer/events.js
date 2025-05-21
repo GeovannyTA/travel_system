@@ -75,8 +75,10 @@ export function configEvents(viewer) {
     const position = { yaw: data.yaw, pitch: data.pitch };
     const size = { width: 40, height: 40 };
     const anchor = "bottom center";
-    const imageProperty = window.baseUrlStratiview + "markers/markers_type/m-property.png";
-    const imageTour = window.baseUrlStratiview + "markers/markers_type/m-tour.png";
+    const imageProperty =
+      window.baseUrlStratiview + "markers/markers_type/m-property.png";
+    const imageTour =
+      window.baseUrlStratiview + "markers/markers_type/m-tour.png";
 
     if (!data.rightclick) {
       markersPlugin.addMarker({
@@ -114,7 +116,7 @@ export function configEvents(viewer) {
         size: { width: 40, height: 40 },
         anchor: "bottom center",
         tooltip: "Marcador de objeto",
-        data: { generated: true, marker_type: "object", is_saved: false},
+        data: { generated: true, marker_type: "object", is_saved: false },
         content: document.getElementById("form-object").innerHTML,
       });
     }
@@ -202,9 +204,7 @@ export function configEvents(viewer) {
             "Oficinas",
           ],
           Mixto: ["1 cortina", "2 cortinas", "3 o más"],
-          Habitacional: [
-            "Habitacional"
-          ],
+          Habitacional: ["Habitacional"],
         };
 
         usoSelect.addEventListener("change", () => {
@@ -233,3 +233,21 @@ export function configEvents(viewer) {
   window.markersPlugin = markersPlugin;
   window.tourPlugin = tourPlugin;
 }
+
+function openViewerVR() {
+  const currentNode = tourPlugin.getCurrentNode();
+  console.log("Current node: ", currentNode.id);
+  
+  if (!currentNode.id) {
+    alert("ID de la panorama no válido.");
+    return;
+  }
+
+  const isPublic = window.location.href.includes("/public/");
+  const basePath = isPublic ? "/stratiview/viewer/vr_viewer/public/" : "/stratiview/viewer/vr_viewer/";
+
+  const url = `${basePath}${currentNode.id}/`;
+  window.open(url, "_blank");
+};
+
+window.openViewerVR = openViewerVR

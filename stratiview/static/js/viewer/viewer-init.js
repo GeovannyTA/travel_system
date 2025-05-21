@@ -35,7 +35,17 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
       container,
       caption: "&copy; Metro IQ",
       // navbar: ["zoom", "caption", "move", "fullscreen", { id: "stereo", title: "VR", className: "custom-vr", content: "🎮" }],
-      navbar: ["zoom", "caption", "move", "fullscreen", "stereo"],
+      navbar: ["zoom", "caption", "move", "fullscreen", "stereo", 
+        { 
+          id: "prueba", 
+          title: "Prueba", 
+          className: "custom-vr", 
+          content: "🎮", 
+          onClick: () => { 
+            openViewerVR(); 
+          }
+        }
+      ],
       minFov: 70,
       plugins: [
         [
