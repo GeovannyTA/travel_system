@@ -10,9 +10,9 @@ from itertools import combinations
 from stratiview.features.utils_amazon import generate_url_presigned
 from django.contrib import messages
 from django.db.models.expressions import RawSQL
+from django.contrib.auth.decorators import login_required
 
-
-# @login_required
+@login_required
 # Modificar para que no sea necesario el login
 def viewer(request, route_id):
     # Verificar si el usuario tiene acceso a la ruta
