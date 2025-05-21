@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tour 360 VR - A-Frame</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: black;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene id="scene" vr-mode-ui="enabled: true" background="color: #000">
+      <a-assets id="assets"></a-assets>
+
+      <a-sky id="sky" radius="5000"></a-sky>
+
+      <!-- Cámara y cursor -->
+      <a-entity camera look-controls wasd-controls>
+        <a-cursor
+          color="#fff"
+          fuse="true"
+          fuse-timeout="1000"
+          geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+          position="0 0 -1"
+        >
+        </a-cursor>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const routeId = {{ route_id }};
+      const nodeId = {{ node_id }} || 0;
+
+      fetch(`/stratiview/viewer/get_nodes/${routeId}/${nodeId}`)
+        .then(res => res.json())
+        .then(data => {
+          const nodes = data.nodes;
+          const defaultId = nodeId === 0 ? data.default_node_id : nodeId;
+          const assets = document.querySelector("#assets");
+          const sky = document.querySelector("#sky");
+
+          const nodeMap = {};
+
+          nodes.forEach(node => {
+            const img = document.createElement("img");
+            img.setAttribute("id", `pano-${node.id}`);
+            img.setAttribute("crossorigin", "anonymous");
+            img.setAttribute("src", node.panorama);
+            assets.appendChild(img);
+
+            nodeMap[node.id] = node;
+          });
+
+          let currentId = defaultId;
+          loadNode(currentId);
+
+          function loadNode(id) {
+            const node = nodeMap[id];
+
+            const imgEl = document.querySelector(`#pano-${id}`);
+            if (imgEl && imgEl.complete) {
+              sky.setAttribute("src", `#pano-${id}`);
+            } else {
+              imgEl.addEventListener("load", () => {
+                sky.setAttribute("src", `#pano-${id}`);
+              });
+            }
+
+            document.querySelectorAll(".link").forEach(e => e.remove());
+
+            node.links.forEach((link, i) => {
+              const target = nodeMap[link.nodeId];
+              const yaw = getYawBetween(node.gps, target.gps);
+
+              const portal = document.createElement("a-image");
+              portal.setAttribute("src", "https://cdn-icons-png.flaticon.com/512/535/535239.png");
+              portal.setAttribute("position", getPositionFromYaw(yaw, 3));
+              portal.setAttribute("scale", "1 1 1");
+              portal.setAttribute("class", "link");
+              portal.setAttribute("look-at", "[camera]");
+              portal.setAttribute("event-set__enter", "_event: mouseenter; scale: 1.2 1.2 1.2");
+              portal.setAttribute("event-set__leave", "_event: mouseleave; scale: 1 1 1");
+              portal.setAttribute("cursor-listener", "");
+
+              portal.addEventListener("click", () => {
+                currentId = link.nodeId;
+                loadNode(currentId);
+              });
+
+              document.querySelector("a-scene").appendChild(portal);
+            });
+          }
+
+          function getYawBetween(from, to) {
+            const lon1 = from[0] * Math.PI / 180;
+            const lat1 = from[1] * Math.PI / 180;
+            const lon2 = to[0] * Math.PI / 180;
+            const lat2 = to[1] * Math.PI / 180;
+
+            const dLon = lon2 - lon1;
+            const y = Math.sin(dLon) * Math.cos(lat2);
+            const x = Math.cos(lat1) * Math.sin(lat2) -
+                      Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+            let brng = Math.atan2(y, x);
+            brng = (brng * 180 / Math.PI + 360) % 360;
+            return brng;
+          }
+
+          function getPositionFromYaw(yawDeg, distance) {
+            const yaw = THREE.MathUtils.degToRad(yawDeg);
+            const x = Math.sin(yaw) * distance;
+            const z = -Math.cos(yaw) * distance;
+            return `${x} 1.6 ${z}`;
+          }
+        });
+    </script>
+  </body>
+</html>

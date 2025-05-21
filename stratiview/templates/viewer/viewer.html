@@ -53,6 +53,21 @@
     }
   }
 </script>
+<a href="{% url 'aframe_tour' route.id %}" target="_blank" style="
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 10px 15px;
+  background-color: #111;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+">
+  Ver en VR
+</a>
 <script type="module" src="{% static 'js/viewer/viewer-init.js' %}"></script>
 {% if is_admin %}
 <script type="text/template" id="form-predio">
