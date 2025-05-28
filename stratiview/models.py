@@ -215,3 +215,13 @@ class PanoramaObjectMarkers(models.Model):
                 fields=['yaw', 'pitch', 'panorama'], 
                 name='unique_panorama_object_markers_fields')
         ]
+
+
+class Implementta(models.Model):
+    id = models.AutoField(primary_key=True)
+    account = models.CharField(max_length=100, blank=False, null=False)
+    gps_lat = models.FloatField(blank=False, null=False)
+    gps_lng = models.FloatField(blank=False, null=False)
+
+    class Meta:
+        db_table = 'implementta'
