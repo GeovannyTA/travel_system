@@ -117,8 +117,8 @@ function addRouteMarker(event) {
           interior: "Recorrido interior",
           a_pie: "Recorrido a pie",
         };
-
-        const icon = recorridoIcons[type].replace(/\s+/g, "_").toLowerCase() || recorridoIcons.vehiculo;
+        const cleanedType = type?.replace(/\s+/g, "_").toLowerCase();
+        const icon = recorridoIcons[cleanedType] || recorridoIcons.vehiculo;
         const label = recorridoLabels[type] || "Recorrido";
 
         const contentHTML = `
