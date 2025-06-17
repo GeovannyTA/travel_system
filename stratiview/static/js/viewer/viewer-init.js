@@ -31,7 +31,7 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
 
     const viewer = new Viewer({
       container,
-      caption: "&copy; Metro IQ",
+      caption: "&copy; Metro-IQ",
       navbar: ["zoom", "caption", "move", "fullscreen", 
         { 
           id: "prueba", 
