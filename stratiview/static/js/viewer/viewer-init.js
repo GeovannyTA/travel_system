@@ -22,8 +22,6 @@ fetch(`/stratiview/viewer/get_nodes/${route_id}/${node_id}`, {
       ? default_node_id
       : parseInt(node_id);
 
-    console.log("Nodo inicial", startNodeId)
-
     if (!nodes || nodes.length === 0) {
       alert("No se encontraron nodos para el recorrido.");
       return;

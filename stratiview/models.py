@@ -4,21 +4,21 @@ from django.contrib.auth.models import AbstractUser
 
 class Route(models.Model):
     TYPE_ROUTE = (
-        ('vehicle', 'En vehículo'),
-        ('air', 'Aéreo'),
-        ('inside', 'Interior'),
-        ('walk', 'A pie')
+        ('Vehiculo', 'En vehículo'),
+        ('Aereo', 'Aéreo'),
+        ('Interior', 'Interior'),
+        ('A pie', 'A pie')
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(unique=True, max_length=100, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_ROUTE, default='vehicle')
+    type = models.CharField(max_length=100, blank=False, null=False, choices=TYPE_ROUTE, default='Vehiculo')
     is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'route'
 
-
+ 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
