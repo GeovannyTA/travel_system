@@ -158,7 +158,7 @@
     </nav>
     {% endif %}
 
-    <main class="{% if request.resolver_match.url_name == 'viewer' or request.resolver_match.url_name == 'viewer_public' or request.resolver_match.url_name ==  'viewer_coordenates' %}h-viewer{% endif %}">
+    <main class="{% if request.resolver_match.url_name == 'viewer' or request.resolver_match.url_name ==  'viewer_coordenates' %}h-viewer{% elif request.resolver_match.url_name == 'viewer_public'%}fh-viewer{% endif %}">
       {% block viewer %}
       <div class="p-2 container-content">
         {% block content %} {% endblock %}

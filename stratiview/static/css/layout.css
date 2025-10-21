@@ -26,6 +26,10 @@ main {
   height: calc(100vh - 55px);
 }
 
+.fh-viewer {
+  height: calc(100vh);
+}
+
 .container-content {
   height: calc(100vh - 105px);
   display: flex;
