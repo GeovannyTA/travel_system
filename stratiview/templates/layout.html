@@ -43,6 +43,7 @@
       {% endif %}
     </div>
     
+    {% if request.resolver_match.url_name != 'viewer_public'%}
     <nav class="navbar navbar-expand-lg bg-light shadow-sm p-0" 
       style="border-bottom: solid 1px; border-color: rgba(128, 128, 128, 0.44);"
       data-bs-theme="light">
@@ -155,6 +156,7 @@
         </div>
       </div>
     </nav>
+    {% endif %}
 
     <main class="{% if request.resolver_match.url_name == 'viewer' or request.resolver_match.url_name == 'viewer_public' or request.resolver_match.url_name ==  'viewer_coordenates' %}h-viewer{% endif %}">
       {% block viewer %}

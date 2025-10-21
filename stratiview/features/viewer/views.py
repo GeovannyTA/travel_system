@@ -131,7 +131,6 @@ def get_nodes(request, route_id, node_id):
     # Obtener el ID de la ruta
     if request.method == "GET":
         route = Route.objects.filter(id=route_id).first()
-        print("Tipo de recorrido get_nodes(): ", route.type.lower().replace(" ", "_"))
 
         # Precargar las relaciones necesarias para evitar consultas extra
         panoramas = list(PanoramaMetadata.objects.filter(route_id=route_id, is_deleted=False))
