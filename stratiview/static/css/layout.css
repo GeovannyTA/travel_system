@@ -27,7 +27,7 @@ main {
 }
 
 .fh-viewer {
-  height: calc(100vh);
+  height: calc(100vh) !important;
 }
 
 .container-content {
